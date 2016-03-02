@@ -1,0 +1,120 @@
+div {
+  border: 1px solid black;
+}
+
+textarea {
+  width: 98%;
+  height: 98%;
+}
+
+pre {
+  white-space: pre-wrap;       /* CSS 3 */
+  white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+  white-space: -pre-wrap;      /* Opera 4-6 */
+  white-space: -o-pre-wrap;    /* Opera 7 */
+  word-wrap: break-word;       /* Internet Explorer 5.5+ */
+  line-height: 1.5em;
+}
+
+button, input {
+  margin: 10px;
+  height: 25px;
+}
+
+h1 {
+  text-align: center;
+  font-size: large;
+}
+
+.left {
+  float: left;
+}
+
+.right {
+  float: right;
+}
+
+.quote {
+  background-color: orange;
+}
+
+.quote .quote {
+  background-color: #BE81F7;
+}
+
+.quote .quote .quote {
+  background-color: red;
+}
+
+.config {
+  border: 1px dashed red;
+}
+
+.text {
+  border: 1px dashed blue;
+}
+
+.config div, .text div {
+  border: 1px dotted gray;
+}
+
+.linenum {
+  color: dimgrey;
+  padding-left: 2px;
+}
+
+.zebra {
+  color: darkgreen;
+}
+
+
+#annotationareacontainer {
+  overflow: hidden;
+  width: 73%;
+}
+
+#linenums {
+  float: left;
+  width: 50px;
+  overflow: hidden; /* essential for together-scrolling! */
+  background-color: lightcyan;
+}
+
+#annotationarea {
+  overflow-y: scroll;
+  width: 90%;
+  padding-left: 5px;
+}
+
+#linenums, #annotationarea {
+  height: 700px;
+}
+
+#annotationarea pre, #annotationarea textarea, pre {
+  font-family: times, serif;
+}
+
+#tools {
+  width: 23%;
+  border: 1px solid green;
+}
+
+#tools div {
+  margin: 5px;
+  padding: 5px;
+}
+
+#annotate {
+  width: 93%;
+  background-color: lime;
+}
+
+#specificAnns span {
+  padding: 5px;
+}
+
+
+/* Annotation guidelines */
+li {
+  margin-top: 7px;
+}
