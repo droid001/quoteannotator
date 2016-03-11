@@ -106,7 +106,7 @@ function highlight(speaker, coords) {
   var re = coords.end;
   var html = $("#annotationarea").html();
   var before = html.substring(0, rs);
-  var wrapped = "<span class=\"quote " + speaker + "\">" + html.substring(rs, re) + "</span>";
+  var wrapped = '<span class="quote ' + speaker + '"' + 'title="' + speaker + '">' + html.substring(rs, re) + '</span>';
   var after = html.substring(re);
   $("#annotationarea").html(before + wrapped + after);
 }
@@ -358,6 +358,7 @@ function addOption() {
   var optionCssElem = $("#optioncss");
   var value = (nextColor)? "background-color:" + nextColor + ';' : optionCssElem.attr('title') || '';
   optionCssElem.attr('value', value);
+  displayTestOption();
 
   $("#addoptionmodal").modal({
     escapeClose: false,
