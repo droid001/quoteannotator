@@ -37,4 +37,4 @@ Tools.prototype.highlight = function() {
   }
 
   return {"start": start, "end" : end};
-}
+};

@@ -14,7 +14,7 @@ function getHtmlTagLocations(html) {
     }
     if (inTag && html.charAt(curr) == ">") {
       // append the tag and the index that it starts at
-      elements[start] = html.substring(start, curr + 1)
+      elements[start] = html.substring(start, curr + 1);
       inTag = false;
     }
     curr += 1; 
@@ -24,13 +24,13 @@ function getHtmlTagLocations(html) {
 
 function getSpansFromTagLocations(elements) {
   var spans = {};
-  for (elem in elements) {
+  for (var elem in elements) {
     var boundsEnd = elem;
     var count = 0;
     if (elements[elem].startsWith('</') || (elements[elem].endsWith('/>'))) {
       continue;
     }
-    for (e in elements) {
+    for (var e in elements) {
       if ((e * 1.0) >= (elem * 1.0)) {
       if (elements[e].startsWith('</')) {
         count -= 1;
@@ -84,7 +84,7 @@ function getHighlightSpan(){
   // are not partially inside another span (like a quote)
   var spans = getSpansFromTagLocations(elements);
 
-  for (span in spans) {
+  for (var span in spans) {
     if (span != spans[span]) {
       if ((rs < span && re > span && re < spans[span]) || 
           (rs > span && rs < spans[span] && re > spans[span])) {
@@ -124,14 +124,14 @@ function deleteQuote(event) {
     var rCoords = getRealCoords(coords, elements);
     var loc = rCoords.start;
     var remove = -1;
-    for (span in spans) {
+    for (var span in spans) {
       if (loc >= span && loc <= spans[span] && elements[span].startsWith("<span class=\"quote")) {
         remove = span;
       }
     }
     if (remove >= 0) {
-      var startR = remove
-      var endR = spans[remove]
+      var startR = remove;
+      var endR = spans[remove];
       var beginning = html.substring(0, startR);
       var mStart = parseInt(startR) + parseInt(elements[startR].length);
       var middle = html.substring(mStart, endR);
@@ -205,7 +205,7 @@ function annotateMode() {
   var text = $("#annotationarea textarea").val();
   // make a fake div
   var escaped = $("<div/>").text(text).html();
-  escaped = unescapeSpans(escaped)
+  escaped = unescapeSpans(escaped);
   // how many lines are in this text
   var numLines = escaped.split("\n").length;
   $("#annotationarea").html("<pre>" + escaped + "</pre>");
@@ -272,7 +272,7 @@ function save(evt) {
   if (id == 'save') {
     savename = $('#savefilename').val().trim();
     name = savename + '.xml';
-    var html = $("#annotationarea pre").html()
+    var html = $("#annotationarea pre").html();
     content = convertToXml(html);
   } else if (id == 'saveconfig') {
     savename = $('#savefilenameconfig').val().trim();
@@ -325,7 +325,7 @@ function loadConfig() {
   $("#annotationOpts").html("");
   var count = 1;
   for (var opt in annotationOpts) {
-    var span = $('<span />').addClass(opt)
+    var span = $('<span />').addClass(opt);
     var input = $('<input type="radio" name="sg" />').attr('value', opt);
     span.append(input);
     span.html('<label>' + span.html() + '(' + count + ') ' + opt + '</label>');
@@ -340,7 +340,7 @@ function loadConfig() {
       var css = annotationOpts[opt];
       // first split by ;
       var cssRules = css.split(';');
-      for (rule in cssRules) {
+      for (var rule in cssRules) {
         var str = cssRules[rule];
         if (str.length == 0) {
           continue;
@@ -388,7 +388,7 @@ function loadListeners() {
 }
 
 function closeAddOptionModal() {
-  var name = $("#optionname").val().replace(/\s/g, "_");;
+  var name = $("#optionname").val().replace(/\s/g, "_");
   var css = $("#optioncss").val();
   annotationOpts[name] = css;
   loadConfig();
