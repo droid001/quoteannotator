@@ -326,11 +326,11 @@ function loadConfig() {
   //remove any content first
   $("#annotationOpts").html("");
   var count = 1;
-  for (var opt in annotationOpts) {
-    var span = $('<span />').addClass(opt);
-    var input = $('<input type="radio" name="sg" />').attr('value', opt);
+  for (var name in annotationOpts) {
+    var span = $('<span />').addClass(name);
+    var input = $('<input type="radio" name="sg" />').attr('value', name);
     span.append(input);
-    span.html('<label>' + span.html() + '(' + count + ') ' + opt + '</label>');
+    span.html('<label>' + span.html() + '(' + count + ') ' + name + '</label>');
     var br = $('<br / >');
     $("#annotationOpts").append(span);
     $("#annotationOpts").append(br);
@@ -338,17 +338,18 @@ function loadConfig() {
   }
   
   $("head style").remove();
-  for (var opt in annotationOpts) {
-      var css = annotationOpts[opt];
-      // first split by ;
-      var cssRules = css.split(';');
-      for (var rule in cssRules) {
-        var str = cssRules[rule];
-        if (str.length == 0) {
-          continue;
-        }
-        $('<style>.' + opt + ' { ' + str + ' }</style>').appendTo('head');
-     }
+  for (var name in annotationOpts) {
+    var opt = annotationOpts[name];
+    var css = opt;
+    // first split by ;
+    var cssRules = css.split(';');
+    for (var rule in cssRules) {
+      var str = cssRules[rule];
+      if (str.length == 0) {
+        continue;
+      }
+      $('<style>.' + name + ' { ' + str + ' }</style>').appendTo('head');
+    }
   }
 }
 
@@ -456,19 +457,7 @@ function resetSpecific() {
 
 // Main annotator class
 function Annotator(annotationOpts) {
-  for (var name in annotationOpts) {
-    var opt = annotationOpts[name];
-    var css = opt;
-    // first split by ;
-    var cssRules = css.split(';');
-    for (var rule in cssRules) {
-      var str = cssRules[rule];
-      if (str.length == 0) {
-        continue;
-      }
-      $('<style>.' + name + ' { ' + str + ' }</style>').appendTo('head');
-    }
-  }
+  loadConfig(annotationOpts);
 }
 
 Annotator.prototype.launch = function() {
