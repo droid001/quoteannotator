@@ -113,34 +113,32 @@ function highlight(jdom, annotations, coords) {
   jdom.html(before + wrapped + after);
 }
 
-function deleteAnnotation(jdom, event) {
-  if (event.altKey) {
-    var coords = getCaretCharacterOffsetWithin(document.getElementById("annotationarea"));
-    if (coords.start != coords.end) {
-      return;
+function deleteAnnotation(jdom) {
+  var coords = getCaretCharacterOffsetWithin(document.getElementById("annotationarea"));
+  if (coords.start != coords.end) {
+    return;
+  }
+  // see if we clicked over a quote span
+  var html = jdom.html();
+  var elements = getHtmlTagLocations(html);
+  var spans = getSpansFromTagLocations(elements);
+  var rCoords = getRealCoords(coords, elements);
+  var loc = rCoords.start;
+  var remove = -1;
+  for (var span in spans) {
+    if (loc >= span && loc <= spans[span] && elements[span].startsWith("<span class=\"quote")) {
+      remove = span;
     }
-    // see if we clicked over a quote span
-    var html = jdom.html();
-    var elements = getHtmlTagLocations(html);
-    var spans = getSpansFromTagLocations(elements);
-    var rCoords = getRealCoords(coords, elements);
-    var loc = rCoords.start;
-    var remove = -1;
-    for (var span in spans) {
-      if (loc >= span && loc <= spans[span] && elements[span].startsWith("<span class=\"quote")) {
-        remove = span;
-      }
-    }
-    if (remove >= 0) {
-      var startR = remove;
-      var endR = spans[remove];
-      var beginning = html.substring(0, startR);
-      var mStart = parseInt(startR) + parseInt(elements[startR].length);
-      var middle = html.substring(mStart, endR);
-      var eStart = parseInt(endR) + parseInt(elements[endR].length);
-      var end = html.substring(eStart);
-      jdom.html(beginning + middle + end);
-    }
+  }
+  if (remove >= 0) {
+    var startR = remove;
+    var endR = spans[remove];
+    var beginning = html.substring(0, startR);
+    var mStart = parseInt(startR) + parseInt(elements[startR].length);
+    var middle = html.substring(mStart, endR);
+    var eStart = parseInt(endR) + parseInt(elements[endR].length);
+    var end = html.substring(eStart);
+    jdom.html(beginning + middle + end);
   }
 }
 
@@ -235,7 +233,11 @@ function annotateMode() {
 
   // listeners
   $("#annotationarea").mouseup(openSpecificModal);
-  $("#annotationarea").click( function(event) { deleteAnnotation($("#annotationarea"), event); } );
+  $("#annotationarea").click( function(event) {
+    if (event.altKey) {
+      deleteAnnotation($("#annotationarea"));
+    }
+  });
   // disable file loading
   $("#loadfiles").prop("disabled", true);
   $("#annotate").prop("disabled", true);
