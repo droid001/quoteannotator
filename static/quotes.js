@@ -1,6 +1,7 @@
 
 ts = new Tools();
 
+// Utility functions
 function getHtmlTagLocations(html) {
   var elements = {};
   var start = 0;
@@ -65,16 +66,16 @@ function getRealCoords(coords, elements) {
   return {start: rs, end: re};
 }
 
-function getHighlightSpan(){
-  var el = document.getElementById("annotationarea");
-  var coords = getCaretCharacterOffsetWithin(el);
+// Given jquery object jdom, returns the span with start and end coordinate
+function getHighlightSpan(jdom){
+  var coords = getCaretCharacterOffsetWithin(jdom[0]);
   // if the user clicks and doesn't highlight anything
   if (coords.start == coords.end) {
     return null;
   }
-  var stripped = $("#annotationarea").text();
+  var stripped = jdom.text();
   // align stripped to html
-  var html = $("#annotationarea").html();
+  var html = jdom.html();
   var elements = getHtmlTagLocations(html);
   var rCoords = getRealCoords(coords, elements);
   rs = rCoords.start;
@@ -101,24 +102,25 @@ function getHighlightSpan(){
   return {"start": rs, "end": re};
 }
 
-function highlight(speaker, coords) {
+function highlight(jdom, annotations, coords) {
   var rs = coords.start;
   var re = coords.end;
-  var html = $("#annotationarea").html();
+  var html = jdom.html();
   var before = html.substring(0, rs);
-  var wrapped = '<span class="quote ' + speaker + '"' + 'title="' + speaker + '">' + html.substring(rs, re) + '</span>';
+  var classAttr = annotations.join(' ');
+  var wrapped = '<span class="' + classAttr + '"' + 'title="' + classAttr + '">' + html.substring(rs, re) + '</span>';
   var after = html.substring(re);
-  $("#annotationarea").html(before + wrapped + after);
+  jdom.html(before + wrapped + after);
 }
 
-function deleteQuote(event) {
+function deleteAnnotation(jdom, event) {
   if (event.altKey) {
     var coords = getCaretCharacterOffsetWithin(document.getElementById("annotationarea"));
     if (coords.start != coords.end) {
       return;
     }
     // see if we clicked over a quote span
-    var html = $("#annotationarea").html();
+    var html = jdom.html();
     var elements = getHtmlTagLocations(html);
     var spans = getSpansFromTagLocations(elements);
     var rCoords = getRealCoords(coords, elements);
@@ -137,7 +139,7 @@ function deleteQuote(event) {
       var middle = html.substring(mStart, endR);
       var eStart = parseInt(endR) + parseInt(elements[endR].length);
       var end = html.substring(eStart);
-      $("#annotationarea").html(beginning + middle + end);
+      jdom.html(beginning + middle + end);
     }
   }
 }
@@ -233,7 +235,7 @@ function annotateMode() {
 
   // listeners
   $("#annotationarea").mouseup(openSpecificModal);
-  $("#annotationarea").click(deleteQuote);
+  $("#annotationarea").click( function(event) { deleteAnnotation($("#annotationarea"), event); } );
   // disable file loading
   $("#loadfiles").prop("disabled", true);
   $("#annotate").prop("disabled", true);
@@ -404,9 +406,7 @@ function closeAddOptionModal() {
 }
 
 function openSpecificModal() {
-
-  var el = document.getElementById("annotationarea");
-  var coords = getHighlightSpan();
+  var coords = getHighlightSpan($("#annotationarea"));
   // if anything weird happens like the user just clicked or 
   // they highlighted over an existing quote
   if (coords == null) {
@@ -441,7 +441,7 @@ function openSpecificModal() {
 function closeSpecificModal(coords) {
   var value = $('input[name="sg"]:checked').val();
   // now send the value to the thing doing the highlighting
-  highlight(value, coords);
+  highlight($('#annotationarea'), ['quote', value], coords);
   $("#closespecific").click();
   $(window).off('keypress');
   $("#submitspecific").off('click');
@@ -454,6 +454,7 @@ function resetSpecific() {
   }
 }
 
+// Main annotator class
 function Annotator(annotationOpts) {
   for (var name in annotationOpts) {
     var opt = annotationOpts[name];
