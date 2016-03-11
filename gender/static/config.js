@@ -5,15 +5,8 @@ var annotationOpts = {
   NONE : "border: none;",
 };
 
-for (var opt in annotationOpts) {
-    var css = annotationOpts[opt];
-    // first split by ;
-    var cssRules = css.split(';');
-    for (var rule in cssRules) {
-      var str = cssRules[rule];
-      if (str.length == 0) {
-        continue;
-      }
-      $('<style>.' + opt + ' { ' + str + ' }</style>').appendTo('head');
-   }
-}
+$(window).load(function() {
+  var annotator = new Annotator(annotationOpts);
+  annotator.launch();
+});
+

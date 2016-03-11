@@ -454,14 +454,31 @@ function resetSpecific() {
   }
 }
 
+function Annotator(annotationOpts) {
+  for (var name in annotationOpts) {
+    var opt = annotationOpts[name];
+    var css = opt;
+    // first split by ;
+    var cssRules = css.split(';');
+    for (var rule in cssRules) {
+      var str = cssRules[rule];
+      if (str.length == 0) {
+        continue;
+      }
+      $('<style>.' + name + ' { ' + str + ' }</style>').appendTo('head');
+    }
+  }
+}
 
-$(window).load(function() {
+Annotator.prototype.launch = function() {
   loadListeners();
 
   // Check for the various File API support.
   if (window.File && window.FileReader && window.FileList && window.Blob) {
     // Great success! All the File APIs are supported.
+    return true;
   } else {
     alert('The File APIs are not fully supported in this browser.');
+    return false;
   }
-});
+};
