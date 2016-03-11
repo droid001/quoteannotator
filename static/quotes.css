@@ -35,15 +35,15 @@ h1 {
 }
 
 .quote {
-  background-color: orange;
+  background-color: #ffbb78;
 }
 
 .quote .quote {
-  background-color: #BE81F7;
+  background-color: #c5b0d5;
 }
 
 .quote .quote .quote {
-  background-color: red;
+  background-color: #ff9896;
 }
 
 .config {

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Grace Muzny</title>
+    <title>Speaker Annotator</title>
     <link rel="stylesheet" type="text/css" href="../static/quotes.css">
 
     <script type="text/javascript" src="../static/jquery-2.0.2.min.js"></script>
@@ -23,9 +23,9 @@
     <!-- Modal HTML embedded directly into document -->
     <div id="addoptionmodal" style="display:none;">
       <p> Add an Annotation Option! </p>
-      <input id="optionname" type="text" size="25" value="Enter the option's name here!">
+      <input id="optionname" type="text" size="25" value="Enter the character name here!", title="Enter the character name here!">
       <br />
-      <input id="optioncss" type="text" size="25" value="Enter css rules here!">
+      <input id="optioncss" type="text" size="25" title="Enter css rules here!">
       <br />
       <div id="addtest"><p>Example</p></div>
       <input id="submitoption" type="button" value="Submit" />
@@ -43,12 +43,16 @@
     </div>
 
     <div>
-      <input id="addoption" type="button" value="Add Annotation Option" />
+      <input id="addoption" type="button" value="Add Character" />
     </div>
 
-    <div id="annotationarea" class="left">
-      <textarea>
-      </textarea>
+    <div id="annotationareacontainer" class="left">
+      <div id="linenums" class="left">
+      </div>
+      <div id="annotationarea" class="left">
+        <textarea class="lined">
+        </textarea>
+      </div>
     </div>
     <div id="tools" class="right">
       <div>

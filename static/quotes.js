@@ -352,6 +352,12 @@ function loadConfig() {
 
 function addOption() {
   // open add option modal
+  var keys = Object.keys(annotationOpts);
+  var nOptions = keys.length;
+  var nextColor = ts.getColor(nOptions);
+  var optionCssElem = $("#optioncss");
+  var value = (nextColor)? "background-color:" + nextColor + ';' : optionCssElem.attr('title') || '';
+  optionCssElem.attr('value', value);
 
   $("#addoptionmodal").modal({
     escapeClose: false,
