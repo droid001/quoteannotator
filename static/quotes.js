@@ -279,7 +279,7 @@ AnnotationOptionsUI.prototype.addOption = function() {
   this.displayTestOption();
 
   $("#addoptionmodal").modal({
-    escapeClose: false,
+    escapeClose: true,
     clickClose: false,
     showClose: false
   });
@@ -457,7 +457,7 @@ Annotator.prototype.openSpecificModal = function() {
   }
 
   $("#specificAnns").modal({
-    escapeClose: false,
+    escapeClose: true,
     clickClose: false,
     showClose: false
   });
