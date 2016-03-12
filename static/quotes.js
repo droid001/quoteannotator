@@ -1,5 +1,5 @@
 
-ts = new Tools();
+var ts = new Tools();
 
 // Utility functions
 function getHtmlTagLocations(html) {
@@ -201,7 +201,154 @@ function getCaretCharacterOffsetWithin(element) {
   return {"start": caretOffset, "end": caretOffset + end};
 }
 
-function annotateMode() {
+function convertToXml(html) {
+  var head = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><doc>";
+  // replace all span tags with xml spans instead
+  var xmled = html.replace(/<span class="quote ([^"]+)">/g, "<quote speaker=\"$1\">");
+  xmled = xmled.replace(/<\/span>/g, "</quote>");
+  var butt = "</doc>";
+  return head + xmled + butt;
+}
+
+function convertToHtml(xml) {
+  var html = xml.replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?><doc>", "");
+  html = html.replace("</doc>", "");
+  html = html.replace(/<quote speaker="([^"]+)">/g, "<span class=\"quote $1\">");
+  html = html.replace(/<\/quote>/g, "</span>");
+  return html;
+}
+
+function unescapeSpans(html) {
+  var unesc = html.replace(/&lt;span class="([^"]+)"&gt;/g, "<span class=\"$1\">");
+  unesc = unesc.replace(/&lt;\/span&gt;/g, "<\/span>");
+  return unesc;
+}
+
+// UI for managing annotation options
+function AnnotationOptionsUI(params) {
+  this.jdom = params.jdom;
+  this.annotationOpts = params.annotationOpts || {};
+  this.attachListeners();
+}
+
+AnnotationOptionsUI.prototype.update = function(annotationOpts) {
+  // AnnotationOpts was updated, lets update our UI (optional annotationOpts param)
+  if (annotationOpts) {
+    this.annotationOpts = annotationOpts;
+  }
+
+  // remove any content first
+  this.jdom.html("");
+  var count = 1;
+  for (var name in this.annotationOpts) {
+    var span = $('<span />').addClass(name);
+    var input = $('<input type="radio" name="sg" />').attr('value', name);
+    span.append(input);
+    span.html('<label>' + span.html() + '(' + count + ') ' + name + '</label>');
+    var br = $('<br / >');
+    this.jdom.append(span);
+    this.jdom.append(br);
+    count += 1;
+  }
+
+  // Update our styles
+  $("head style").remove();
+  for (var name in this.annotationOpts) {
+    var opt = this.annotationOpts[name];
+    var css = opt;
+    // first split by ;
+    var cssRules = css.split(';');
+    for (var rule in cssRules) {
+      var str = cssRules[rule];
+      if (str.length == 0) {
+        continue;
+      }
+      $('<style>.' + name + ' { ' + str + ' }</style>').appendTo('head');
+    }
+  }
+};
+
+AnnotationOptionsUI.prototype.addOption = function() {
+  // open add option modal
+  var keys = Object.keys(this.annotationOpts);
+  var nOptions = keys.length;
+  var nextColor = ts.getColor(nOptions);
+  var optionCssElem = $("#optioncss");
+  var value = (nextColor)? "background-color:" + nextColor + ';' : optionCssElem.attr('title') || '';
+  optionCssElem.attr('value', value);
+  this.displayTestOption();
+
+  $("#addoptionmodal").modal({
+    escapeClose: false,
+    clickClose: false,
+    showClose: false
+  });
+
+  // listen for key press events
+  $(window).keypress(function(e) {
+    var key = e.which;
+    if (key == 13) {
+      // 13 is return
+      $("#submitoption").click();
+    }
+  });
+};
+
+AnnotationOptionsUI.prototype.displayTestOption = function() {
+  var val = $("#optioncss").val();
+  $("#addtest p").attr("style", val);
+};
+
+AnnotationOptionsUI.prototype.closeAddOptionModal = function() {
+  var name = $("#optionname").val().replace(/\s/g, "_");
+  var css = $("#optioncss").val();
+  this.annotationOpts[name] = css;
+  this.update();
+  $('#addtest p').attr("style", "");
+  $("#closeaddoption").click();
+};
+
+AnnotationOptionsUI.prototype.attachListeners = function() {
+  // Annotation option stuff
+  $("#addoption").click( this.addOption.bind(this) );
+  $("#optioncss").keyup( this.displayTestOption.bind(this) );
+  $("#submitoption").click( this.closeAddOptionModal.bind(this) );
+};
+
+// Main annotator class
+function Annotator(annotationOpts) {
+  this.annotationOptsUI = new AnnotationOptionsUI(
+    { jdom: $('#annotationOpts'),
+      annotationOpts: annotationOpts });
+}
+
+Annotator.prototype.launch = function() {
+  this.attachListeners();
+  this.annotationOptsUI.update();
+
+  // Check for the various File API support.
+  if (window.File && window.FileReader && window.FileList && window.Blob) {
+    // Great success! All the File APIs are supported.
+    return true;
+  } else {
+    alert('The File APIs are not fully supported in this browser.');
+    return false;
+  }
+};
+
+Annotator.prototype.attachListeners = function() {
+  // enterAnnotateMode
+  $("#annotate").click( this.enterAnnotateMode.bind(this) );
+  // Saving
+  $("#save").click( this.save.bind(this) );
+  $("#saveconfig").click( this.save.bind(this) );
+  // Loading
+  $("#loadfiles").change( this.load.bind(this) );
+  $("#loadconfig").change( this.load.bind(this) );
+  $("#closespecific").click( this.resetSpecific.bind(this) );
+};
+
+Annotator.prototype.enterAnnotateMode = function() {
   var text = $("#annotationarea textarea").val();
   // make a fake div
   var escaped = $("<div/>").text(text).html();
@@ -232,10 +379,10 @@ function annotateMode() {
   });
 
   // listeners
-  $("#annotationarea").mouseup(openSpecificModal);
+  $("#annotationarea").mouseup( this.openSpecificModal.bind(this) );
   $("#annotationarea").click( function(event) {
     if (event.altKey) {
-      deleteAnnotation($("#annotationarea"));
+      this.deleteAnnotation($("#annotationarea"));
     }
   });
   // disable file loading
@@ -243,32 +390,10 @@ function annotateMode() {
   $("#annotate").prop("disabled", true);
   $("#annotate").addClass("disabled");
   $("#annotate").css("background-color", "white");
-}
+};
 
-function convertToXml(html) {
-  var head = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><doc>";
-  // replace all span tags with xml spans instead
-  var xmled = html.replace(/<span class="quote ([^"]+)">/g, "<quote speaker=\"$1\">");
-  xmled = xmled.replace(/<\/span>/g, "</quote>");
-  var butt = "</doc>";
-  return head + xmled + butt;
-}
-
-function convertToHtml(xml) {
-  var html = xml.replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?><doc>", "");
-  html = html.replace("</doc>", "");
-  html = html.replace(/<quote speaker="([^"]+)">/g, "<span class=\"quote $1\">");
-  html = html.replace(/<\/quote>/g, "</span>");
-  return html;
-}
-
-function unescapeSpans(html) {
-  var unesc = html.replace(/&lt;span class="([^"]+)"&gt;/g, "<span class=\"$1\">");
-  unesc = unesc.replace(/&lt;\/span&gt;/g, "<\/span>");
-  return unesc;
-}
-
-function save(evt) {
+// Annotate stuff!!!
+Annotator.prototype.save = function(evt) {
   var id = evt.target.id;
   var savename = "";
   var name = "";
@@ -281,7 +406,7 @@ function save(evt) {
   } else if (id == 'saveconfig') {
     savename = $('#savefilenameconfig').val().trim();
     name = savename + '.json';
-    content = JSON.stringify(annotationOpts);
+    content = JSON.stringify(this.annotationOptsUI.annotationOpts);
   }
   if (savename.length == 0) {
     alert("filename is empty!");
@@ -289,9 +414,9 @@ function save(evt) {
   }
   var blob = new Blob([content], {type: "text/plain;charset=utf-8"});
   saveAs(blob, name);
-}
+};
 
-function handleFileSelect(evt) {
+Annotator.prototype.load = function(evt) {
   var files = evt.target.files; // FileList object
   var id = evt.target.id;
   if (files.length == 0) {
@@ -315,102 +440,17 @@ function handleFileSelect(evt) {
     } else if (id == 'loadconfig') {
       reader.onload = function(e) {
         var content = reader.result;
-        annotationOpts = JSON.parse(content);
-        loadConfig();
+        var annotationOpts = JSON.parse(content);
+        this.annotationOptsUI.update(annotationOpts);
       }
     }
     reader.readAsText(file);
   }
+};
 
-}
-
-function loadConfig() {
-  //remove any content first
-  $("#annotationOpts").html("");
-  var count = 1;
-  for (var name in annotationOpts) {
-    var span = $('<span />').addClass(name);
-    var input = $('<input type="radio" name="sg" />').attr('value', name);
-    span.append(input);
-    span.html('<label>' + span.html() + '(' + count + ') ' + name + '</label>');
-    var br = $('<br / >');
-    $("#annotationOpts").append(span);
-    $("#annotationOpts").append(br);
-    count += 1;
-  }
-  
-  $("head style").remove();
-  for (var name in annotationOpts) {
-    var opt = annotationOpts[name];
-    var css = opt;
-    // first split by ;
-    var cssRules = css.split(';');
-    for (var rule in cssRules) {
-      var str = cssRules[rule];
-      if (str.length == 0) {
-        continue;
-      }
-      $('<style>.' + name + ' { ' + str + ' }</style>').appendTo('head');
-    }
-  }
-}
-
-function addOption() {
-  // open add option modal
-  var keys = Object.keys(annotationOpts);
-  var nOptions = keys.length;
-  var nextColor = ts.getColor(nOptions);
-  var optionCssElem = $("#optioncss");
-  var value = (nextColor)? "background-color:" + nextColor + ';' : optionCssElem.attr('title') || '';
-  optionCssElem.attr('value', value);
-  displayTestOption();
-
-  $("#addoptionmodal").modal({
-    escapeClose: false,
-    clickClose: false,
-    showClose: false
-  });
-
-  // listen for key press events
-  $(window).keypress(function(e) {
-    var key = e.which;
-    if (key == 13) {
-      // 13 is return
-      $("#submitoption").click();
-    } 
-  });
-}
-
-function displayTestOption(evt) {
-  var val = $("#optioncss").val();
-  $("#addtest p").attr("style", val);
-}
-
-function loadListeners() {
-  $("#annotate").click(annotateMode);
-  $("#save").click(save);
-  $("#saveconfig").click(save);
-  $("#loadfiles").change(handleFileSelect);
-  $("#loadconfig").change(handleFileSelect);
-  $("#closespecific").click(resetSpecific);
-  $("#addoption").click(addOption);
-  $("#optioncss").keyup(displayTestOption);
-  $("#submitoption").click(closeAddOptionModal);
-  loadConfig();
-}
-
-function closeAddOptionModal() {
-  var name = $("#optionname").val().replace(/\s/g, "_");
-  var css = $("#optioncss").val();
-  annotationOpts[name] = css;
-  loadConfig();
-  $('#addtest p').attr("style", "");
-  $("#closeaddoption").click();
-}
-
-function openSpecificModal() {
+Annotator.prototype.openSpecificModal = function() {
   var coords = getHighlightSpan($("#annotationarea"));
-  // if anything weird happens like the user just clicked or 
+  // if anything weird happens like the user just clicked or
   // they highlighted over an existing quote
   if (coords == null) {
     return;
@@ -423,6 +463,7 @@ function openSpecificModal() {
   });
 
 
+  var scope = this;
   // listen for key press events
   $(window).keypress(function(e) {
     var key = e.which;
@@ -432,45 +473,29 @@ function openSpecificModal() {
       $('input[name="sg"]')[ind].click()
     } else if (key == 13) {
       // 13 is return
-      closeSpecificModal(coords);
-    } 
+      scope.closeSpecificModal(coords);
+    }
   });
 
   $("#submitspecific").click(function(e){
-    closeSpecificModal(coords);
+    scope.closeSpecificModal(coords);
   });
-}
+};
 
-function closeSpecificModal(coords) {
+Annotator.prototype.closeSpecificModal = function(coords) {
   var value = $('input[name="sg"]:checked').val();
   // now send the value to the thing doing the highlighting
   highlight($('#annotationarea'), ['quote', value], coords);
   $("#closespecific").click();
   $(window).off('keypress');
   $("#submitspecific").off('click');
-}
+};
 
-function resetSpecific() {
+Annotator.prototype.resetSpecific = function() {
   var ele = $('input[name="sg"]');
   for(var i=0;i<ele.length;i++) {
     ele[i].checked = false; // hack that depends on default value being last
   }
-}
-
-// Main annotator class
-function Annotator(annotationOpts) {
-  loadConfig(annotationOpts);
-}
-
-Annotator.prototype.launch = function() {
-  loadListeners();
-
-  // Check for the various File API support.
-  if (window.File && window.FileReader && window.FileList && window.Blob) {
-    // Great success! All the File APIs are supported.
-    return true;
-  } else {
-    alert('The File APIs are not fully supported in this browser.');
-    return false;
-  }
 };
+
+
