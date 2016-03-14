@@ -228,6 +228,8 @@ function unescapeSpans(html) {
 function AnnotationOptionsUI(params) {
   this.jdom = params.jdom;
   this.annotationOpts = params.annotationOpts || {};
+  this.maxCharacterId = -1;  // TODO: update when loading from config
+  this.groupType = 'spanType';
   this.attachListeners();
 }
 
@@ -240,22 +242,35 @@ AnnotationOptionsUI.prototype.update = function(annotationOpts) {
   // remove any content first
   this.jdom.html("");
   var count = 1;
+  var allowsGroups = ['spanType', 'character'];
+  var groups = {};
+  for (var i = 0; i < allowsGroups.length; i++) {
+    var div = $('<div/>');
+    groups[allowsGroups[i]] = { div: div };
+    this.jdom.append(div);
+  }
   for (var name in this.annotationOpts) {
-    var span = $('<span />').addClass(name);
-    var input = $('<input type="radio" name="sg" />').attr('value', name);
-    span.append(input);
-    span.html('<label>' + span.html() + '(' + count + ') ' + name + '</label>');
-    var br = $('<br / >');
-    this.jdom.append(span);
-    this.jdom.append(br);
-    count += 1;
+    var opt = this.annotationOpts[name];
+    if (groups[opt.group]) {
+      var div = groups[opt.group].div;
+      var span = $('<span />').addClass(name);
+      var input = $('<input type="radio" name="sg" />').attr('value', name);
+      span.append(input);
+      span.html('<label>' + span.html() + '(' + count + ') ' + name + '</label>');
+      var br = $('<br / >');
+      div.append(span);
+      div.append(br);
+      count += 1;
+    } else {
+      console.warn('Ignoring opt ' + name + ' in unknown group ' + opt.group);
+    }
   }
 
   // Update our styles
   $("head style").remove();
   for (var name in this.annotationOpts) {
     var opt = this.annotationOpts[name];
-    var css = opt;
+    var css = (opt instanceof Object) ? opt.css : opt;
     // first split by ;
     var cssRules = css.split(';');
     for (var rule in cssRules) {
@@ -269,10 +284,30 @@ AnnotationOptionsUI.prototype.update = function(annotationOpts) {
 };
 
 AnnotationOptionsUI.prototype.addOption = function() {
+  this.groupType = 'spanType';
   // open add option modal
-  var keys = Object.keys(this.annotationOpts);
-  var nOptions = keys.length;
-  var nextColor = ts.getColor(nOptions);
+  $("#addoptionmodal").modal({
+    escapeClose: true,
+    clickClose: false,
+    showClose: false
+  });
+
+  // listen for key press events
+  $(window).keypress(function(e) {
+    var key = e.which;
+    if (key == 13) {
+      // 13 is return
+      $("#submitoption").click();
+    }
+  });
+};
+
+AnnotationOptionsUI.prototype.addCharacter = function() {
+  // open add option modal
+  this.maxCharacterId++;
+  this.groupType = 'character';
+  var characterId = this.maxCharacterId;
+  var nextColor = ts.getColor(characterId);
   var optionCssElem = $("#optioncss");
   var value = (nextColor)? "background-color:" + nextColor + ';' : optionCssElem.attr('title') || '';
   optionCssElem.attr('value', value);
@@ -302,7 +337,10 @@ AnnotationOptionsUI.prototype.displayTestOption = function() {
 AnnotationOptionsUI.prototype.closeAddOptionModal = function() {
   var name = $("#optionname").val().replace(/\s/g, "_");
   var css = $("#optioncss").val();
-  this.annotationOpts[name] = css;
+  this.annotationOpts[name] = { css: css, name: name, group: this.groupType };
+  if (this.groupType === 'character') {
+    this.annotationOpts[name].id = this.maxCharacterId;
+  }
   this.update();
   $('#addtest p').attr("style", "");
   $("#closeaddoption").click();
@@ -311,6 +349,7 @@ AnnotationOptionsUI.prototype.closeAddOptionModal = function() {
 AnnotationOptionsUI.prototype.attachListeners = function() {
   // Annotation option stuff
   $("#addoption").click( this.addOption.bind(this) );
+  $("#addcharacter").click( this.addCharacter.bind(this) );
   $("#optioncss").keyup( this.displayTestOption.bind(this) );
   $("#submitoption").click( this.closeAddOptionModal.bind(this) );
 };
