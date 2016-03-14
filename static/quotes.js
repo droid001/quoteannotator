@@ -254,7 +254,7 @@ AnnotationOptionsUI.prototype.update = function(annotationOpts) {
     if (groups[opt.group]) {
       var div = groups[opt.group].div;
       var span = $('<span />').addClass(name);
-      var input = $('<input type="radio" name="sg" />').attr('value', name);
+      var input = $('<input/>').attr('type', 'radio').attr('name', opt.group).attr('value', name);
       span.append(input);
       span.html('<label>' + span.html() + '(' + count + ') ' + name + '</label>');
       var br = $('<br / >');
@@ -508,8 +508,8 @@ Annotator.prototype.openSpecificModal = function() {
     var key = e.which;
     // 49 is the numeral "1"'s code
     var ind = key - 49;
-    if (ind >= 0 && ind < $('input[name="sg"]').length) {
-      $('input[name="sg"]')[ind].click()
+    if (ind >= 0 && ind < $('input[name="character"]').length) {
+      $('input[name="character"]')[ind].click()
     } else if (key == 13) {
       // 13 is return
       scope.closeSpecificModal(coords);
@@ -522,16 +522,17 @@ Annotator.prototype.openSpecificModal = function() {
 };
 
 Annotator.prototype.closeSpecificModal = function(coords) {
-  var value = $('input[name="sg"]:checked').val();
+  var value = $('input[name="character"]:checked').val();
+  var spanType = $('input[name="spanType"]:checked').val();
   // now send the value to the thing doing the highlighting
-  highlight($('#annotationarea'), ['quote', value], coords);
+  highlight($('#annotationarea'), [spanType, value], coords);
   $("#closespecific").click();
   $(window).off('keypress');
   $("#submitspecific").off('click');
 };
 
 Annotator.prototype.resetSpecific = function() {
-  var ele = $('input[name="sg"]');
+  var ele = $('input[name="character"]');
   for(var i=0;i<ele.length;i++) {
     ele[i].checked = false; // hack that depends on default value being last
   }
