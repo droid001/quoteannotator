@@ -114,16 +114,17 @@ h1 {
 /* Fancy buttons */
 #annotationOpts .btn {
   border-radius: 5px;
+  margin: 10px;
 }
 
 #annotationOpts .btn:hover,
 #annotationOpts .btn.hover {
-  box-shadow: 0 5px yellow;
+  box-shadow: 5px 5px yellow;
 }
 
 #annotationOpts .btn:active,
 #annotationOpts .btn.active {
-  box-shadow: 0 5px lightblue;
+  box-shadow: 5px 5px lightblue;
 }
 
 /* Annotation guidelines */
