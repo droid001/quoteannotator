@@ -119,12 +119,12 @@ h1 {
 
 #annotationOpts .btn:hover,
 #annotationOpts .btn.hover {
-  box-shadow: 5px 5px yellow;
+  outline: 5px solid #ffff00;
 }
 
 #annotationOpts .btn:active,
 #annotationOpts .btn.active {
-  box-shadow: 5px 5px lightblue;
+  outline: 5px solid #afeeee;
 }
 
 /* Annotation guidelines */
