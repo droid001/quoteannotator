@@ -8,6 +8,11 @@ var d3_category20_colors = [ '#1f77b4', '#aec7e8', '#ff7f0e', '#ffbb78', '#2ca02
   '#d62728', '#ff9896', '#9467bd', '#c5b0d5', '#8c564b', '#c49c94', '#e377c2', '#f7b6d2',
   '#7f7f7f', '#c7c7c7', '#bcbd22', '#dbdb8d', '#17becf', '#9edae5'];
 
+// Subset of light colors as defaults for character coloring (also exclude grays)
+// Other colors are okay too but maybe black doesn't show up as well...
+var light_colors = ['#aec7e8', '#ffbb78', '#98df8a', '#ff9896', '#c5b0d5',
+  '#c49c94', '#f7b6d2', 'dbdb8d', '#9edae5'];
+
 Tools.prototype.selectSelector = function() {
   if (!this.selection){
     // change mouse pointer to look selecty
@@ -44,7 +49,16 @@ Tools.prototype.highlight = function() {
   return {"start": start, "end" : end};
 };
 
+Tools.prototype.alert = function(message, callback){
+  alert(message);
+};
+
 Tools.prototype.getColor = function(i) {
-  // TODO: generate a random color if i >= 19
+  // TODO: generate a random color if i >= array_length
   return d3_category20_colors[i];
+};
+
+Tools.prototype.getLightColor = function(i) {
+  // TODO: generate a random color if i >= array_length
+  return light_colors[i];
 };

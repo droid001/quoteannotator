@@ -246,11 +246,14 @@ AnnotationOptionsUI.prototype.update = function(annotationOpts) {
   // remove any content first
   this.jdom.html("");
   var allowsGroups = ['spanType', 'character'];
+  var groupNames = ['Span', 'Character'];
   var groups = {};
   for (var i = 0; i < allowsGroups.length; i++) {
-    var div = $('<div/>').addClass('btn-group').attr('data-toggle', 'buttons');
-    groups[allowsGroups[i]] = { div: div };
-    this.jdom.append(div);
+    var btnClass = (allowsGroups[i] === 'spanType')? 'btn-group' : 'btn-group-vertical';
+    var div = $('<div/>').addClass(btnClass).attr('data-toggle', 'buttons').attr('role', 'group');
+    groups[allowsGroups[i]] = { div: div, text: groupNames[i]};
+    var gdiv = $('<div/>').append($('<b></b>').append(groupNames[i])).append(div);
+    this.jdom.append(gdiv);
   }
   for (var name in this.annotationOpts) {
     var opt = this.annotationOpts[name];
@@ -312,7 +315,7 @@ AnnotationOptionsUI.prototype.addCharacter = function() {
   this.maxCharacterId++;
   this.groupType = 'character';
   var characterId = this.maxCharacterId;
-  var nextColor = ts.getColor(characterId);
+  var nextColor = ts.getLightColor(characterId);
   var optionCssElem = $("#optioncss");
   var value = (nextColor)? "background-color:" + nextColor + ';' : optionCssElem.attr('title') || '';
   optionCssElem.attr('value', value);
@@ -340,14 +343,14 @@ AnnotationOptionsUI.prototype.displayTestOption = function() {
 };
 
 AnnotationOptionsUI.prototype.submit = function() {
-  // TODO: class name shouldn't have punctuation either...
+  // TODO: class name shouldn't have punctuation either
   var name = $("#optionname").val().trim().replace(/\s/g, "_");
 
   // Check that values are reasonable
   if (this.annotationOpts[name]) {
     // This annotation option already exists
     // Let's not allow adding
-    alert('Cannot add duplicate annotation: ' + name);
+    ts.alert('Cannot add duplicate annotation: ' + name);
     return false;
   }
 
@@ -356,7 +359,7 @@ AnnotationOptionsUI.prototype.submit = function() {
   if (this.groupType === 'character') {
     this.annotationOpts[name].id = this.maxCharacterId;
     if (this.maxCharacterId <= 9) {
-      this.shortcut = this.maxCharacterId.toString();
+      this.annotationOpts[name].shortcut = this.maxCharacterId.toString();
     }
   }
   this.update();
@@ -378,6 +381,7 @@ function Annotator(annotationOpts) {
   this.annotationOptsUI = new AnnotationOptionsUI(
     { jdom: $('#annotationOpts'),
       annotationOpts: annotationOpts });
+  this.spanType = 'quote';
 }
 
 Annotator.prototype.launch = function() {
@@ -389,7 +393,7 @@ Annotator.prototype.launch = function() {
     // Great success! All the File APIs are supported.
     return true;
   } else {
-    alert('The File APIs are not fully supported in this browser.');
+    ts.alert('The File APIs are not fully supported in this browser.');
     return false;
   }
 };
@@ -407,7 +411,12 @@ Annotator.prototype.attachListeners = function() {
 };
 
 Annotator.prototype.enterAnnotateMode = function() {
-  var text = $("#annotationarea textarea").val();
+  var text = $("#annotationarea textarea").val().trim();
+  if (text.length === 0) {
+    // Nothing to annotate - refuse to enter AnnotateMode
+    ts.alert("Please enter some text to annotate!!!");
+    return;
+  }
   // make a fake div
   var escaped = $("<div/>").text(text).html();
   escaped = unescapeSpans(escaped);
@@ -416,7 +425,7 @@ Annotator.prototype.enterAnnotateMode = function() {
   $("#annotationarea").html("<pre>" + escaped + "</pre>");
 
   if (numLines > 10000) {
-    alert("This text is likely too long (" + numLines + "lines!), you should probably split it into smaller ones and annotate those instead");
+    ts.alert("This text is likely too long (" + numLines + "lines!), you should probably split it into smaller ones and annotate those instead");
   }
   // now we need to set up our line numbers correctly
   var lineNums = "<pre>";
@@ -467,7 +476,7 @@ Annotator.prototype.save = function(evt) {
     content = JSON.stringify(this.annotationOptsUI.annotationOpts);
   }
   if (savename.length == 0) {
-    alert("filename is empty!");
+    ts.alert("filename is empty!");
     return;
   }
   var blob = new Blob([content], {type: "text/plain;charset=utf-8"});
@@ -481,7 +490,7 @@ Annotator.prototype.load = function(evt) {
     return;
   }
   if (files.length != 1) {
-    alert("Only the first selected file will be loaded!");
+    ts.alert("Only the first selected file will be loaded!");
   }
 
   var textType = /text.*/;
@@ -521,6 +530,8 @@ Annotator.prototype.openSpecificModal = function() {
   });
 
   var scope = this;
+  //Make sure the default spanType is selected
+  $('input[name="spanType"][value="' + this.spanType + '"').click();
   // listen for key press events
   $(window).keypress(function(e) {
     var key = e.which;
@@ -542,6 +553,7 @@ Annotator.prototype.openSpecificModal = function() {
 Annotator.prototype.closeSpecificModal = function(coords) {
   var value = $('input[name="character"]:checked').val();
   var spanType = $('input[name="spanType"]:checked').val();
+  this.spanType = spanType;
   // now send the value to the thing doing the highlighting
   highlight($('#annotationarea'), [spanType, value], coords);
   $("#closespecific").click();
