@@ -102,13 +102,14 @@ function getHighlightSpan(jdom){
   return {"start": rs, "end": re};
 }
 
-function highlight(jdom, annotations, coords) {
+function highlight(jdom, annotations, coords, id) {
   var rs = coords.start;
   var re = coords.end;
   var html = jdom.html();
   var before = html.substring(0, rs);
   var classAttr = annotations.join(' ');
-  var wrapped = '<span class="' + classAttr + '"' + 'title="' + classAttr + '">' + html.substring(rs, re) + '</span>';
+  var idstr = (id)? ' id="' + id + '"' : "";
+  var wrapped = '<span class="' + classAttr + '"' + idstr + ' title="' + classAttr + '">' + html.substring(rs, re) + '</span>';
   var after = html.substring(re);
   jdom.html(before + wrapped + after);
 }
@@ -126,7 +127,9 @@ function deleteAnnotation(jdom) {
   var loc = rCoords.start;
   var remove = -1;
   for (var span in spans) {
-    if (loc >= span && loc <= spans[span] && elements[span].startsWith("<span class=\"quote")) {
+    if (loc >= span && loc <= spans[span] &&
+       (elements[span].startsWith('<span class="quote') ||
+        elements[span].startsWith('<span class="mention'))) {
       remove = span;
     }
   }
@@ -382,6 +385,8 @@ function Annotator(annotationOpts) {
     { jdom: $('#annotationOpts'),
       annotationOpts: annotationOpts });
   this.spanType = 'quote';
+  this.nextSpanId = 0; // TOOD: update this when annotated file is loaded.
+  this.selectedSpans = [];
 }
 
 Annotator.prototype.launch = function() {
@@ -555,7 +560,20 @@ Annotator.prototype.closeSpecificModal = function(coords) {
   var spanType = $('input[name="spanType"]:checked').val();
   this.spanType = spanType;
   // now send the value to the thing doing the highlighting
-  highlight($('#annotationarea'), [spanType, value], coords);
+  var spanId = 's' + this.nextSpanId;
+  highlight($('#annotationarea'), [spanType, value], coords, spanId);
+  var mySpan = $("#" + spanId);
+  mySpan.click( function(event) {
+    if (event.ctrlKey) {
+      this.selectedSpans.push(mySpan);
+      if (this.selectedSpans.length === 2) {
+        console.log('Connect ' + this.selectedSpans[0].attr('id') + ' with ' + this.selectedSpans[1].attr('id'));
+        // TODO: Visualize and record
+        this.selectedSpans = [];
+      }
+    }
+  }.bind(this));
+  this.nextSpanId++;
   $("#closespecific").click();
   $(window).off('keypress');
   $("#submitspecific").off('click');
