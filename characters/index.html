@@ -2,9 +2,11 @@
 <html>
   <head>
     <title>Speaker Annotator</title>
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="../static/quotes.css">
 
     <script type="text/javascript" src="../static/jquery-2.0.2.min.js"></script>
+    <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../static/FileSaver.min.js"></script>
     <script type="text/javascript" src="../static/tools.js"></script>
     <script type="text/javascript" src="../static/quotes.js"></script>
@@ -15,7 +17,6 @@
 
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
     <meta content="utf-8" http-equiv="encoding">
-
   </head>
   <body>
     <h1>A Small Sandbox of Quote Annotation</h1>
@@ -28,7 +29,7 @@
       <input id="optioncss" type="text" size="25" title="Enter css rules here!">
       <br />
       <div id="addtest"><p>Example</p></div>
-      <input id="submitoption" type="button" value="Submit" />
+      <input id="submitoption" type="button" value="Submit" class="btn btn-default"/>
       <a id="closeaddoption" href="#" rel="modal:close"></a>
     </div>
 
@@ -38,12 +39,12 @@
       <div id="annotationOpts">
 
       </div>
-      <input id="submitspecific" type="button" value="Submit" />
+      <input id="submitspecific" type="button" value="Submit" class="btn btn-default" />
       <a id="closespecific" href="#" rel="modal:close"></a>
     </div>
 
     <div>
-      <input id="addcharacter" type="button" value="Add Character" />
+      <input id="addcharacter" type="button" value="Add Character" class="btn btn-primary" />
     </div>
 
     <div id="annotationareacontainer" class="left">

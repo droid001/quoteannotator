@@ -227,6 +227,9 @@ function unescapeSpans(html) {
 // UI for managing annotation options
 function AnnotationOptionsUI(params) {
   this.jdom = params.jdom;
+  // Map of shortcut key code (same as event.which) to input element
+  this.shortcuts = {};
+  // Annotation opts
   this.annotationOpts = params.annotationOpts || {};
   this.maxCharacterId = -1;  // TODO: update when loading from config
   this.groupType = 'spanType';
@@ -238,14 +241,14 @@ AnnotationOptionsUI.prototype.update = function(annotationOpts) {
   if (annotationOpts) {
     this.annotationOpts = annotationOpts;
   }
+  this.shortcuts = {};
 
   // remove any content first
   this.jdom.html("");
-  var count = 1;
   var allowsGroups = ['spanType', 'character'];
   var groups = {};
   for (var i = 0; i < allowsGroups.length; i++) {
-    var div = $('<div/>');
+    var div = $('<div/>').addClass('btn-group').attr('data-toggle', 'buttons');
     groups[allowsGroups[i]] = { div: div };
     this.jdom.append(div);
   }
@@ -253,14 +256,16 @@ AnnotationOptionsUI.prototype.update = function(annotationOpts) {
     var opt = this.annotationOpts[name];
     if (groups[opt.group]) {
       var div = groups[opt.group].div;
-      var span = $('<span />').addClass(name);
+      var span = $('<label/>').addClass('btn').addClass(name);
       var input = $('<input/>').attr('type', 'radio').attr('name', opt.group).attr('value', name);
       span.append(input);
-      span.html('<label>' + span.html() + '(' + count + ') ' + name + '</label>');
-      var br = $('<br / >');
+      if (opt.shortcut) {
+        this.shortcuts[opt.shortcut.charCodeAt(0)] = input;
+        span.append('(' + opt.shortcut + ') ' + name);
+      } else {
+        span.append(name);
+      }
       div.append(span);
-      div.append(br);
-      count += 1;
     } else {
       console.warn('Ignoring opt ' + name + ' in unknown group ' + opt.group);
     }
@@ -334,16 +339,30 @@ AnnotationOptionsUI.prototype.displayTestOption = function() {
   $("#addtest p").attr("style", val);
 };
 
-AnnotationOptionsUI.prototype.closeAddOptionModal = function() {
-  var name = $("#optionname").val().replace(/\s/g, "_");
+AnnotationOptionsUI.prototype.submit = function() {
+  // TODO: class name shouldn't have punctuation either...
+  var name = $("#optionname").val().trim().replace(/\s/g, "_");
+
+  // Check that values are reasonable
+  if (this.annotationOpts[name]) {
+    // This annotation option already exists
+    // Let's not allow adding
+    alert('Cannot add duplicate annotation: ' + name);
+    return false;
+  }
+
   var css = $("#optioncss").val();
   this.annotationOpts[name] = { css: css, name: name, group: this.groupType };
   if (this.groupType === 'character') {
     this.annotationOpts[name].id = this.maxCharacterId;
+    if (this.maxCharacterId <= 9) {
+      this.shortcut = this.maxCharacterId.toString();
+    }
   }
   this.update();
   $('#addtest p').attr("style", "");
   $("#closeaddoption").click();
+  $(window).off('keypress');
 };
 
 AnnotationOptionsUI.prototype.attachListeners = function() {
@@ -351,7 +370,7 @@ AnnotationOptionsUI.prototype.attachListeners = function() {
   $("#addoption").click( this.addOption.bind(this) );
   $("#addcharacter").click( this.addCharacter.bind(this) );
   $("#optioncss").keyup( this.displayTestOption.bind(this) );
-  $("#submitoption").click( this.closeAddOptionModal.bind(this) );
+  $("#submitoption").click( this.submit.bind(this) );
 };
 
 // Main annotator class
@@ -421,7 +440,7 @@ Annotator.prototype.enterAnnotateMode = function() {
   $("#annotationarea").mouseup( this.openSpecificModal.bind(this) );
   $("#annotationarea").click( function(event) {
     if (event.altKey) {
-      this.deleteAnnotation($("#annotationarea"));
+      deleteAnnotation($("#annotationarea"));
     }
   });
   // disable file loading
@@ -481,7 +500,7 @@ Annotator.prototype.load = function(evt) {
         var content = reader.result;
         var annotationOpts = JSON.parse(content);
         this.annotationOptsUI.update(annotationOpts);
-      }
+      }.bind(this);
     }
     reader.readAsText(file);
   }
@@ -501,15 +520,14 @@ Annotator.prototype.openSpecificModal = function() {
     showClose: false
   });
 
-
   var scope = this;
   // listen for key press events
   $(window).keypress(function(e) {
     var key = e.which;
     // 49 is the numeral "1"'s code
-    var ind = key - 49;
-    if (ind >= 0 && ind < $('input[name="character"]').length) {
-      $('input[name="character"]')[ind].click()
+    //var ind = key - 49;
+    if (scope.annotationOptsUI.shortcuts[key]) {
+      scope.annotationOptsUI.shortcuts[key].click()
     } else if (key == 13) {
       // 13 is return
       scope.closeSpecificModal(coords);
