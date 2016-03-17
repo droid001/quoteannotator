@@ -387,12 +387,26 @@ function Annotator(annotationOpts) {
   this.spanType = 'quote';
   this.nextSpanId = 0; // TOOD: update this when annotated file is loaded.
   this.selectedSpans = [];
-//  this.svgtools = new SVGTools({ container: $('#svgContainer') });
+  this.allowConnections = true;
 }
 
 Annotator.prototype.launch = function() {
   this.attachListeners();
   this.annotationOptsUI.update();
+
+  if (this.allowConnections) {
+    // Using jsPlumb from https://jsplumbtoolkit.com to connect elements
+    jsPlumb.setContainer($("#annotationarea"));
+    jsPlumb.importDefaults({
+      Anchor : "Center",
+      Connector:[ "Bezier", { curviness: 30 } ],
+      PaintStyle: {
+        lineWidth: 4,
+        strokeStyle: 'rgba(200,0,0,0.5)'
+      },
+      Endpoints: [["Dot", {radius: 4}], ["Dot", {radius: 4}]]
+    });
+  }
 
   // Check for the various File API support.
   if (window.File && window.FileReader && window.FileList && window.Blob) {
@@ -563,25 +577,32 @@ Annotator.prototype.closeSpecificModal = function(coords) {
   // now send the value to the thing doing the highlighting
   var spanId = 's' + this.nextSpanId;
   highlight($('#annotationarea'), [spanType, value], coords, spanId);
-  var spans = $('#annotationarea span');
-  spans.css('cursor', 'default');
-  var scope = this;
-  spans.click( function(event) {
-    if (event.ctrlKey) {
-      console.log('Selected span ' + $(this).attr('id'));
-      if (scope.selectedSpans.indexOf($(this)) < 0) {
-        scope.selectedSpans.push($(this));
-        if (scope.selectedSpans.length === 2) {
-          console.log('Connect ' + scope.selectedSpans[0].attr('id') + ' with ' + scope.selectedSpans[1].attr('id'));
-          // TODO: Visualize and record
-          //scope.svgtools.appendPath(scope.selectedSpans[0], scope.selectedSpans[1]);
-          scope.selectedSpans = [];
+
+  if (this.allowConnections) {
+    var spans = $('#annotationarea span');
+    spans.css('cursor', 'default');
+    var scope = this;
+    spans.click(function (event) {
+      if (event.ctrlKey) {
+        console.log('Selected span ' + $(this).attr('id'));
+        if (scope.selectedSpans.indexOf($(this)) < 0) {
+          scope.selectedSpans.push($(this));
+          if (scope.selectedSpans.length === 2) {
+            console.log('Connect ' + scope.selectedSpans[0].attr('id') + ' with ' + scope.selectedSpans[1].attr('id'));
+            // TODO: Visualize and record
+            jsPlumb.connect({
+              source: scope.selectedSpans[0],
+              target: scope.selectedSpans[1],
+              scope: "someScope"
+            });
+            scope.selectedSpans = [];
+          }
+        } else {
+          console.log('Selected spans already contain span');
         }
-      } else {
-        console.log('Selected spans already contain span');
       }
-    }
-  });
+    });
+  }
   this.nextSpanId++;
   $("#closespecific").click();
   $(window).off('keypress');

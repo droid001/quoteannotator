@@ -79,6 +79,7 @@ h1 {
 }
 
 #annotationarea {
+  position: relative;
   overflow-y: scroll;
   width: calc(100% - 50px);  /* experimental - can do calc in javascript */
   padding-left: 5px;
