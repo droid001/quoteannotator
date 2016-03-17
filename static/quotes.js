@@ -387,6 +387,7 @@ function Annotator(annotationOpts) {
   this.spanType = 'quote';
   this.nextSpanId = 0; // TOOD: update this when annotated file is loaded.
   this.selectedSpans = [];
+//  this.svgtools = new SVGTools({ container: $('#svgContainer') });
 }
 
 Annotator.prototype.launch = function() {
@@ -562,17 +563,25 @@ Annotator.prototype.closeSpecificModal = function(coords) {
   // now send the value to the thing doing the highlighting
   var spanId = 's' + this.nextSpanId;
   highlight($('#annotationarea'), [spanType, value], coords, spanId);
-  var mySpan = $("#" + spanId);
-  mySpan.click( function(event) {
+  var spans = $('#annotationarea span');
+  spans.css('cursor', 'default');
+  var scope = this;
+  spans.click( function(event) {
     if (event.ctrlKey) {
-      this.selectedSpans.push(mySpan);
-      if (this.selectedSpans.length === 2) {
-        console.log('Connect ' + this.selectedSpans[0].attr('id') + ' with ' + this.selectedSpans[1].attr('id'));
-        // TODO: Visualize and record
-        this.selectedSpans = [];
+      console.log('Selected span ' + $(this).attr('id'));
+      if (scope.selectedSpans.indexOf($(this)) < 0) {
+        scope.selectedSpans.push($(this));
+        if (scope.selectedSpans.length === 2) {
+          console.log('Connect ' + scope.selectedSpans[0].attr('id') + ' with ' + scope.selectedSpans[1].attr('id'));
+          // TODO: Visualize and record
+          //scope.svgtools.appendPath(scope.selectedSpans[0], scope.selectedSpans[1]);
+          scope.selectedSpans = [];
+        }
+      } else {
+        console.log('Selected spans already contain span');
       }
     }
-  }.bind(this));
+  });
   this.nextSpanId++;
   $("#closespecific").click();
   $(window).off('keypress');
