@@ -385,6 +385,7 @@ function Annotator(annotationOpts) {
     { jdom: $('#annotationOpts'),
       annotationOpts: annotationOpts });
   this.spanType = 'quote';
+  this.lastCharacter = undefined;
   this.nextSpanId = 0; // TOOD: update this when annotated file is loaded.
   this.selectedSpans = [];
   this.allowConnections = true;
@@ -550,8 +551,15 @@ Annotator.prototype.openSpecificModal = function() {
   });
 
   var scope = this;
-  //Make sure the default spanType is selected
+  // Make sure the default spanType is selected
   $('input[name="spanType"][value="' + this.spanType + '"').click();
+  // Make sure last character is selected
+  if (this.lastCharacter) {
+    $('input[name="character"][value="' + this.lastCharacter + '"').click();
+  } else {
+    // no last character selected, so don't select any
+    $('input[name="character"]').prop('checked', 'false').removeClass('active');
+  }
   // listen for key press events
   $(window).keypress(function(e) {
     var key = e.which;
