@@ -209,8 +209,8 @@ function getCaretCharacterOffsetWithin(element) {
 function convertToXml(html) {
   var head = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><doc>";
   // replace all span tags with xml spans instead
-  var xmled = html.replace(/<span class="quote ([^"]+)">/g, "<quote speaker=\"$1\">");
-  xmled = xmled.replace(/<\/span>/g, "</quote>");
+  var xmled = html.replace(/<span [^>]*class="(quote|mention) ([^"]+)"[^>]*>([^<]*)<\/span>/g,
+      "<$1 speaker=\"$2\">$3</$1>");
   var butt = "</doc>";
   return head + xmled + butt;
 }
@@ -218,8 +218,8 @@ function convertToXml(html) {
 function convertToHtml(xml) {
   var html = xml.replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?><doc>", "");
   html = html.replace("</doc>", "");
-  html = html.replace(/<quote speaker="([^"]+)">/g, "<span class=\"quote $1\">");
-  html = html.replace(/<\/quote>/g, "</span>");
+  html = html.replace(/<(quote|mention) speaker="([^"]+)">/g, "<span class=\"$1 $2\">");
+  html = html.replace(/<\/(quote|mention)>/g, "</span>");
   return html;
 }
 
