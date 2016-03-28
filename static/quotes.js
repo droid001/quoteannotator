@@ -236,7 +236,7 @@ function AnnotationOptionsUI(params) {
   this.shortcuts = {};
   // Annotation opts
   this.annotationOpts = params.annotationOpts || {};
-  this.maxCharacterId = -1;  // TODO: update when loading from config
+  this.maxCharacterId = -1;
   this.groupType = 'spanType';
   this.attachListeners();
 }
@@ -253,6 +253,7 @@ AnnotationOptionsUI.prototype.update = function(annotationOpts) {
   var allowsGroups = ['spanType', 'character'];
   var groupNames = ['Span', 'Character'];
   var groups = {};
+  var maxId = -1;
   for (var i = 0; i < allowsGroups.length; i++) {
     var btnClass = (allowsGroups[i] === 'spanType')? 'btn-group' : 'btn-group-vertical';
     var div = $('<div/>').addClass(btnClass).attr('data-toggle', 'buttons').attr('role', 'group');
@@ -277,7 +278,15 @@ AnnotationOptionsUI.prototype.update = function(annotationOpts) {
     } else {
       console.warn('Ignoring opt ' + name + ' in unknown group ' + opt.group);
     }
+    // look for the max characterId that is being preloaded
+    if (opt.group == 'character') {
+      var id = opt.id;
+      if (id > maxId) {
+        maxId = id;
+      }
+    }
   }
+  this.maxCharacterId = maxId;
 
   // Update our styles
   $("head style").remove();
