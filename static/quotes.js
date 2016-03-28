@@ -127,9 +127,11 @@ function deleteAnnotation(jdom) {
   var loc = rCoords.start;
   var remove = -1;
   for (var span in spans) {
+    var skeletonHtml = elements[span] + elements[spans[span]];
+    var skeletonContents = $('<div/>').html(skeletonHtml).contents();
     if (loc >= span && loc <= spans[span] &&
-       (elements[span].startsWith('<span class="quote') ||
-        elements[span].startsWith('<span class="mention'))) {
+        (skeletonContents.hasClass('quote') ||
+         skeletonContents.hasClass('mention'))) {
       remove = span;
     }
   }
