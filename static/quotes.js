@@ -371,7 +371,6 @@ AnnotationOptionsUI.prototype.submit = function() {
   }
 
   var css = $("#optioncss").val();
-  console.log(this.groupType);
   this.addCharacterToConfig(name, this.groupType, css);
   $('#addtest p').attr("style", "");
   $("#closeaddoption").click();
@@ -550,6 +549,7 @@ Annotator.prototype.load = function(evt) {
         // check for speakers loaded
         // this is a filereader
         ann.checkConfigs();
+        ann.setConnections();
       }
     } else if (id == 'loadconfig') {
       reader.onload = function(e) {
@@ -635,12 +635,20 @@ Annotator.prototype.closeSpecificModal = function(coords) {
   var spanId = 's' + this.nextSpanId;
   highlight($('#annotationarea'), [spanType, value], coords, spanId);
 
+  this.setConnections();
+  this.nextSpanId++;
+  $("#closespecific").click();
+  $(window).off('keypress');
+  $("#submitspecific").off('click');
+};
+
+Annotator.prototype.setConnections = function() {
   if (this.allowConnections) {
     var spans = $('#annotationarea span');
     spans.css('cursor', 'default');
     var scope = this;
     spans.click(function (event) {
-      if (event.ctrlKey) {
+      if (event.metaKey || event.ctrlKey) { // command key, essentially
         console.log('Selected span ' + $(this).attr('id'));
         if (scope.selectedSpans.indexOf($(this)) < 0) {
           scope.selectedSpans.push($(this));
@@ -660,10 +668,6 @@ Annotator.prototype.closeSpecificModal = function(coords) {
       }
     });
   }
-  this.nextSpanId++;
-  $("#closespecific").click();
-  $(window).off('keypress');
-  $("#submitspecific").off('click');
 };
 
 Annotator.prototype.resetSpecific = function() {
