@@ -209,7 +209,7 @@ function getCaretCharacterOffsetWithin(element) {
 function convertToXml(html) {
   var head = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><doc>";
   // replace all span tags with xml spans instead
-  var xmled = html.replace(/<span [^>]*class="(quote|mention) ([^"]+)"[^>]*>([^<]*)<\/span>/g,
+  var xmled = html.replace(/<span [^>]*class="(quote|mention) character_([^"]+)"[^>]*>([^<]*)<\/span>/g,
       "<$1 speaker=\"$2\">$3</$1>");
   var butt = "</doc>";
   return head + xmled + butt;
@@ -218,7 +218,7 @@ function convertToXml(html) {
 function convertToHtml(xml) {
   var html = xml.replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?><doc>", "");
   html = html.replace("</doc>", "");
-  html = html.replace(/<(quote|mention) speaker="([^"]+)">/g, "<span class=\"$1 $2\">");
+  html = html.replace(/<(quote|mention) speaker="([^"]+)">/g, "<span class=\"$1 character_$2\">");
   html = html.replace(/<\/(quote|mention)>/g, "</span>");
   return html;
 }
@@ -359,9 +359,11 @@ AnnotationOptionsUI.prototype.displayTestOption = function() {
 AnnotationOptionsUI.prototype.submit = function() {
   // TODO: class name shouldn't have punctuation either
   var name = $("#optionname").val().trim().replace(/\s/g, "_");
+  // prefix so that we can process/differentiate classes better!
+  name = 'character_' + name;
 
   // Check that values are reasonable
-  if (this.annotationOpts[name]) {
+  if (this.containsCharacter(name)) {
     // This annotation option already exists
     // Let's not allow adding
     ts.alert('Cannot add duplicate annotation: ' + name);
@@ -369,6 +371,14 @@ AnnotationOptionsUI.prototype.submit = function() {
   }
 
   var css = $("#optioncss").val();
+  console.log(this.groupType);
+  this.addCharacterToConfig(name, this.groupType, css);
+  $('#addtest p').attr("style", "");
+  $("#closeaddoption").click();
+  $(window).off('keypress');
+};
+
+AnnotationOptionsUI.prototype.addCharacterToConfig = function(name, group, css) {
   this.annotationOpts[name] = { css: css, name: name, group: this.groupType };
   if (this.groupType === 'character') {
     this.annotationOpts[name].id = this.maxCharacterId;
@@ -377,10 +387,11 @@ AnnotationOptionsUI.prototype.submit = function() {
     }
   }
   this.update();
-  $('#addtest p').attr("style", "");
-  $("#closeaddoption").click();
-  $(window).off('keypress');
-};
+}
+
+AnnotationOptionsUI.prototype.containsCharacter = function(name) {
+  return this.annotationOpts[name];
+}
 
 AnnotationOptionsUI.prototype.attachListeners = function() {
   // Annotation option stuff
@@ -527,6 +538,7 @@ Annotator.prototype.load = function(evt) {
 
   var textType = /text.*/;
   var file = files[0];
+  var ann = this;
   if (file.type.match(textType) || file.type.match(/application\/json/)) {
     var reader = new FileReader();
     if (id == 'loadfiles') {
@@ -535,6 +547,9 @@ Annotator.prototype.load = function(evt) {
         var html = convertToHtml(content);
         $("#annotationarea textarea").val(html);
         $("#annotate").click();
+        // check for speakers loaded
+        // this is a filereader
+        ann.checkConfigs();
       }
     } else if (id == 'loadconfig') {
       reader.onload = function(e) {
@@ -546,6 +561,29 @@ Annotator.prototype.load = function(evt) {
     reader.readAsText(file);
   }
 };
+
+Annotator.prototype.checkConfigs = function() {
+  // grab all spans from the annotation area
+  var spans = $("#annotationarea pre span");
+  // for each span go and look at the classes
+  for (var i = 0; i < spans.length; i++) {
+    var classes = $(spans[i]).attr('class').split(' ');
+    for (var ci = 0; ci < classes.length; ci++) {
+      if (classes[ci].startsWith('character_')) {
+        // check if this character is in the configs,
+        // if it is, do nothing, otherwise, add it!
+        if (this.annotationOptsUI.containsCharacter(classes[ci])) {
+          console.log("contains already: " + classes[ci]);
+        } else {
+          // TODO: check if weird things happen with character ids/colors
+          this.annotationOptsUI.addCharacter();
+          $("#optionname").attr('value', classes[ci].substring(classes[ci].indexOf('_') + 1));
+          $("#submitoption").click();
+        }
+      }
+    }
+  }
+}
 
 Annotator.prototype.openSpecificModal = function() {
   var coords = getHighlightSpan($("#annotationarea"));
