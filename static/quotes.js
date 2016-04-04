@@ -206,17 +206,29 @@ function getCaretCharacterOffsetWithin(element) {
   return {"start": caretOffset, "end": caretOffset + end};
 }
 
-function convertToXml(html) {
+function convertToXml(html, annotationOpts) {
   var head = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><doc>";
+  // we need to insert character info here
+  
+  head += "<characters>";
+  for (var name in annotationOpts) {
+    if (name.startsWith('character_')) {
+      var character = "<character name=\"" + name + "\" id=" + annotationOpts[name].id + "/>";
+      head += character;
+    }
+  }
+  head += "</characters><text>";
+
   // replace all span tags with xml spans instead
   var xmled = html.replace(/<span [^>]*class="(quote|mention) character_([^"]+)"[^>]*>([^<]*)<\/span>/g,
       "<$1 speaker=\"$2\">$3</$1>");
-  var butt = "</doc>";
+  var butt = "</text></doc>";
   return head + xmled + butt;
 }
 
 function convertToHtml(xml) {
-  var html = xml.replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?><doc>", "");
+  var html = xml.replace(/<\?xml version="1\.0" encoding="UTF-8"\?><doc><characters>(.*)<\/characters><text>/g, "");
+  html = html.replace("</text>", "");
   html = html.replace("</doc>", "");
   html = html.replace(/<(quote|mention) speaker="([^"]+)">/g, "<span class=\"$1 character_$2\">");
   html = html.replace(/<\/(quote|mention)>/g, "</span>");
@@ -371,18 +383,18 @@ AnnotationOptionsUI.prototype.submit = function() {
   }
 
   var css = $("#optioncss").val();
-  this.addCharacterToConfig(name, this.groupType, css);
+  this.addCharacterToConfig(name, this.maxCharacterId, this.groupType, css);
   $('#addtest p').attr("style", "");
   $("#closeaddoption").click();
   $(window).off('keypress');
 };
 
-AnnotationOptionsUI.prototype.addCharacterToConfig = function(name, group, css) {
-  this.annotationOpts[name] = { css: css, name: name, group: this.groupType };
-  if (this.groupType === 'character') {
-    this.annotationOpts[name].id = this.maxCharacterId;
-    if (this.maxCharacterId <= 9) {
-      this.annotationOpts[name].shortcut = this.maxCharacterId.toString();
+AnnotationOptionsUI.prototype.addCharacterToConfig = function(name, id, group, css) {
+  this.annotationOpts[name] = { css: css, name: name, group: group };
+  if (group === 'character') {
+    this.annotationOpts[name].id = id;
+    if (id <= 9) {
+      this.annotationOpts[name].shortcut = id + "";
     }
   }
   this.update();
@@ -511,7 +523,8 @@ Annotator.prototype.save = function(evt) {
     savename = $('#savefilename').val().trim();
     name = savename + '.xml';
     var html = $("#annotationarea pre").html();
-    content = convertToXml(html);
+    console.log("call convert");
+    content = convertToXml(html, this.annotationOptsUI.annotationOpts);
   } else if (id == 'saveconfig') {
     savename = $('#savefilenameconfig').val().trim();
     name = savename + '.json';
@@ -543,12 +556,14 @@ Annotator.prototype.load = function(evt) {
     if (id == 'loadfiles') {
       reader.onload = function(e) {
         var content = reader.result;
+        var headerReg = /<\?xml version="1\.0" encoding="UTF-8"\?><doc><characters>(.*)<\/characters>/g;
+        var match = headerReg.exec(content);
+        var charactersStr = match[1];
+        // now we need to add the characters to our configs
+        ann.addCharactersFromXml(charactersStr);
         var html = convertToHtml(content);
         $("#annotationarea textarea").val(html);
         $("#annotate").click();
-        // check for speakers loaded
-        // this is a filereader
-        ann.checkConfigs();
         ann.setConnections();
       }
     } else if (id == 'loadconfig') {
@@ -562,28 +577,21 @@ Annotator.prototype.load = function(evt) {
   }
 };
 
-Annotator.prototype.checkConfigs = function() {
-  // grab all spans from the annotation area
-  var spans = $("#annotationarea pre span");
-  // for each span go and look at the classes
-  for (var i = 0; i < spans.length; i++) {
-    var classes = $(spans[i]).attr('class').split(' ');
-    for (var ci = 0; ci < classes.length; ci++) {
-      if (classes[ci].startsWith('character_')) {
-        // check if this character is in the configs,
-        // if it is, do nothing, otherwise, add it!
-        if (this.annotationOptsUI.containsCharacter(classes[ci])) {
-          console.log("contains already: " + classes[ci]);
-        } else {
-          // TODO: check if weird things happen with character ids/colors
-          this.annotationOptsUI.addCharacter();
-          $("#optionname").attr('value', classes[ci].substring(classes[ci].indexOf('_') + 1));
-          $("#submitoption").click();
-        }
-      }
-    }
+Annotator.prototype.addCharactersFromXml = function(charXml) {
+  this.groupType = 'character';
+  var charMatch = /<character[^>]*\/>/g;
+  var match = charMatch.exec(charXml);
+  while (match != null) {
+    var str = match[0];
+    var nameMatch = /name="([^"]*)"/g;
+    var idMatch = /id=([0-9]+)/g;
+    var name = nameMatch.exec(str);
+    var id = idMatch.exec(str);
+    var css = 'background-color: ' + ts.getLightColor(id[1]);
+    this.annotationOptsUI.addCharacterToConfig(name[1], id[1], this.groupType, css);
+    match = charMatch.exec(charXml);
   }
-}
+};
 
 Annotator.prototype.openSpecificModal = function() {
   var coords = getHighlightSpan($("#annotationarea"));
