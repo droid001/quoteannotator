@@ -222,9 +222,12 @@ function convertSingleSpanToXml(span) {
     var childConverted = convertSingleSpanToXml(next);
     // now replace the outer xml bits
     var unconverted = next.html();
+    console.log(childConverted);
     childConverted = childHtml.substring(0, childHtml.indexOf(unconverted)) + childConverted
       + childHtml.substring(childHtml.indexOf(unconverted) + unconverted.length);
-    childConverted = childConverted.replace(/<span [^>]*class="(quote|mention) character_([^"]+)"[^>]*>(.*)<\/span>/g, "<$1 speaker=\"$2\">$3</$1>");
+    console.log(childConverted);
+    childConverted = childConverted.replace(/<span [^>]*class="(quote|mention) character_([^"]+)"[^>]*>([\s\S]*)<\/span>/g, "<$1 speaker=\"$2\">$3</$1>");
+    console.log(childConverted);
     gathered += html.substring(prevEnd, start);
     gathered += childConverted;
     prevEnd = start + childHtml.length;
@@ -247,6 +250,7 @@ function convertToXml(html, annotationOpts) {
   head += "</characters><text>";
 
   var xmled = convertSingleSpanToXml($("#annotationarea pre"));
+  console.log(xmled);
   var butt = "</text></doc>";
   return head + xmled + butt;
 }
