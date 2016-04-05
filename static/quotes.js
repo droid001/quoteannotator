@@ -206,6 +206,33 @@ function getCaretCharacterOffsetWithin(element) {
   return {"start": caretOffset, "end": caretOffset + end};
 }
 
+function convertSingleSpanToXml(span) {
+  // base case, no span in this span, can just return the html
+  var children = span.children();
+  if (children.length == 0) {
+    return span.html();
+  }
+  var html = span.html();
+  var prevEnd = 0;
+  var gathered = "";
+  for (var i = 0; i < children.length; i++) {
+    var next = $(children[i]);
+    var childHtml = next.prop("outerHTML");
+    var start = html.indexOf(childHtml);  // only appears once
+    var childConverted = convertSingleSpanToXml(next);
+    // now replace the outer xml bits
+    var unconverted = next.html();
+    childConverted = childHtml.substring(0, childHtml.indexOf(unconverted)) + childConverted
+      + childHtml.substring(childHtml.indexOf(unconverted) + unconverted.length);
+    childConverted = childConverted.replace(/<span [^>]*class="(quote|mention) character_([^"]+)"[^>]*>(.*)<\/span>/g, "<$1 speaker=\"$2\">$3</$1>");
+    gathered += html.substring(prevEnd, start);
+    gathered += childConverted;
+    prevEnd = start + childHtml.length;
+  }
+  gathered += html.substring(prevEnd);
+  return gathered;
+}
+
 function convertToXml(html, annotationOpts) {
   var head = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><doc>";
   // we need to insert character info here
@@ -219,12 +246,11 @@ function convertToXml(html, annotationOpts) {
   }
   head += "</characters><text>";
 
-  // replace all span tags with xml spans instead
-  var xmled = html.replace(/<span [^>]*class="(quote|mention) character_([^"]+)"[^>]*>([^<]*)<\/span>/g,
-      "<$1 speaker=\"$2\">$3</$1>");
+  var xmled = convertSingleSpanToXml($("#annotationarea pre"));
   var butt = "</text></doc>";
   return head + xmled + butt;
 }
+
 
 function convertToHtml(xml) {
   var html = xml.replace(/<\?xml version="1\.0" encoding="UTF-8"\?><doc><characters>(.*)<\/characters><text>/g, "");
@@ -564,7 +590,7 @@ Annotator.prototype.load = function(evt) {
         var html = convertToHtml(content);
         $("#annotationarea textarea").val(html);
         $("#annotate").click();
-        ann.setConnections();
+        ann.enableConnectionClicks();
       }
     } else if (id == 'loadconfig') {
       reader.onload = function(e) {
@@ -643,14 +669,14 @@ Annotator.prototype.closeSpecificModal = function(coords) {
   var spanId = 's' + this.nextSpanId;
   highlight($('#annotationarea'), [spanType, value], coords, spanId);
 
-  this.setConnections();
+  this.enableConnectionClicks();
   this.nextSpanId++;
   $("#closespecific").click();
   $(window).off('keypress');
   $("#submitspecific").off('click');
 };
 
-Annotator.prototype.setConnections = function() {
+Annotator.prototype.enableConnectionClicks = function() {
   if (this.allowConnections) {
     var spans = $('#annotationarea span');
     spans.css('cursor', 'default');
@@ -668,6 +694,8 @@ Annotator.prototype.setConnections = function() {
               target: scope.selectedSpans[1],
               scope: "someScope"
             });
+            scope.selectedSpans[0].addClass("connection_" + scope.selectedSpans[1].attr('id'));
+            scope.selectedSpans[1].addClass("connection_" + scope.selectedSpans[0].attr('id'));
             scope.selectedSpans = [];
           }
         } else {
