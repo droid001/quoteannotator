@@ -75,19 +75,30 @@ def convert(input, output):
                 quoted.append(line)
             elif (qei >= 0 and qsi < 0):
                 inQuotes = False
+                quoted.append(line)
+                quote = " ".join(quoted)
+                # Strip any inner quotes
+                quote = quote.replace("'' -- ``", ' ')
+                #quote = quote.replace("''", '')
+                #quote = quote.replace("--", '')
                 multilineQuotes.append( {
-                    'quote': " ".join(quoted),
+                    'quote': quote,
                     'quoteLines': quoted,
                     'span': [startIndex, li+1]
                 })
                 startIndex = -1
                 quoted = []
-            elif (qei < 0 and qsi < 0):
+            #elif (qei < 0 and qsi < 0):
+            else:
                 if inQuotes:
                     quoted.append(line)
-        # Set index
-        print multilineQuotes
         chapter['mulitlineQuotes'] = multilineQuotes
+        mqIndex = {}
+        for mqi,mq in enumerate(multilineQuotes):
+            for li in range(mq['span'][0], mq['span'][1]):
+                mqIndex[li] = mq
+        chapter['mulitlineQuotesByLine'] = mqIndex
+        # Set index
         chapter['_nextIndex'] = 0
     # Try to match annotations with the text
     for ai, annstr in enumerate(annotations):
@@ -96,6 +107,7 @@ def convert(input, output):
         speaker = ann[1]
         quote = ann[2]
         chapter = chapters[ch-1]
+        mqIndex = chapter['mulitlineQuotesByLine']
         startIndex = chapter['_nextIndex'];
         pieces = re.split('\s*\[X\]\s*', quote)
         escaped = map(re.escape, pieces)
@@ -105,6 +117,11 @@ def convert(input, output):
         for i in range(startIndex, len(chapter['text'])):
             # Try to match quote to text
             line = chapter['text'][i]
+            if i in mqIndex:
+                mulitlineQuote = mqIndex[i]
+                line = mulitlineQuote['quote']
+                print line
+                print quote
             #print regex
             #print line
             m = pattern.search(line)
