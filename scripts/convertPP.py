@@ -39,6 +39,23 @@ def readlines(input):
                 lines.append(line)
     return lines
 
+def writeXml(output, characters, chapters):
+    output.write('<?xml version="1.0" encoding="UTF-8"?>\n')
+    output.write('<doc>\n')
+    for chapter in chapters:
+        textlines = chapter['text']
+        mqIndex = chapter['mulitlineQuotesByLine']
+        speakersByLine = chapter['speakersByLine']
+        # TODO: Fix up multiline quotes...        
+        for li, line in enumerate(textlines):
+            if li in speakersByLine:
+                speaker = speakersByLine[li]
+                line = line.replace("``", '<quote speaker="' + speaker + '">')
+                line = line.replace("''", '</quote>')
+            output.write(line)
+            output.write('\n\n')
+    output.write('</doc>\n')
+
 def convert(input, output):
     print input
     print output
@@ -73,14 +90,17 @@ def convert(input, output):
                 inQuotes = True
                 startIndex = li
                 quoted.append(line)
+            elif (qsi >= 0 and line.startswith("``It was greatly my wish")):
+                inQuotes = True
+                startIndex = li
+                quoted.append(line)
             elif (qei >= 0 and qsi < 0):
+              if inQuotes:  
                 inQuotes = False
                 quoted.append(line)
                 quote = " ".join(quoted)
                 # Strip any inner quotes
                 quote = quote.replace("'' -- ``", ' ')
-                #quote = quote.replace("''", '')
-                #quote = quote.replace("--", '')
                 multilineQuotes.append( {
                     'quote': quote,
                     'quoteLines': quoted,
@@ -100,18 +120,28 @@ def convert(input, output):
         chapter['mulitlineQuotesByLine'] = mqIndex
         # Set index
         chapter['_nextIndex'] = 0
+        chapter['speakersByLine'] = {}
     # Try to match annotations with the text
     for ai, annstr in enumerate(annotations):
         ann = annstr.split('\t')
         ch = int(ann[0])
         speaker = ann[1]
         quote = ann[2]
+        quote = quote.replace('  ', ' ')
         chapter = chapters[ch-1]
         mqIndex = chapter['mulitlineQuotesByLine']
+        speakersByLine = chapter['speakersByLine']
+        debug = False
         startIndex = chapter['_nextIndex'];
+        if ai == 452:
+            quote = quote.replace(' apology, Hunsford, Lady Catherine de Bourgh.', '') 
+        elif quote == 'delightful, charming,':
+            continue # skip
+            # TODO: find and mark these
         pieces = re.split('\s*\[X\]\s*', quote)
         escaped = map(re.escape, pieces)
-        regex = '(' + '.*'.join(escaped) + ')'
+        escaped = [x.replace('\ ', '\s+') for x in escaped]
+        regex = '(``' + ')(.*)('.join(escaped) + "'')"
         pattern = re.compile(regex)
         matched = False
         for i in range(startIndex, len(chapter['text'])):
@@ -120,18 +150,20 @@ def convert(input, output):
             if i in mqIndex:
                 mulitlineQuote = mqIndex[i]
                 line = mulitlineQuote['quote']
+            if debug:
+                print i
                 print line
                 print quote
-            #print regex
-            #print line
             m = pattern.search(line)
             if m:
-                print 'matched %d to chapter %d:%d' % (ai, ch, i)
-                matched = True
+                #print 'matched %d to chapter %d:%d' % (ai, ch, i)
+                speakersByLine[i] = speaker
                 chapter['_nextIndex'] = i+1
+                matched = True
                 break
         if not matched:
             print 'unmatched ' + annstr
+    writeXml(output, characters, chapters)
 
 
 
