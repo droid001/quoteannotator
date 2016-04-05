@@ -206,25 +206,81 @@ function getCaretCharacterOffsetWithin(element) {
   return {"start": caretOffset, "end": caretOffset + end};
 }
 
-function convertToXml(html) {
+function convertSingleSpanToXml(span) {
+  // base case, no span in this span, can just return the html
+  var children = span.children();
+  if (children.length == 0) {
+    return span.html();
+  }
+  var html = span.html();
+  var prevEnd = 0;
+  var gathered = "";
+  for (var i = 0; i < children.length; i++) {
+    var next = $(children[i]);
+    var childHtml = next.prop("outerHTML");
+    var start = html.indexOf(childHtml);  // only appears once
+    var childConverted = convertSingleSpanToXml(next);
+    // now replace the outer xml bits
+    var childId = next.attr('id');
+    var childClasses = next.attr('class');
+    // find the span type, connection, and speaker classes
+    var type = "";
+    var connection = "";
+    var speaker = "";
+    childClasses = childClasses.split(' ');
+    // TODO: make less hacky
+    type = childClasses[0];
+    for (var j = 1; j < childClasses.length; j++) {
+      if (childClasses[j].startsWith('character_')) {
+        speaker = childClasses[j].substring('character_'.length);
+      }
+      if (childClasses[j].startsWith('connection_')) {
+        connection = childClasses[j].substring('connection_'.length);
+      }
+    }
+    childConverted = "<" + type + " speaker=\"" + speaker + "\" connection=\"" +
+      connection + "\" id=\"" + childId + "\">" + childConverted + "</" + type + ">";
+    gathered += html.substring(prevEnd, start);
+    gathered += childConverted;
+    prevEnd = start + childHtml.length;
+  }
+  gathered += html.substring(prevEnd);
+  return gathered;
+}
+
+function convertToXml(html, annotationOpts) {
   var head = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><doc>";
-  // replace all span tags with xml spans instead
-  var xmled = html.replace(/<span [^>]*class="(quote|mention) character_([^"]+)"[^>]*>([^<]*)<\/span>/g,
-      "<$1 speaker=\"$2\">$3</$1>");
-  var butt = "</doc>";
+  // we need to insert character info here
+  
+  head += "<characters>";
+  for (var name in annotationOpts) {
+    if (name.startsWith('character_')) {
+      var character = "<character name=\"" + name + "\" id=" + annotationOpts[name].id + "/>";
+      head += character;
+    }
+  }
+  head += "</characters><text>";
+
+  var xmled = convertSingleSpanToXml($("#annotationarea pre"));
+  var butt = "</text></doc>";
   return head + xmled + butt;
 }
 
+
 function convertToHtml(xml) {
-  var html = xml.replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?><doc>", "");
+  var html = xml.replace(/<\?xml version="1\.0" encoding="UTF-8"\?><doc><characters>(.*)<\/characters><text>/g, "");
+  html = html.replace("</text>", "");
   html = html.replace("</doc>", "");
-  html = html.replace(/<(quote|mention) speaker="([^"]+)">/g, "<span class=\"$1 character_$2\">");
+  html = html.replace(/<(quote|mention) speaker="([^"]+)" connection="([^"]*)" id="([^"]+)">/g,
+      "<span class=\"$1 character_$2 connection_$3\" id=\"$4\">");
   html = html.replace(/<\/(quote|mention)>/g, "</span>");
+  // TODO: visualize connections somewhere
   return html;
 }
 
 function unescapeSpans(html) {
-  var unesc = html.replace(/&lt;span class="([^"]+)"&gt;/g, "<span class=\"$1\">");
+  // TODO: maybe make this less hacky
+  var unesc = html.replace(/&lt;span([^&]*)&gt;/g, "<span$1>");
   unesc = unesc.replace(/&lt;\/span&gt;/g, "<\/span>");
   return unesc;
 }
@@ -371,19 +427,18 @@ AnnotationOptionsUI.prototype.submit = function() {
   }
 
   var css = $("#optioncss").val();
-  console.log(this.groupType);
-  this.addCharacterToConfig(name, this.groupType, css);
+  this.addCharacterToConfig(name, this.maxCharacterId, this.groupType, css);
   $('#addtest p').attr("style", "");
   $("#closeaddoption").click();
   $(window).off('keypress');
 };
 
-AnnotationOptionsUI.prototype.addCharacterToConfig = function(name, group, css) {
-  this.annotationOpts[name] = { css: css, name: name, group: this.groupType };
-  if (this.groupType === 'character') {
-    this.annotationOpts[name].id = this.maxCharacterId;
-    if (this.maxCharacterId <= 9) {
-      this.annotationOpts[name].shortcut = this.maxCharacterId.toString();
+AnnotationOptionsUI.prototype.addCharacterToConfig = function(name, id, group, css) {
+  this.annotationOpts[name] = { css: css, name: name, group: group };
+  if (group === 'character') {
+    this.annotationOpts[name].id = id;
+    if (id <= 9) {
+      this.annotationOpts[name].shortcut = id + "";
     }
   }
   this.update();
@@ -512,7 +567,7 @@ Annotator.prototype.save = function(evt) {
     savename = $('#savefilename').val().trim();
     name = savename + '.xml';
     var html = $("#annotationarea pre").html();
-    content = convertToXml(html);
+    content = convertToXml(html, this.annotationOptsUI.annotationOpts);
   } else if (id == 'saveconfig') {
     savename = $('#savefilenameconfig').val().trim();
     name = savename + '.json';
@@ -544,12 +599,15 @@ Annotator.prototype.load = function(evt) {
     if (id == 'loadfiles') {
       reader.onload = function(e) {
         var content = reader.result;
+        var headerReg = /<\?xml version="1\.0" encoding="UTF-8"\?><doc><characters>(.*)<\/characters>/g;
+        var match = headerReg.exec(content);
+        var charactersStr = match[1];
+        // now we need to add the characters to our configs
+        ann.addCharactersFromXml(charactersStr);
         var html = convertToHtml(content);
         $("#annotationarea textarea").val(html);
         $("#annotate").click();
-        // check for speakers loaded
-        // this is a filereader
-        ann.checkConfigs();
+        ann.enableConnectionClicks();
       }
     } else if (id == 'loadconfig') {
       reader.onload = function(e) {
@@ -562,28 +620,21 @@ Annotator.prototype.load = function(evt) {
   }
 };
 
-Annotator.prototype.checkConfigs = function() {
-  // grab all spans from the annotation area
-  var spans = $("#annotationarea pre span");
-  // for each span go and look at the classes
-  for (var i = 0; i < spans.length; i++) {
-    var classes = $(spans[i]).attr('class').split(' ');
-    for (var ci = 0; ci < classes.length; ci++) {
-      if (classes[ci].startsWith('character_')) {
-        // check if this character is in the configs,
-        // if it is, do nothing, otherwise, add it!
-        if (this.annotationOptsUI.containsCharacter(classes[ci])) {
-          console.log("contains already: " + classes[ci]);
-        } else {
-          // TODO: check if weird things happen with character ids/colors
-          this.annotationOptsUI.addCharacter();
-          $("#optionname").attr('value', classes[ci].substring(classes[ci].indexOf('_') + 1));
-          $("#submitoption").click();
-        }
-      }
-    }
+Annotator.prototype.addCharactersFromXml = function(charXml) {
+  this.groupType = 'character';
+  var charMatch = /<character[^>]*\/>/g;
+  var match = charMatch.exec(charXml);
+  while (match != null) {
+    var str = match[0];
+    var nameMatch = /name="([^"]*)"/g;
+    var idMatch = /id=([0-9]+)/g;
+    var name = nameMatch.exec(str);
+    var id = idMatch.exec(str);
+    var css = 'background-color: ' + ts.getLightColor(id[1]);
+    this.annotationOptsUI.addCharacterToConfig(name[1], id[1], this.groupType, css);
+    match = charMatch.exec(charXml);
   }
-}
+};
 
 Annotator.prototype.openSpecificModal = function() {
   var coords = getHighlightSpan($("#annotationarea"));
@@ -635,12 +686,20 @@ Annotator.prototype.closeSpecificModal = function(coords) {
   var spanId = 's' + this.nextSpanId;
   highlight($('#annotationarea'), [spanType, value], coords, spanId);
 
+  this.enableConnectionClicks();
+  this.nextSpanId++;
+  $("#closespecific").click();
+  $(window).off('keypress');
+  $("#submitspecific").off('click');
+};
+
+Annotator.prototype.enableConnectionClicks = function() {
   if (this.allowConnections) {
     var spans = $('#annotationarea span');
     spans.css('cursor', 'default');
     var scope = this;
     spans.click(function (event) {
-      if (event.ctrlKey) {
+      if (event.metaKey || event.ctrlKey) { // command key, essentially
         console.log('Selected span ' + $(this).attr('id'));
         if (scope.selectedSpans.indexOf($(this)) < 0) {
           scope.selectedSpans.push($(this));
@@ -652,6 +711,8 @@ Annotator.prototype.closeSpecificModal = function(coords) {
               target: scope.selectedSpans[1],
               scope: "someScope"
             });
+            scope.selectedSpans[0].addClass("connection_" + scope.selectedSpans[1].attr('id'));
+            scope.selectedSpans[1].addClass("connection_" + scope.selectedSpans[0].attr('id'));
             scope.selectedSpans = [];
           }
         } else {
@@ -660,10 +721,6 @@ Annotator.prototype.closeSpecificModal = function(coords) {
       }
     });
   }
-  this.nextSpanId++;
-  $("#closespecific").click();
-  $(window).off('keypress');
-  $("#submitspecific").off('click');
 };
 
 Annotator.prototype.resetSpecific = function() {
