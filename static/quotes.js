@@ -221,13 +221,25 @@ function convertSingleSpanToXml(span) {
     var start = html.indexOf(childHtml);  // only appears once
     var childConverted = convertSingleSpanToXml(next);
     // now replace the outer xml bits
-    var unconverted = next.html();
-    console.log(childConverted);
-    childConverted = childHtml.substring(0, childHtml.indexOf(unconverted)) + childConverted
-      + childHtml.substring(childHtml.indexOf(unconverted) + unconverted.length);
-    console.log(childConverted);
-    childConverted = childConverted.replace(/<span [^>]*class="(quote|mention) character_([^"]+)"[^>]*>([\s\S]*)<\/span>/g, "<$1 speaker=\"$2\">$3</$1>");
-    console.log(childConverted);
+    var childId = next.attr('id');
+    var childClasses = next.attr('class');
+    // find the span type, connection, and speaker classes
+    var type = "";
+    var connection = "";
+    var speaker = "";
+    childClasses = childClasses.split(' ');
+    // TODO: make less hacky
+    type = childClasses[0];
+    for (var j = 1; j < childClasses.length; j++) {
+      if (childClasses[j].startsWith('character_')) {
+        speaker = childClasses[j].substring('character_'.length);
+      }
+      if (childClasses[j].startsWith('connection_')) {
+        connection = childClasses[j].substring('connection_'.length);
+      }
+    }
+    childConverted = "<" + type + " speaker=\"" + speaker + "\" connection=\"" +
+      connection + "\" id=\"" + childId + "\">" + childConverted + "</" + type + ">";
     gathered += html.substring(prevEnd, start);
     gathered += childConverted;
     prevEnd = start + childHtml.length;
@@ -250,7 +262,6 @@ function convertToXml(html, annotationOpts) {
   head += "</characters><text>";
 
   var xmled = convertSingleSpanToXml($("#annotationarea pre"));
-  console.log(xmled);
   var butt = "</text></doc>";
   return head + xmled + butt;
 }
@@ -260,13 +271,16 @@ function convertToHtml(xml) {
   var html = xml.replace(/<\?xml version="1\.0" encoding="UTF-8"\?><doc><characters>(.*)<\/characters><text>/g, "");
   html = html.replace("</text>", "");
   html = html.replace("</doc>", "");
-  html = html.replace(/<(quote|mention) speaker="([^"]+)">/g, "<span class=\"$1 character_$2\">");
+  html = html.replace(/<(quote|mention) speaker="([^"]+)" connection="([^"]*)" id="([^"]+)">/g,
+      "<span class=\"$1 character_$2 connection_$3\" id=\"$4\">");
   html = html.replace(/<\/(quote|mention)>/g, "</span>");
+  // TODO: visualize connections somewhere
   return html;
 }
 
 function unescapeSpans(html) {
-  var unesc = html.replace(/&lt;span class="([^"]+)"&gt;/g, "<span class=\"$1\">");
+  // TODO: maybe make this less hacky
+  var unesc = html.replace(/&lt;span([^&]*)&gt;/g, "<span$1>");
   unesc = unesc.replace(/&lt;\/span&gt;/g, "<\/span>");
   return unesc;
 }
@@ -553,7 +567,6 @@ Annotator.prototype.save = function(evt) {
     savename = $('#savefilename').val().trim();
     name = savename + '.xml';
     var html = $("#annotationarea pre").html();
-    console.log("call convert");
     content = convertToXml(html, this.annotationOptsUI.annotationOpts);
   } else if (id == 'saveconfig') {
     savename = $('#savefilenameconfig').val().trim();
