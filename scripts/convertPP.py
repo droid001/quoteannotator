@@ -3,8 +3,6 @@
 # Convert pride and prejudice annotations to our format
 
 import argparse
-import collections
-import xml
 import os
 import re
 import sys
