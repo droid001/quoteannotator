@@ -42,6 +42,14 @@ def readlines(input):
 def writeXml(output, characters, chapters):
     output.write('<?xml version="1.0" encoding="UTF-8"?>\n')
     output.write('<doc>\n')
+    output.write('<characters>\n') 
+    for index, character in enumerate(characters):
+        output.write(
+            '<character id="{0}" name="{1}" gender="{2}">'
+            .format(index, character['name'], character['gender']))
+        output.write('</character>\n')
+    output.write('</characters>\n')
+    output.write('<text>\n') 
     for chapter in chapters:
         textlines = chapter['text']
         mqIndex = chapter['mulitlineQuotesByLine']
@@ -50,11 +58,16 @@ def writeXml(output, characters, chapters):
         for li, line in enumerate(textlines):
             if li in speakersByLine:
                 speaker = speakersByLine[li]
-                line = line.replace("``", '<quote speaker="' + speaker + '">')
-                line = line.replace("''", '</quote>')
+                line = line.replace("``", '<quote speaker="' + speaker + '">``')
+                line = line.replace("''", "''</quote>")
             output.write(line)
             output.write('\n\n')
+    output.write('</text>')
     output.write('</doc>\n')
+
+def strToCharacter(str):
+    fields = str.split(';')
+    return { 'name': fields[0], 'gender': fields[1], 'aliases': fields[2:]}
 
 def convert(input, output):
     print input
@@ -67,6 +80,7 @@ def convert(input, output):
     #with open(textfile) as x: text = x.readlines()
     #with open(annfile) as x: annotations = x.readlines()
     characters = readlines(charfile)
+    characters = map(strToCharacter, characters)
     text = readlines(textfile)
     annotations = readlines(annfile)
     print '# characters: ' + str(len(characters))
