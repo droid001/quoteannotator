@@ -54,12 +54,15 @@ def writeXml(output, characters, chapters):
         textlines = chapter['text']
         mqIndex = chapter['mulitlineQuotesByLine']
         speakersByLine = chapter['speakersByLine']
-        # TODO: Fix up multiline quotes...        
         for li, line in enumerate(textlines):
             if li in speakersByLine:
-                speaker = speakersByLine[li]
-                line = line.replace("``", '<quote speaker="' + speaker + '">``')
-                line = line.replace("''", "''</quote>")
+                # Special skipping (n)
+                if li in mqIndex and line.find("'' -- ``") >= 0:
+                    print 'skipping replacing inner quotes for multiline quote on line %d' % (li) 
+                else:
+                    speaker = speakersByLine[li]
+                    line = line.replace("``", '<quote speaker="' + speaker + '">``')
+                    line = line.replace("''", "''</quote>")
             output.write(line)
             output.write('\n\n')
     output.write('</text>')
@@ -122,7 +125,6 @@ def convert(input, output):
                 })
                 startIndex = -1
                 quoted = []
-            #elif (qei < 0 and qsi < 0):
             else:
                 if inQuotes:
                     quoted.append(line)
@@ -150,8 +152,7 @@ def convert(input, output):
         if ai == 452:
             quote = quote.replace(' apology, Hunsford, Lady Catherine de Bourgh.', '') 
         elif quote == 'delightful, charming,':
-            continue # skip
-            # TODO: find and mark these
+            quote = 'delightful, [X] charming,'
         pieces = re.split('\s*\[X\]\s*', quote)
         escaped = map(re.escape, pieces)
         escaped = [x.replace('\ ', '\s+') for x in escaped]
@@ -161,6 +162,7 @@ def convert(input, output):
         for i in range(startIndex, len(chapter['text'])):
             # Try to match quote to text
             line = chapter['text'][i]
+            mulitlineQuote = None
             if i in mqIndex:
                 mulitlineQuote = mqIndex[i]
                 line = mulitlineQuote['quote']
@@ -171,8 +173,16 @@ def convert(input, output):
             m = pattern.search(line)
             if m:
                 #print 'matched %d to chapter %d:%d' % (ai, ch, i)
+                if i in speakersByLine and not speakersByLine[i] == speaker:
+                    print 'line %d already has speaker %s' % (i, speakersByLine[i])
                 speakersByLine[i] = speaker
-                chapter['_nextIndex'] = i+1
+                if mulitlineQuote:
+                    span = mulitlineQuote['span']
+                    for j in range(span[0], span[1]):
+                        speakersByLine[j] = speaker
+                    chapter['_nextIndex'] = span[1]
+                else:
+                    chapter['_nextIndex'] = i+1
                 matched = True
                 break
         if not matched:
