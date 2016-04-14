@@ -120,8 +120,8 @@ def convert(input, output, mentionLevel):
     # Convert tags to lowercase
     lowercaseTags(dom)
 
-#    output.write(dom.toxml("utf-8"))
-    output.write(dom.toprettyxml(encoding="utf-8"))
+    output.write(dom.toxml("utf-8"))
+#    output.write(dom.toprettyxml(encoding="utf-8"))
 
 def main():
     # Argument processing
