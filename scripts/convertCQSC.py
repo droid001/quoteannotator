@@ -28,6 +28,12 @@ def get_all_text( node ):
             text_string += get_all_text( child_node )
         return text_string
 
+def lowercaseTags( node ):
+    if node.nodeType ==  node.ELEMENT_NODE:
+        node.tagName = node.tagName.lower()
+    for child_node in node.childNodes:
+        lowercaseTags(child_node)
+
 def convert(input, output, mentionLevel):
     #print input
     #print output
@@ -111,9 +117,11 @@ def convert(input, output, mentionLevel):
                mention.parentNode.replaceChild(t, mention)
     # default 'ALL' (keep everything)
 
-    # TODO: convert tags to lowercase?
+    # Convert tags to lowercase
+    lowercaseTags(dom)
+
     output.write(dom.toxml("utf-8"))
-#    output.write(dom.toprettyxml(encoding="utf-8"))
+#   output.write(dom.toprettyxml(encoding="utf-8"))
 
 def main():
     # Argument processing
