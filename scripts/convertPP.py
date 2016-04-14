@@ -14,6 +14,14 @@ logging.basicConfig(format=FORMAT)
 log = logging.getLogger('index')
 log.setLevel(logging.INFO)
 
+def mapGender(gender):
+    if gender == 'M':
+        return 'male'
+    elif gender == 'F':
+        return 'female'
+    else:
+        return 'unknown'
+
 def textToChapters(lines):
     # Organize lines into chapters
     chapters = []
@@ -43,8 +51,8 @@ def writeXml(output, characters, chapters):
     output.write('<characters>\n') 
     for index, character in enumerate(characters):
         output.write(
-            '<character id="{0}" name="{1}" gender="{2}">'
-            .format(index, character['name'], character['gender']))
+            '<character id="{0}" name="{1}" gender="{2}", aliases="{3}">'
+            .format(index, character['name'], character['gender'], ';'.join(character['aliases'])))
         output.write('</character>\n')
     output.write('</characters>\n')
     output.write('<text>\n') 
@@ -68,7 +76,8 @@ def writeXml(output, characters, chapters):
 
 def strToCharacter(str):
     fields = str.split(';')
-    return { 'name': fields[0], 'gender': fields[1], 'aliases': fields[2:]}
+    aliases = [fields[0]] + fields[2:]
+    return { 'name': fields[0].replace(' ', '_'), 'gender': mapGender(fields[1]), 'aliases': aliases}
 
 def convert(input, output):
     print input

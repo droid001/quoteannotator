@@ -72,7 +72,7 @@ def convert(input, output, mentionLevel):
         element = dom.createElement(info['name'])
         for k, v in entity.iteritems():
             if k == 'aliases':
-                element.setAttribute(k,','.join(v))
+                element.setAttribute(k,';'.join(v))
             else:
                 element.setAttribute(k,v)
         info['elements'].appendChild(element)
@@ -120,8 +120,8 @@ def convert(input, output, mentionLevel):
     # Convert tags to lowercase
     lowercaseTags(dom)
 
-    output.write(dom.toxml("utf-8"))
-#   output.write(dom.toprettyxml(encoding="utf-8"))
+#    output.write(dom.toxml("utf-8"))
+    output.write(dom.toprettyxml(encoding="utf-8"))
 
 def main():
     # Argument processing
