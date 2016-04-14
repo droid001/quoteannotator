@@ -36,12 +36,14 @@ def convert(input, output, mentionLevel):
     root = dom.documentElement
     # Process paragraphs    
     entities = {}
+    mentionIdToEntityId = {}
     for paragraph in root.getElementsByTagName('PARAGRAPH'):
         for nertype in nertypes:
             for mention in paragraph.getElementsByTagName(nertype):
                 mention.tagName = 'MENTION'
                 mention.setAttribute('entityType', nertype)
                 entityId = mention.getAttribute('entity')
+                mentionId = mention.getAttribute('id')
                 if not entityId in entities:
                     # it would be great if the entities had names
                     entities[entityId] = {
@@ -52,6 +54,7 @@ def convert(input, output, mentionLevel):
                     }
                 name = get_all_text(mention)
                 entities[entityId]['aliases'].add(name)
+                mentionIdToEntityId[mentionId] = entityId
     # Add characters
     entityElementsByType = {
         'PERSON': { 'elements': dom.createElement('CHARACTERS'), 'name': 'CHARACTER'},
@@ -78,10 +81,21 @@ def convert(input, output, mentionLevel):
 
     # Go over quotes and match them to characters
     quotes = dom.getElementsByTagName('QUOTE')
+    speakerMentions = Set()
     speakers = Set()
+    noSpeaker = 0
     for quote in quotes:
-        speaker = quote.getAttribute('speaker')
-        speakers.add(speaker)
+        speakerMentionId = quote.getAttribute('speaker')
+        if speakerMentionId and speakerMentionId != 'none':
+            speakerMentions.add(speakerMentionId)
+            speakerId = mentionIdToEntityId[speakerMentionId]
+            # Rename attributes
+            quote.setAttribute('speaker', speakerId)
+            quote.setAttribute('mention', speakerMentionId)
+        else:
+            noSpeaker += 1
+            #print 'Unknown speaker for ' + quote.toxml('utf-8')
+    print 'No speaker for ' + str(noSpeaker) + ' quotes'
 
     # Trim based on mention level
     if mentionLevel == 'QUOTES': # only show quotes (remove mentions)
@@ -89,10 +103,10 @@ def convert(input, output, mentionLevel):
         for mention in mentions:
             t = dom.createTextNode(get_all_text(mention))
             mention.parentNode.replaceChild(t, mention)
-    elif mentionLevel == 'SPEAKER': # only show mention that are speakers
+    elif mentionLevel == 'DIRECT': # only show mention that are linked as speakers
        mentions = dom.getElementsByTagName('MENTION')
        for mention in mentions:
-           if mention.getAttribute('id') not in speakers:
+           if mention.getAttribute('id') not in speakerMentions:
                t = dom.createTextNode(get_all_text(mention))
                mention.parentNode.replaceChild(t, mention)
     # default 'ALL' (keep everything)
@@ -108,7 +122,7 @@ def main():
                         default=sys.stdin)
     parser.add_argument('outfile', nargs='?')
     args = parser.parse_args()
-    mentionLevels = ["ALL", "SPEAKER", "QUOTES"]
+    mentionLevels = ["ALL", "DIRECT", "QUOTES"]
     outname = args.outfile or args.infile.name
     (outbase, outext) = os.path.splitext(outname)
     outext = outext or '.xml'
