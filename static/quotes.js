@@ -206,78 +206,6 @@ function getCaretCharacterOffsetWithin(element) {
   return {"start": caretOffset, "end": caretOffset + end};
 }
 
-function convertSingleSpanToXml(span) {
-  // base case, no span in this span, can just return the html
-  var children = span.children();
-  if (children.length == 0) {
-    return span.html();
-  }
-  var html = span.html();
-  var prevEnd = 0;
-  var gathered = "";
-  for (var i = 0; i < children.length; i++) {
-    var next = $(children[i]);
-    var childHtml = next.prop("outerHTML");
-    var start = html.indexOf(childHtml);  // only appears once
-    var childConverted = convertSingleSpanToXml(next);
-    // now replace the outer xml bits
-    var childId = next.attr('id');
-    var childClasses = next.attr('class');
-    // find the span type, connection, and speaker classes
-    var type = "";
-    var connection = "";
-    var speaker = "";
-    childClasses = childClasses.split(' ');
-    // TODO: make less hacky
-    type = childClasses[0];
-    for (var j = 1; j < childClasses.length; j++) {
-      if (childClasses[j].startsWith('character_')) {
-        speaker = childClasses[j].substring('character_'.length);
-      }
-      if (childClasses[j].startsWith('connection_')) {
-        connection = childClasses[j].substring('connection_'.length);
-      }
-    }
-    childConverted = "<" + type + " speaker=\"" + speaker + "\" connection=\"" +
-      connection + "\" id=\"" + childId + "\">" + childConverted + "</" + type + ">";
-    gathered += html.substring(prevEnd, start);
-    gathered += childConverted;
-    prevEnd = start + childHtml.length;
-  }
-  gathered += html.substring(prevEnd);
-  return gathered;
-}
-
-function convertToXml(html, annotationOpts) {
-  var head = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><doc>";
-  // we need to insert character info here
-  
-  head += "<characters>";
-  for (var name in annotationOpts) {
-    if (name.startsWith('character_')) {
-      var character = "<character name=\"" + name + "\" id=" + annotationOpts[name].id + "/>";
-      head += character;
-    }
-  }
-  head += "</characters><text>";
-
-  var xmled = convertSingleSpanToXml($("#annotationarea pre"));
-  var butt = "</text></doc>";
-  return head + xmled + butt;
-}
-
-
-function convertToHtml(xml) {
-  var html = xml.replace(/<\?xml version="1\.0" encoding="UTF-8"\?><doc><characters>(.*)<\/characters><text>/g, "");
-  html = html.replace("</text>", "");
-  html = html.replace("</doc>", "");
-  html = html.replace(/<(quote|mention) speaker="([^"]+)" connection="([^"]*)" id="([^"]+)">/g,
-      "<span class=\"$1 character_$2 connection_$3\" id=\"$4\">");
-  html = html.replace(/<\/(quote|mention)>/g, "</span>");
-  // TODO: visualize connections somewhere
-  return html;
-}
-
 function unescapeSpans(html) {
   // TODO: maybe make this less hacky
   var unesc = html.replace(/&lt;span([^&]*)&gt;/g, "<span$1>");
@@ -416,7 +344,7 @@ AnnotationOptionsUI.prototype.submit = function() {
   // TODO: class name shouldn't have punctuation either
   var name = $("#optionname").val().trim().replace(/\s/g, "_");
   // prefix so that we can process/differentiate classes better!
-  name = 'character_' + name;
+  name = 'speaker_' + name;
 
   // Check that values are reasonable
   if (this.containsCharacter(name)) {
@@ -466,6 +394,7 @@ function Annotator(annotationOpts) {
   this.nextSpanId = 0; // TOOD: update this when annotated file is loaded.
   this.selectedSpans = [];
   this.allowConnections = true;
+  this.savingUI = new Saver();
 }
 
 Annotator.prototype.launch = function() {
@@ -499,13 +428,13 @@ Annotator.prototype.launch = function() {
 Annotator.prototype.attachListeners = function() {
   // enterAnnotateMode
   $("#annotate").click( this.enterAnnotateMode.bind(this) );
-  // Saving
-  $("#save").click( this.save.bind(this) );
-  $("#saveconfig").click( this.save.bind(this) );
-  // Loading
-  $("#loadfiles").change( this.load.bind(this) );
-  $("#loadconfig").change( this.load.bind(this) );
   $("#closespecific").click( this.resetSpecific.bind(this) );
+  // Saving
+  $("#save").click( this.savingUI.save.bind(this) );
+  $("#saveconfig").click( this.savingUI.save.bind(this) );
+  // Loading
+  $("#loadfiles").change( this.savingUI.load.bind(this) );
+  $("#loadconfig").change( this.savingUI.load.bind(this) );
 };
 
 Annotator.prototype.enterAnnotateMode = function() {
@@ -557,82 +486,14 @@ Annotator.prototype.enterAnnotateMode = function() {
   $("#annotate").css("background-color", "white");
 };
 
-// Annotate stuff!!!
-Annotator.prototype.save = function(evt) {
-  var id = evt.target.id;
-  var savename = "";
-  var name = "";
-  var content = "";
-  if (id == 'save') {
-    savename = $('#savefilename').val().trim();
-    name = savename + '.xml';
-    var html = $("#annotationarea pre").html();
-    content = convertToXml(html, this.annotationOptsUI.annotationOpts);
-  } else if (id == 'saveconfig') {
-    savename = $('#savefilenameconfig').val().trim();
-    name = savename + '.json';
-    content = JSON.stringify(this.annotationOptsUI.annotationOpts);
-  }
-  if (savename.length == 0) {
-    ts.alert("filename is empty!");
-    return;
-  }
-  var blob = new Blob([content], {type: "text/plain;charset=utf-8"});
-  saveAs(blob, name);
-};
-
-Annotator.prototype.load = function(evt) {
-  var files = evt.target.files; // FileList object
-  var id = evt.target.id;
-  if (files.length == 0) {
-    return;
-  }
-  if (files.length != 1) {
-    ts.alert("Only the first selected file will be loaded!");
-  }
-
-  var textType = /text.*/;
-  var file = files[0];
-  var ann = this;
-  if (file.type.match(textType) || file.type.match(/application\/json/)) {
-    var reader = new FileReader();
-    if (id == 'loadfiles') {
-      reader.onload = function(e) {
-        var content = reader.result;
-        var headerReg = /<\?xml version="1\.0" encoding="UTF-8"\?><doc><characters>(.*)<\/characters>/g;
-        var match = headerReg.exec(content);
-        var charactersStr = match[1];
-        // now we need to add the characters to our configs
-        ann.addCharactersFromXml(charactersStr);
-        var html = convertToHtml(content);
-        $("#annotationarea textarea").val(html);
-        $("#annotate").click();
-        ann.enableConnectionClicks();
-      }
-    } else if (id == 'loadconfig') {
-      reader.onload = function(e) {
-        var content = reader.result;
-        var annotationOpts = JSON.parse(content);
-        this.annotationOptsUI.update(annotationOpts);
-      }.bind(this);
-    }
-    reader.readAsText(file);
-  }
-};
-
-Annotator.prototype.addCharactersFromXml = function(charXml) {
-  this.groupType = 'character';
-  var charMatch = /<character[^>]*\/>/g;
-  var match = charMatch.exec(charXml);
-  while (match != null) {
-    var str = match[0];
-    var nameMatch = /name="([^"]*)"/g;
-    var idMatch = /id=([0-9]+)/g;
-    var name = nameMatch.exec(str);
-    var id = idMatch.exec(str);
-    var css = 'background-color: ' + ts.getLightColor(id[1]);
-    this.annotationOptsUI.addCharacterToConfig(name[1], id[1], this.groupType, css);
-    match = charMatch.exec(charXml);
+Annotator.prototype.addCharactersFromXml = function($characters) {
+  var children = $characters.children();
+  for (var i = 0; i < children.length; i++) {
+    var child = $( children[i] );
+    var id = child.attr("id");
+    var name = child.attr("name");
+    var css = 'background-color: ' + ts.getLightColor(id);
+    this.annotationOptsUI.addCharacterToConfig(name, id, 'character', css);
   }
 };
 
