@@ -484,6 +484,14 @@ Annotator.prototype.enterAnnotateMode = function() {
   $("#annotate").prop("disabled", true);
   $("#annotate").addClass("disabled");
   $("#annotate").css("background-color", "white");
+  // make sure that all spans have ids
+  var spans = $("#annotationarea pre span");
+  for (var i = 0; i < spans.length; i++) {
+    if ($(spans[i]).attr("id") == undefined) {
+      $(spans[i]).attr("id", 's' + this.nextSpanId);
+      this.nextSpanId++;
+    }
+  }
 };
 
 Annotator.prototype.addCharactersFromXml = function($characters) {
@@ -579,14 +587,9 @@ Annotator.prototype.enableConnectionClicks = function() {
           scope.selectedSpans.push($(this));
           if (scope.selectedSpans.length === 2) {
             console.log('Connect ' + scope.selectedSpans[0].attr('id') + ' with ' + scope.selectedSpans[1].attr('id'));
-            // TODO: Visualize and record
-            jsPlumb.connect({
-              source: scope.selectedSpans[0],
-              target: scope.selectedSpans[1],
-              scope: "someScope"
-            });
             scope.selectedSpans[0].addClass("connection_" + scope.selectedSpans[1].attr('id'));
             scope.selectedSpans[1].addClass("connection_" + scope.selectedSpans[0].attr('id'));
+            scope.drawConnection(scope.selectedSpans[0], scope.selectedSpans[1]);
             scope.selectedSpans = [];
           }
         } else {
@@ -598,7 +601,7 @@ Annotator.prototype.enableConnectionClicks = function() {
 };
 
 Annotator.prototype.hasClassStartsWith = function($el, target) {
-  var classes = el.attr("class").split(' ');
+  var classes = $el.attr("class").split(' ');
   for (var i = 0; i < classes.length; i++) {
     if (classes[i].startsWith(target)) {
       return classes[i];
@@ -609,17 +612,62 @@ Annotator.prototype.hasClassStartsWith = function($el, target) {
 
 Annotator.prototype.updateConnections = function() {
   // get all spans
-  var spans = $("#annotationarea pre span");
+  var spans = $("#annotationarea pre span.quote");
   // for each span with an annotated connection, connect it to its friend
   for (var i = 0; i < spans.length; i++) {
     var span = $(spans[i]);
     var connectionClass = this.hasClassStartsWith(span, 'connection_');
-    if (connectionClass == null) {
+    if (connectionClass == null || connectionClass === 'connection_') {
       continue;
     }
-    var connectedId = connectionClass.split(' ')[1];
-    //TODO: GRACE, fix this!!!
+    var connectedId = connectionClass.split('_')[1];
+    var connectedSpan = $("#" + connectedId);
+    if (connectedSpan[0] == undefined) {
+      ts.alert("Span " + span.attr("id") + " connected to " + connectedId + " which doesn't exist");
+      continue;
+    }
+    this.drawConnection(span, connectedSpan);
   }
+};
+
+Annotator.prototype.drawConnection = function(span1, span2) {
+  var s1Left = span1.prop("offsetLeft");
+  var s1Top = span1.prop("offsetTop");
+  var s2Left = span2.prop("offsetLeft");
+  var s2Top = span2.prop("offsetTop");
+  var div = $('<div />'); 
+  div.addClass('connection');
+  var widthDiv = s1Left > s2Left ? s1Left - s2Left : s2Left - s1Left;
+  var heightDiv = s1Top > s2Top ? s1Top - s2Top : s2Top - s1Top;
+  var topCorner = s1Top < s2Top ? s1Top : s2Top;
+  var leftCorner = s1Left < s2Left ? s1Left : s2Left;
+  if (heightDiv < 10) {
+    heightDiv = 10;
+    topCorner -= 10;
+  }
+  if (Math.abs(s1Top - s2Top) < 10) {
+    div.addClass("flat");
+  } else if (s1Left > s2Left) {  // quote is to the left
+    div.addClass("toupperright");
+  } else {
+    div.addClass("toupperleft");
+  }
+  div.css({
+      height : heightDiv + "px",
+      width : widthDiv + "px",
+      top : topCorner + "px",
+      left : leftCorner + "px"
+    });
+  div.click( this.deleteConnection );
+  div.attr("id", span1.attr("id") + "_" + span2.attr("id"));
+  $("#annotationarea").append(div);
+};
+
+Annotator.prototype.deleteConnection = function(e) {
+  var id = e.target.id.split('_');
+  $("#" + id[0]).removeClass('connection_' + id[1]);
+  $("#" + id[1]).removeClass('connection_' + id[0]);
+  $(e.target).remove();
 };
 
 Annotator.prototype.resetSpecific = function() {

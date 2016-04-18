@@ -49,6 +49,7 @@ Saver.prototype.load = function(evt) {
         var html = convertToHtml(content, ann);
         $("#annotationarea textarea").val(html);
         $("#annotate").click();
+        ann.updateConnections();
         ann.enableConnectionClicks();
       }
     } else if (id == 'loadconfig') {
@@ -129,7 +130,6 @@ function convertSingleSpan(span, conversionFunction) {
   for (var i = 0; i < children.length; i++) {
     var next = $(children[i]);
     var childHtml = next.prop("outerHTML");
-    console.log(childHtml);
     var start = html.indexOf(childHtml, prevEnd);  // only appears once
     var childConverted = convertSingleSpan(next, conversionFunction);
     childConverted = conversionFunction(next, childConverted);
@@ -181,7 +181,7 @@ function convertToXml(html, annotationOpts) {
   var xmled = convertSingleSpan($("#annotationarea pre"), htmlToXmlConvert);
   var butt = "</text></doc>";
   return head + xmled + butt;
-}
+};
 
 function convertToHtml(xml, ann) {
   var xmlDoc = $.parseXML(xml);
@@ -192,8 +192,5 @@ function convertToHtml(xml, ann) {
   // now we want to load everything for real
   $text = $xml.find( "text");
   var inner = convertSingleSpan($text, xmlToHtmlConvert);
-  //console.log(inner);
-  // TODO: visualize connections somewhere
-  ann.updateConnections();
   return inner;
-}
+};
