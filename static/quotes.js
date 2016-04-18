@@ -491,7 +491,20 @@ Annotator.prototype.addCharactersFromXml = function($characters) {
   for (var i = 0; i < children.length; i++) {
     var child = $( children[i] );
     var id = child.attr("id");
-    var name = child.attr("name");
+    var name = "";
+    if (child.attr("name") == undefined) {
+      if (child.attr("aliases") == undefined) {
+        continue;
+      }
+      //TODO: deal with aliases!
+      name = child.attr("aliases").replace(' ', '_');
+    } else {
+      name = child.attr("name").split(' ').join('_');
+      name = name.replace('.', '');
+      if (!name.startsWith('speaker_')) {
+        name = 'speaker_' + name;
+      }
+    }
     var css = 'background-color: ' + ts.getLightColor(id);
     this.annotationOptsUI.addCharacterToConfig(name, id, 'character', css);
   }
@@ -581,6 +594,31 @@ Annotator.prototype.enableConnectionClicks = function() {
         }
       }
     });
+  }
+};
+
+Annotator.prototype.hasClassStartsWith = function($el, target) {
+  var classes = el.attr("class").split(' ');
+  for (var i = 0; i < classes.length; i++) {
+    if (classes[i].startsWith(target)) {
+      return classes[i];
+    }
+  }
+  return null;
+};
+
+Annotator.prototype.updateConnections = function() {
+  // get all spans
+  var spans = $("#annotationarea pre span");
+  // for each span with an annotated connection, connect it to its friend
+  for (var i = 0; i < spans.length; i++) {
+    var span = $(spans[i]);
+    var connectionClass = this.hasClassStartsWith(span, 'connection_');
+    if (connectionClass == null) {
+      continue;
+    }
+    var connectedId = connectionClass.split(' ')[1];
+    //TODO: GRACE, fix this!!!
   }
 };
 

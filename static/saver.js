@@ -46,11 +46,6 @@ Saver.prototype.load = function(evt) {
     if (id == 'loadfiles') {
       reader.onload = function(e) {
         var content = reader.result;
-        var headerReg = /<\?xml version="1\.0" encoding="UTF-8"\?><doc><characters>(.*)<\/characters>/g;
-        var match = headerReg.exec(content);
-        var charactersStr = match[1];
-        // now we need to add the characters to our configs
-        //ann.addCharactersFromXml(charactersStr);
         var html = convertToHtml(content, ann);
         $("#annotationarea textarea").val(html);
         $("#annotate").click();
@@ -113,7 +108,9 @@ function xmlToHtmlConvert(child, childConverted) {
   span.attr("id", id);
   span.addClass(child[0].tagName);
   for (var cl in classes) {
-    span.addClass(cl + "_" + classes[cl]);
+    var val = classes[cl].split(' ').join('_');
+    val = val.split('.').join('');
+    span.addClass(cl + "_" + val);
   }
   span.html(childConverted);
 
@@ -132,7 +129,8 @@ function convertSingleSpan(span, conversionFunction) {
   for (var i = 0; i < children.length; i++) {
     var next = $(children[i]);
     var childHtml = next.prop("outerHTML");
-    var start = html.indexOf(childHtml);  // only appears once
+    console.log(childHtml);
+    var start = html.indexOf(childHtml, prevEnd);  // only appears once
     var childConverted = convertSingleSpan(next, conversionFunction);
     childConverted = conversionFunction(next, childConverted);
     gathered += html.substring(prevEnd, start);
@@ -186,7 +184,6 @@ function convertToXml(html, annotationOpts) {
 }
 
 function convertToHtml(xml, ann) {
-  console.log($.parseXML(xml));
   var xmlDoc = $.parseXML(xml);
   $xml = $( xmlDoc );
   // take care of adding the characters in the doc to the annotator
@@ -195,6 +192,8 @@ function convertToHtml(xml, ann) {
   // now we want to load everything for real
   $text = $xml.find( "text");
   var inner = convertSingleSpan($text, xmlToHtmlConvert);
+  //console.log(inner);
   // TODO: visualize connections somewhere
+  ann.updateConnections();
   return inner;
 }
