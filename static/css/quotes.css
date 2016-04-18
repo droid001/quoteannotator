@@ -57,6 +57,10 @@ h1 {
   position: absolute;
 }
 
+.connect_select {
+  color: red;
+}
+
 .flat {
   border-style: solid;
   border-width: 4px;

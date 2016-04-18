@@ -582,15 +582,25 @@ Annotator.prototype.enableConnectionClicks = function() {
     var scope = this;
     spans.click(function (event) {
       if (event.metaKey || event.ctrlKey) { // command key, essentially
-        console.log('Selected span ' + $(this).attr('id'));
         if (scope.selectedSpans.indexOf($(this)) < 0) {
           scope.selectedSpans.push($(this));
+          $(this).addClass('connect_select');
+          // if there is a click that is not on a span, stop trying to connect this one
+          $(window).click(function(e) {
+            if ($(e.target)[0].tagName !== 'SPAN') {
+              scope.selectedSpans[0].removeClass('connect_select');
+              scope.selectedSpans = [];
+              $(window).off('click');
+            }
+          });
           if (scope.selectedSpans.length === 2) {
-            console.log('Connect ' + scope.selectedSpans[0].attr('id') + ' with ' + scope.selectedSpans[1].attr('id'));
             scope.selectedSpans[0].addClass("connection_" + scope.selectedSpans[1].attr('id'));
             scope.selectedSpans[1].addClass("connection_" + scope.selectedSpans[0].attr('id'));
             scope.drawConnection(scope.selectedSpans[0], scope.selectedSpans[1]);
+            scope.selectedSpans[0].removeClass('connect_select');
+            scope.selectedSpans[1].removeClass('connect_select');
             scope.selectedSpans = [];
+            $(window).off('click');
           }
         } else {
           console.log('Selected spans already contain span');
@@ -664,10 +674,12 @@ Annotator.prototype.drawConnection = function(span1, span2) {
 };
 
 Annotator.prototype.deleteConnection = function(e) {
-  var id = e.target.id.split('_');
-  $("#" + id[0]).removeClass('connection_' + id[1]);
-  $("#" + id[1]).removeClass('connection_' + id[0]);
-  $(e.target).remove();
+  if (event.altKey) {
+    var id = e.target.id.split('_');
+    $("#" + id[0]).removeClass('connection_' + id[1]);
+    $("#" + id[1]).removeClass('connection_' + id[0]);
+    $(e.target).remove();
+  }
 };
 
 Annotator.prototype.resetSpecific = function() {
