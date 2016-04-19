@@ -102,19 +102,25 @@ function getHighlightSpan(jdom){
   return {"start": rs, "end": re};
 }
 
-function highlight(jdom, annotations, coords, id) {
+function highlight(annotator, jdom, annotations, coords, id) {
   var rs = coords.start;
   var re = coords.end;
   var html = jdom.html();
   var before = html.substring(0, rs);
   var classAttr = annotations.join(' ');
-  var idstr = (id)? ' id="' + id + '"' : "";
-  var wrapped = '<span class="' + classAttr + '"' + idstr + ' title="' + classAttr + '">' + html.substring(rs, re) + '</span>';
+  var span = $('<span />');
+  for (var ann in annotations) {
+    span.addClass(annotations[ann]);
+  }
+  var idstr = (id) ? id : "";
+  span.attr("id", idstr);
+  span.attr("title", classAttr);
+  span.html(html.substring(rs, re));
   var after = html.substring(re);
-  jdom.html(before + wrapped + after);
+  jdom.html(before + span.prop("outerHTML") + after);
 }
 
-function deleteAnnotation(jdom) {
+Annotator.prototype.deleteAnnotation = function(jdom) {
   var coords = getCaretCharacterOffsetWithin(document.getElementById("annotationarea"));
   if (coords.start != coords.end) {
     return;
@@ -145,6 +151,7 @@ function deleteAnnotation(jdom) {
     var end = html.substring(eStart);
     jdom.html(beginning + middle + end);
   }
+  this.updateSpanClicks();
 }
 
 function getCaretCharacterOffsetWithin(element) {
@@ -215,7 +222,9 @@ function unescapeSpans(html) {
 
 // UI for managing annotation options
 function AnnotationOptionsUI(params) {
-  this.jdom = params.jdom;
+  //this.jdom = params.jdom;
+  this.jdom = $("<div />");
+  this.jdom.attr("id", "annotationOpts");
   // Map of shortcut key code (same as event.which) to input element
   this.shortcuts = {};
   // Annotation opts
@@ -361,6 +370,17 @@ AnnotationOptionsUI.prototype.submit = function() {
   $(window).off('keypress');
 };
 
+AnnotationOptionsUI.prototype.attachOptionsToDiv = function(parentDiv) {
+  console.log("attaching to " + parentDiv);
+  console.log(parentDiv);
+  console.log(this.jdom);
+  parentDiv.append(this.jdom);
+};
+
+AnnotationOptionsUI.prototype.removeOptionsFromParent = function() {
+  parentDiv.append(this.jdom);
+};
+
 AnnotationOptionsUI.prototype.addCharacterToConfig = function(name, id, group, css) {
   this.annotationOpts[name] = { css: css, name: name, group: group };
   if (group === 'character') {
@@ -395,7 +415,8 @@ function Annotator(annotationOpts) {
   this.selectedSpans = [];
   this.allowConnections = true;
   this.savingUI = new Saver();
-}
+};
+
 
 Annotator.prototype.launch = function() {
   this.attachListeners();
@@ -437,6 +458,12 @@ Annotator.prototype.attachListeners = function() {
   $("#loadconfig").change( this.savingUI.load.bind(this) );
 };
 
+Annotator.prototype.updateSpanClicks = function() {
+  $("#annotationarea pre span").off('click');
+  // listen to span clicks
+  $("#annotationarea pre span").click( this.directSpanClicks.bind(this) );
+}
+
 Annotator.prototype.enterAnnotateMode = function() {
   var text = $("#annotationarea textarea").val().trim();
   if (text.length === 0) {
@@ -474,16 +501,25 @@ Annotator.prototype.enterAnnotateMode = function() {
 
   // listeners
   $("#annotationarea").mouseup( this.openSpecificModal.bind(this) );
-  $("#annotationarea").click( function(event) {
-    if (event.altKey) {
-      deleteAnnotation($("#annotationarea"));
-    }
-  });
+//  $("#annotationarea").click( function(event) {
+//    if (event.altKey) {
+//      deleteAnnotation($("#annotationarea"));
+//    }
+//  });
   // disable file loading
   $("#loadfiles").prop("disabled", true);
   $("#annotate").prop("disabled", true);
   $("#annotate").addClass("disabled");
   $("#annotate").css("background-color", "white");
+  // make sure that all spans have ids
+  var spans = $("#annotationarea pre span");
+  for (var i = 0; i < spans.length; i++) {
+    if ($(spans[i]).attr("id") == undefined) {
+      $(spans[i]).attr("id", 's' + this.nextSpanId);
+      this.nextSpanId++;
+    }
+  }
+  this.updateSpanClicks();
 };
 
 Annotator.prototype.addCharactersFromXml = function($characters) {
@@ -491,7 +527,20 @@ Annotator.prototype.addCharactersFromXml = function($characters) {
   for (var i = 0; i < children.length; i++) {
     var child = $( children[i] );
     var id = child.attr("id");
-    var name = child.attr("name");
+    var name = "";
+    if (child.attr("name") == undefined) {
+      if (child.attr("aliases") == undefined) {
+        continue;
+      }
+      //TODO: deal with aliases!
+      name = child.attr("aliases").replace(' ', '_');
+    } else {
+      name = child.attr("name").split(' ').join('_');
+      name = name.replace('.', '');
+      if (!name.startsWith('speaker_')) {
+        name = 'speaker_' + name;
+      }
+    }
     var css = 'background-color: ' + ts.getLightColor(id);
     this.annotationOptsUI.addCharacterToConfig(name, id, 'character', css);
   }
@@ -511,6 +560,8 @@ Annotator.prototype.openSpecificModal = function() {
     showClose: false
   });
 
+  this.annotationOptsUI.attachOptionsToDiv($("#specificAnnotationOpts"));
+  
   var scope = this;
   // Make sure the default spanType is selected
   $('input[name="spanType"][value="' + this.spanType + '"').click();
@@ -545,7 +596,8 @@ Annotator.prototype.closeSpecificModal = function(coords) {
   this.spanType = spanType;
   // now send the value to the thing doing the highlighting
   var spanId = 's' + this.nextSpanId;
-  highlight($('#annotationarea'), [spanType, value], coords, spanId);
+  highlight(this, $('#annotationarea'), [spanType, value], coords, spanId);
+  this.updateSpanClicks();
 
   this.enableConnectionClicks();
   this.nextSpanId++;
@@ -554,33 +606,114 @@ Annotator.prototype.closeSpecificModal = function(coords) {
   $("#submitspecific").off('click');
 };
 
+Annotator.prototype.connectClick = function (event) {
+  if (event.metaKey || event.ctrlKey) { // command key, essentially
+    var span = $("#" + event.target.id);
+    if (this.selectedSpans.indexOf(span) < 0) {
+      this.selectedSpans.push(span);
+      span.addClass('connect_select');
+      // if there is a click that is not on a span, stop trying to connect span one
+      $(window).click(function(e) {
+        if ($(e.target)[0].tagName !== 'SPAN') {
+          this.selectedSpans[0].removeClass('connect_select');
+          this.selectedSpans = [];
+          $(window).off('click');
+        }
+      });
+      if (this.selectedSpans.length === 2) {
+        this.selectedSpans[0].addClass("connection_" + this.selectedSpans[1].attr('id'));
+        this.selectedSpans[1].addClass("connection_" + this.selectedSpans[0].attr('id'));
+        this.drawConnection(this.selectedSpans[0], this.selectedSpans[1]);
+        this.selectedSpans[0].removeClass('connect_select');
+        this.selectedSpans[1].removeClass('connect_select');
+        this.selectedSpans = [];
+        $(window).off('click');
+      }
+    } else {
+      console.log('Selected spans already contain span');
+    }
+  }
+};
+
 Annotator.prototype.enableConnectionClicks = function() {
   if (this.allowConnections) {
     var spans = $('#annotationarea span');
     spans.css('cursor', 'default');
-    var scope = this;
-    spans.click(function (event) {
-      if (event.metaKey || event.ctrlKey) { // command key, essentially
-        console.log('Selected span ' + $(this).attr('id'));
-        if (scope.selectedSpans.indexOf($(this)) < 0) {
-          scope.selectedSpans.push($(this));
-          if (scope.selectedSpans.length === 2) {
-            console.log('Connect ' + scope.selectedSpans[0].attr('id') + ' with ' + scope.selectedSpans[1].attr('id'));
-            // TODO: Visualize and record
-            jsPlumb.connect({
-              source: scope.selectedSpans[0],
-              target: scope.selectedSpans[1],
-              scope: "someScope"
-            });
-            scope.selectedSpans[0].addClass("connection_" + scope.selectedSpans[1].attr('id'));
-            scope.selectedSpans[1].addClass("connection_" + scope.selectedSpans[0].attr('id'));
-            scope.selectedSpans = [];
-          }
-        } else {
-          console.log('Selected spans already contain span');
-        }
-      }
+    this.updateSpanClicks();
+  }
+};
+
+Annotator.prototype.hasClassStartsWith = function($el, target) {
+  var classes = $el.attr("class").split(' ');
+  for (var i = 0; i < classes.length; i++) {
+    if (classes[i].startsWith(target)) {
+      return classes[i];
+    }
+  }
+  return null;
+};
+
+Annotator.prototype.updateConnections = function() {
+  // get all spans
+  var spans = $("#annotationarea pre span.quote");
+  // for each span with an annotated connection, connect it to its friend
+  for (var i = 0; i < spans.length; i++) {
+    var span = $(spans[i]);
+    var connectionClass = this.hasClassStartsWith(span, 'connection_');
+    if (connectionClass == null || connectionClass === 'connection_') {
+      continue;
+    }
+    var connectedId = connectionClass.split('_')[1];
+    var connectedSpan = $("#" + connectedId);
+    if (connectedSpan[0] == undefined) {
+      ts.alert("Span " + span.attr("id") + " connected to " + connectedId + " which doesn't exist");
+      continue;
+    }
+    this.drawConnection(span, connectedSpan);
+  }
+};
+
+Annotator.prototype.drawConnection = function(span1, span2) {
+  var s1Left = span1.prop("offsetLeft");
+  var s1Top = span1.prop("offsetTop");
+  var s2Left = span2.prop("offsetLeft");
+  var s2Top = span2.prop("offsetTop");
+  var div = $('<div />'); 
+  div.addClass('connection');
+  var widthDiv = s1Left > s2Left ? s1Left - s2Left : s2Left - s1Left;
+  var heightDiv = s1Top > s2Top ? s1Top - s2Top : s2Top - s1Top;
+  var topCorner = s1Top < s2Top ? s1Top : s2Top;
+  var leftCorner = s1Left < s2Left ? s1Left : s2Left;
+  leftCorner += 10;
+  topCorner += 4;
+  if (heightDiv < 10) {
+    heightDiv = 10;
+    topCorner -= 10;
+  }
+  if (Math.abs(s1Top - s2Top) < 10) {
+    div.addClass("flat");
+  } else if (s1Left > s2Left) {  // quote is to the left
+    div.addClass("toupperright");
+  } else {
+    div.addClass("toupperleft");
+  }
+  div.css({
+      height : heightDiv + "px",
+      width : widthDiv + "px",
+      top : topCorner + "px",
+      left : leftCorner + "px"
     });
+  div.click( this.deleteConnection );
+  div.attr("id", span1.attr("id") + "_" + span2.attr("id"));
+  $("#annotationarea").append(div);
+};
+
+Annotator.prototype.deleteConnection = function(e) {
+  if (event.altKey) {
+    var id = e.target.id.split('_');
+    $("#" + id[0]).removeClass('connection_' + id[1]);
+    $("#" + id[1]).removeClass('connection_' + id[0]);
+    $(e.target).remove();
   }
 };
 
@@ -591,4 +724,71 @@ Annotator.prototype.resetSpecific = function() {
   }
 };
 
+Annotator.prototype.openEditModal = function(e) {
+  var span = $("#" + e.target.id);
+  // TODO: let someone edit the speaker of this quote/mention
+  $("#editAnnotation").modal({
+    escapeClose: true,
+    clickClose: true,
+    showClose: false
+  });
+  this.annotationOptsUI.attachOptionsToDiv($("#editAnnotationOpts"));
 
+  var scope = this;
+  // Make sure the default spanType is selected
+  $('input[name="spanType"][value="' + this.spanType + '"').click();
+  // Make sure last character is selected
+  if (this.lastCharacter) {
+    $('input[name="character"][value="' + this.lastCharacter + '"').click();
+  } else {
+    // no last character selected, so don't select any
+    $('input[name="character"]').prop('checked', 'false').removeClass('active');
+  }
+  // listen for key press events
+  $(window).keypress(function(e) {
+    var key = e.which;
+    // 49 is the numeral "1"'s code
+    //var ind = key - 49;
+    if (scope.annotationOptsUI.shortcuts[key]) {
+      scope.annotationOptsUI.shortcuts[key].click()
+    } else if (key == 13) {
+      // 13 is return
+      scope.closeEditModal(span);
+    }
+  });
+
+  $("#submitedit").click(function(e){
+    scope.closeEditModal(span);
+  });
+};
+
+Annotator.prototype.closeEditModal = function(span) {
+  var value = $('input[name="character"]:checked').val();
+  var spanType = $('input[name="spanType"]:checked').val();
+  this.spanType = spanType;
+  // first remove any problematic classes
+  // TODO: make this less hacky
+  var classes = span.attr("class").split(' ');
+  for (var i = 0; i < classes.length; i++) {
+    if (classes[i].startsWith("speaker_")) {
+      span.removeClass(classes[i]);
+    }
+  }
+  span.addClass(value);
+  $("#closeedit").click();
+  $(window).off('keypress');
+  $("#submitedit").off('click');
+};
+
+Annotator.prototype.directSpanClicks = function(e) {
+  if (e.altKey) {
+    // delete the annotation
+    this.deleteAnnotation($("#annotationarea"));
+  } else if (e.metaKey || e.ctrlKey) {
+    // do the connection
+    this.connectClick(e);
+  } else {
+    // open the edit modal
+    this.openEditModal(e);
+  }
+}

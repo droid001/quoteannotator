@@ -11,7 +11,7 @@ var d3_category20_colors = [ '#1f77b4', '#aec7e8', '#ff7f0e', '#ffbb78', '#2ca02
 // Subset of light colors as defaults for character coloring (also exclude grays)
 // Other colors are okay too but maybe black doesn't show up as well...
 var light_colors = ['#aec7e8', '#ffbb78', '#98df8a', '#ff9896', '#c5b0d5',
-  '#c49c94', '#f7b6d2', 'dbdb8d', '#9edae5'];
+  '#c49c94', '#f7b6d2', '#dbdb8d', '#9edae5'];
 
 Tools.prototype.selectSelector = function() {
   if (!this.selection){
@@ -58,7 +58,15 @@ Tools.prototype.getColor = function(i) {
   return d3_category20_colors[i];
 };
 
+Tools.prototype.getRandomColor = function() {
+  var num = Math.floor(Math.random() * 360);
+  return $.husl.toHex(num, 90, 60);
+}
+
 Tools.prototype.getLightColor = function(i) {
-  // TODO: generate a random color if i >= array_length
-  return light_colors[i];
+  if (i < light_colors.length) {
+    return light_colors[i];
+  } else {
+    return this.getRandomColor();
+  }
 };
