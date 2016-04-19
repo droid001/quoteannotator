@@ -55,6 +55,8 @@ h1 {
 
 .connection {
   position: absolute;
+  border-style: solid;
+  border-width: 2px 4px 4px 4px;
 }
 
 .connect_select {
@@ -62,20 +64,14 @@ h1 {
 }
 
 .flat {
-  border-style: solid;
-  border-width: 4px;
   border-color: #007bff #007bff transparent #007bff;
 }
 
 .toupperleft {
-  border-style: solid;
-  border-width: 4px;
   border-color: #007bff transparent transparent #007bff;
 }
 
 .toupperright {
-  border-style: solid;
-  border-width: 4px;
   border-color: #007bff #007bff transparent transparent;
 }
 
