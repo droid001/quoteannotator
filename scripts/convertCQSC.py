@@ -42,6 +42,7 @@ def stripSectionTags( dom ):
         for paragraph in dom.getElementsByTagName(ptype):
             for child in paragraph.childNodes:
                 paragraph.parentNode.insertBefore(child.cloneNode(True), paragraph)
+            paragraph.parentNode.insertBefore(dom.createTextNode('\n'), paragraph)
             paragraph.parentNode.removeChild(paragraph)
 
 def toChapters( dom ):
@@ -57,7 +58,8 @@ def toChapters( dom ):
                     paras = []
                     elementCnt = 0
             if child.nodeType == child.ELEMENT_NODE:
-                elementCnt += 1
+                if child.tagName == 'paragraph':
+                    elementCnt += 1
                 if len(paras) == 0:
                     paras.append(dom.createTextNode('\n'))
             paras.append(child)
