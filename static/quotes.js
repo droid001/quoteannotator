@@ -608,12 +608,15 @@ Annotator.prototype.connectClick = function (event) {
       // if there is a click that is not on a span, stop trying to connect span one
       $(window).click(function(e) {
         if ($(e.target)[0].tagName !== 'SPAN') {
+          console.log($(e.target));
           this.selectedSpans[0].removeClass('connect_select');
           this.selectedSpans = [];
           $(window).off('click');
         }
       });
       if (this.selectedSpans.length === 2) {
+        console.log(this.selectedSpans[0]);
+        console.log(this.selectedSpans[1]);
         this.selectedSpans[0].addClass("connection_" + this.selectedSpans[1].attr('id'));
         this.selectedSpans[1].addClass("connection_" + this.selectedSpans[0].attr('id'));
         this.drawConnection(this.selectedSpans[0], this.selectedSpans[1]);
@@ -671,34 +674,80 @@ Annotator.prototype.drawConnection = function(span1, span2) {
   var s1Top = span1.prop("offsetTop");
   var s2Left = span2.prop("offsetLeft");
   var s2Top = span2.prop("offsetTop");
-  var div = $('<div />'); 
-  div.addClass('connection');
-  var widthDiv = s1Left > s2Left ? s1Left - s2Left : s2Left - s1Left;
-  var heightDiv = s1Top > s2Top ? s1Top - s2Top : s2Top - s1Top;
-  var topCorner = s1Top < s2Top ? s1Top : s2Top;
-  var leftCorner = s1Left < s2Left ? s1Left : s2Left;
-  leftCorner += 10;
-  topCorner += 4;
-  if (heightDiv < 10) {
-    heightDiv = 10;
-    topCorner -= 10;
-  }
-  if (Math.abs(s1Top - s2Top) < 10) {
-    div.addClass("flat");
-  } else if (s1Left > s2Left) {  // quote is to the left
-    div.addClass("toupperright");
+  var rightSpan = null;
+  var leftMostSpan = null;
+  if (s1Left < s2Left) {
+    leftMostSpan = span1;
+    rightSpan = span2;
   } else {
-    div.addClass("toupperleft");
+    leftMostSpan = span2;
+    rightSpan = span1;
   }
-  div.css({
-      height : heightDiv + "px",
-      width : widthDiv + "px",
-      top : topCorner + "px",
-      left : leftCorner + "px"
-    });
-  div.click( this.deleteConnection );
-  div.attr("id", span1.attr("id") + "_" + span2.attr("id"));
-  $("#annotationarea").append(div);
+  var bottomSpan = null;
+  var topMostSpan = null;
+  if (s1Top < s2Top) {
+    topMostSpan = span1;
+    bottomSpan = span2;
+  } else {
+    topMostSpan = span2;
+    bottomSpan = span1;
+  }
+  var widthDiv = Math.abs(s1Left - s2Left);
+  var heightDiv = Math.abs(s1Top - s2Top);
+  if (Math.abs(s1Top - s2Top) < 10) {
+    heightDiv = 10;
+    var div = $('<div />'); 
+    div.addClass('connection');
+    div.addClass("flat");
+    div.css({
+        height : (heightDiv - 10) + "px",
+        width : widthDiv + "px",
+        top : (topMostSpan.prop("offsetTop") - 4) + "px",
+        left : (leftMostSpan.prop("offsetLeft") + 10) + "px"
+      });
+    div.click( this.deleteConnection );
+    div.attr("id", span1.attr("id") + "_" + span2.attr("id"));
+    $("#annotationarea").append(div);
+  } else {
+    var divOver = $('<div />');
+    divOver.addClass("overConnect");
+    var divUp = $('<div />');
+    divUp.addClass("upConnect");
+    if (leftMostSpan == topMostSpan) { // the left span is also above  
+      divUp.css({
+          height : (heightDiv - 5) + "px",
+          width : "4px",
+          top : (leftMostSpan.prop("offsetTop") + (leftMostSpan.height() - 4)) + "px",
+          left : (leftMostSpan.prop("offsetLeft") + 10) + "px",
+        });
+      divOver.css({
+          height : "2px",
+          width : widthDiv + "px",
+          top : (bottomSpan.prop("offsetTop") + 4) + "px",
+          left : (leftMostSpan.prop("offsetLeft") + 10) + "px",
+        });
+    } else {
+      divUp.css({
+          height : heightDiv + "px",
+          width : "4px",
+          top : (rightSpan.prop("offsetTop") + 4) + "px",
+          left : (leftMostSpan.prop("offsetLeft") + 10) + "px",
+        });
+      divOver.css({
+          height : "2px",
+          width : widthDiv + "px",
+          top : (rightSpan.prop("offsetTop") + 4) + "px",
+          left : (leftMostSpan.prop("offsetLeft") + 10) + "px",
+        });
+    }
+    divUp.click( this.deleteConnection );
+    divUp.attr("id", span1.attr("id") + "_" + span2.attr("id") + '_up');
+    divOver.click( this.deleteConnection );
+    divOver.attr("id", span1.attr("id") + "_" + span2.attr("id") + '_over');
+    console.log("appending up over s1 < s2");
+    $("#annotationarea").append(divUp);
+    $("#annotationarea").append(divOver);
+  }
 };
 
 Annotator.prototype.deleteConnection = function(e) {
@@ -707,6 +756,16 @@ Annotator.prototype.deleteConnection = function(e) {
     $("#" + id[0]).removeClass('connection_' + id[1]);
     $("#" + id[1]).removeClass('connection_' + id[0]);
     $(e.target).remove();
+    // if this is an up/over connection, also remove the sister
+    var sister = null;
+    if (e.target.id.endsWith('_up')) {
+      sister = id[0] + '_' + id[1] + '_over';
+    } else if (e.target.id.endsWith('_over')) {
+      sister = id[0] + '_' + id[1] + '_up';
+    }
+    if (sister != null) {
+      $("#" + sister).remove();
+    }
   }
 };
 

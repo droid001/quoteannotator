@@ -59,20 +59,17 @@ h1 {
   border-width: 2px 4px 4px 4px;
 }
 
+.upConnect, .overConnect {
+  position: absolute;
+  background-color: #007bff;
+}
+
 .connect_select {
   color: red;
 }
 
 .flat {
   border-color: #007bff #007bff transparent #007bff;
-}
-
-.toupperleft {
-  border-color: #007bff transparent transparent #007bff;
-}
-
-.toupperright {
-  border-color: #007bff #007bff transparent transparent;
 }
 
 .linenum {
