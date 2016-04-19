@@ -615,8 +615,6 @@ Annotator.prototype.connectClick = function (event) {
         }
       });
       if (this.selectedSpans.length === 2) {
-        console.log(this.selectedSpans[0]);
-        console.log(this.selectedSpans[1]);
         this.selectedSpans[0].addClass("connection_" + this.selectedSpans[1].attr('id'));
         this.selectedSpans[1].addClass("connection_" + this.selectedSpans[0].attr('id'));
         this.drawConnection(this.selectedSpans[0], this.selectedSpans[1]);
@@ -744,7 +742,6 @@ Annotator.prototype.drawConnection = function(span1, span2) {
     divUp.attr("id", span1.attr("id") + "_" + span2.attr("id") + '_up');
     divOver.click( this.deleteConnection );
     divOver.attr("id", span1.attr("id") + "_" + span2.attr("id") + '_over');
-    console.log("appending up over s1 < s2");
     $("#annotationarea").append(divUp);
     $("#annotationarea").append(divOver);
   }
