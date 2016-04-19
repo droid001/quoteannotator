@@ -9,6 +9,7 @@ import logging
 import traceback
 
 import xml.dom.minidom as minidom
+
 from sets import Set
 
 FORMAT = '%(asctime)-15s [%(levelname)s] %(message)s'
@@ -31,10 +32,67 @@ def get_all_text( node ):
 def lowercaseTags( node ):
     if node.nodeType ==  node.ELEMENT_NODE:
         node.tagName = node.tagName.lower()
+        node.nodeName = node.tagName
     for child_node in node.childNodes:
         lowercaseTags(child_node)
 
-def convert(input, output, mentionLevel):
+def stripSectionTags( dom ):
+    paragraphTypes = ['heading', 'paragraph']
+    for ptype in paragraphTypes:
+        for paragraph in dom.getElementsByTagName(ptype):
+            for child in paragraph.childNodes:
+                paragraph.parentNode.insertBefore(child.cloneNode(True), paragraph)
+            paragraph.parentNode.removeChild(paragraph)
+
+def toChapters( dom ):
+    chapters = []
+    paras = []
+    elementCnt = 0
+    for doc in dom.getElementsByTagName('doc'):
+      for text in dom.getElementsByTagName('text'):
+        for child in text.childNodes:
+            if child.nodeType == child.ELEMENT_NODE and child.tagName == 'heading':
+                if elementCnt > 0:
+                    chapters.append(paras)
+                    paras = []
+                    elementCnt = 0
+            if child.nodeType == child.ELEMENT_NODE:
+                elementCnt += 1
+                if len(paras) == 0:
+                    paras.append(dom.createTextNode('\n'))
+            paras.append(child)
+    if elementCnt > 0:
+        chapters.append(paras)
+    return chapters
+
+def writeXml( dom, filename, includeSectionTags ):
+    if not includeSectionTags:
+        stripSectionTags(dom)
+    with open(filename, 'w') as output:
+        output.write(dom.toxml("utf-8"))
+#       output.write(dom.toprettyxml(encoding="utf-8"))
+
+def writeConverted( dom, filename, splitChapters, includeSectionTags):
+    if splitChapters:
+        # Create minidom for each chapter
+        chapters = toChapters(dom)
+        (temp, ext) = os.path.splitext(filename)
+        (base, ext2) = os.path.splitext(temp)
+        ext = ext2 + ext
+        impl = minidom.getDOMImplementation()
+        for chindex, chapter in enumerate(chapters):
+            chdom = impl.createDocument(None, "doc", None)
+            textElem = chdom.createElement('text')
+            for para in chapter:
+                textElem.appendChild(para.cloneNode(True))
+            docElem = chdom.documentElement
+            docElem.appendChild(textElem)
+            chfile = base + '-' + str(chindex) + ext
+            writeXml(chdom, chfile, includeSectionTags)
+    else:
+        writeXml(dom, filename, includeSectionTags)
+
+def convert(input, outfilename, mentionLevel, splitChapters, includeSectionTags):
     #print input
     #print output
     nertypes = ['PERSON', 'ORGANIZATION', 'LOCATION']
@@ -43,10 +101,18 @@ def convert(input, output, mentionLevel):
     # Process paragraphs    
     entities = {}
     mentionIdToEntityId = {}
+    # Clean extracted mentions in HEADING
+    for paragraph in root.getElementsByTagName('HEADING'):
+        for nertype in nertypes:
+            for mention in paragraph.getElementsByTagName(nertype):
+                t = dom.createTextNode(get_all_text(mention))
+                mention.parentNode.replaceChild(t, mention)
+    # Convert mentions under PARAGRAPH        
     for paragraph in root.getElementsByTagName('PARAGRAPH'):
         for nertype in nertypes:
             for mention in paragraph.getElementsByTagName(nertype):
                 mention.tagName = 'MENTION'
+                mention.nodeName = 'MENTION' 
                 mention.setAttribute('entityType', nertype)
                 entityId = mention.getAttribute('entity')
                 mentionId = mention.getAttribute('id')
@@ -63,7 +129,7 @@ def convert(input, output, mentionLevel):
                 mentionIdToEntityId[mentionId] = entityId
     # Add characters
     entityElementsByType = {
-        'PERSON': { 'elements': dom.createElement('CHARACTERS'), 'name': 'CHARACTER'},
+        'PERSON': { 'elements': dom.createElement('PERSONS'), 'name': 'PERSON'},
         'LOCATION': { 'elements': dom.createElement('LOCATIONS'), 'name': 'LOCATION'},
         'ORGANIZATION': { 'elements': dom.createElement('ORGANIZATIONS'), 'name': 'ORGANIZATION'},
     }
@@ -79,9 +145,12 @@ def convert(input, output, mentionLevel):
     # Wrap headings and paragraphs in text tag
     newdoc = dom.createElement('DOC')
     root.tagName = 'TEXT'
-    newdoc.appendChild(entityElementsByType['PERSON']['elements'])
-    newdoc.appendChild(entityElementsByType['LOCATION']['elements'])
-    newdoc.appendChild(entityElementsByType['ORGANIZATION']['elements'])
+    root.nodeName = 'TEXT'
+    entitiesElement = dom.createElement('ENTITIES');
+    entitiesElement.appendChild(entityElementsByType['PERSON']['elements'])
+    entitiesElement.appendChild(entityElementsByType['LOCATION']['elements'])
+    entitiesElement.appendChild(entityElementsByType['ORGANIZATION']['elements'])
+    newdoc.appendChild(entitiesElement)
     newdoc.appendChild(root)
     dom.appendChild(newdoc);
 
@@ -120,12 +189,14 @@ def convert(input, output, mentionLevel):
     # Convert tags to lowercase
     lowercaseTags(dom)
 
-    output.write(dom.toxml("utf-8"))
-#    output.write(dom.toprettyxml(encoding="utf-8"))
+    # Output
+    writeConverted(dom, outfilename, splitChapters, includeSectionTags)
 
 def main():
     # Argument processing
     parser = argparse.ArgumentParser(description='Convert CQSC XML')
+    parser.add_argument('-s', '--split', dest='splitChapters', help='split by chapter', action='store_true')
+    parser.add_argument('-p', dest='includeSectionTags', help='paragraphs and headings', action='store_true')
     parser.add_argument('infile', nargs='?', type=argparse.FileType('r'),
                         default=sys.stdin)
     parser.add_argument('outfile', nargs='?')
@@ -137,7 +208,6 @@ def main():
     for mentionLevel in mentionLevels:
         args.infile.seek(0)
         outfilename = outbase + '.' + mentionLevel.lower() + outext
-        with open(outfilename, 'w') as outfile:
-            convert(args.infile, outfile, mentionLevel);
+        convert(args.infile, outfilename, mentionLevel, args.splitChapters, args.includeSectionTags)
 
 if __name__ == "__main__": main()
