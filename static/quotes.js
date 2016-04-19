@@ -371,13 +371,6 @@ AnnotationOptionsUI.prototype.submit = function() {
 };
 
 AnnotationOptionsUI.prototype.attachOptionsToDiv = function(parentDiv) {
-  console.log("attaching to " + parentDiv);
-  console.log(parentDiv);
-  console.log(this.jdom);
-  parentDiv.append(this.jdom);
-};
-
-AnnotationOptionsUI.prototype.removeOptionsFromParent = function() {
   parentDiv.append(this.jdom);
 };
 
