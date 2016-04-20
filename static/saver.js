@@ -49,6 +49,7 @@ Saver.prototype.load = function(evt) {
         var html = convertToHtml(content, ann);
         $("#annotationarea textarea").val(html);
         $("#annotate").click();
+        ann.updateSpanIds();
         ann.updateConnections();
         ann.enableConnectionClicks();
       }

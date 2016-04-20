@@ -451,6 +451,24 @@ Annotator.prototype.attachListeners = function() {
   $("#loadconfig").change( this.savingUI.load.bind(this) );
 };
 
+Annotator.prototype.updateSpanIds = function() {
+  var spans = $('#annotationarea pre span');
+  var maxId = 0;
+  for (var i = 0; i < spans.length; i++) {
+    var targId = $(spans[i]).attr('id');
+    // trim off the 's' that prepends it
+    if (targId.startsWith('s')) {
+      targId = parseInt(targId.substring(1), 10);
+      if (targId > maxId) {
+        maxId = targId;
+      }
+    } else {
+      console.log("weirdly formatted id: " + targId);
+    }
+  }
+  this.nextSpanId = maxId + 1;
+}
+
 Annotator.prototype.updateSpanClicks = function() {
   $("#annotationarea pre span").off('click');
   // listen to span clicks
@@ -494,11 +512,6 @@ Annotator.prototype.enterAnnotateMode = function() {
 
   // listeners
   $("#annotationarea").mouseup( this.openSpecificModal.bind(this) );
-//  $("#annotationarea").click( function(event) {
-//    if (event.altKey) {
-//      deleteAnnotation($("#annotationarea"));
-//    }
-//  });
   // disable file loading
   $("#loadfiles").prop("disabled", true);
   $("#annotate").prop("disabled", true);
