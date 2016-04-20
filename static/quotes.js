@@ -493,7 +493,11 @@ Annotator.prototype.enterAnnotateMode = function() {
   });
 
   // listeners
-  $("#annotationarea").mouseup( this.openSpecificModal.bind(this) );
+  $("#annotationarea").mouseup( function(event) {
+    if (!event.altKey) {
+      this.openSpecificModal();
+    }
+  }.bind(this));
 //  $("#annotationarea").click( function(event) {
 //    if (event.altKey) {
 //      deleteAnnotation($("#annotationarea"));
