@@ -511,7 +511,11 @@ Annotator.prototype.enterAnnotateMode = function() {
   });
 
   // listeners
-  $("#annotationarea").mouseup( this.openSpecificModal.bind(this) );
+  $("#annotationarea").mouseup( function(event) {
+    if (!event.altKey) {
+      this.openSpecificModal();
+    }
+  }.bind(this));
   // disable file loading
   $("#loadfiles").prop("disabled", true);
   $("#annotate").prop("disabled", true);
