@@ -557,10 +557,10 @@ Annotator.prototype.openSpecificModal = function() {
   
   var scope = this;
   // Make sure the default spanType is selected
-  $('input[name="spanType"][value="' + this.spanType + '"').click();
+  $('input[name="spanType"][value="' + this.spanType + '"]').click();
   // Make sure last character is selected
   if (this.lastCharacter) {
-    $('input[name="character"][value="' + this.lastCharacter + '"').click();
+    $('input[name="character"][value="' + this.lastCharacter + '"]').click();
   } else {
     // no last character selected, so don't select any
     $('input[name="character"]').prop('checked', 'false').removeClass('active');
@@ -785,10 +785,10 @@ Annotator.prototype.openEditModal = function(e) {
 
   var scope = this;
   // Make sure the default spanType is selected
-  $('input[name="spanType"][value="' + this.spanType + '"').click();
+  $('input[name="spanType"][value="' + this.spanType + '"]').click();
   // Make sure last character is selected
   if (this.lastCharacter) {
-    $('input[name="character"][value="' + this.lastCharacter + '"').click();
+    $('input[name="character"][value="' + this.lastCharacter + '"]').click();
   } else {
     // no last character selected, so don't select any
     $('input[name="character"]').prop('checked', 'false').removeClass('active');
