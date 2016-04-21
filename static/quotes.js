@@ -467,6 +467,7 @@ Annotator.prototype.updateSpanIds = function() {
     }
   }
   this.nextSpanId = maxId + 1;
+  this.ensureSpanIds();
 }
 
 Annotator.prototype.updateSpanClicks = function() {
@@ -511,21 +512,36 @@ Annotator.prototype.enterAnnotateMode = function() {
   });
 
   // listeners
-  $("#annotationarea").mouseup( this.openSpecificModal.bind(this) );
+  $("#annotationarea").mouseup( function(event) {
+    if (!event.altKey) {
+      this.openSpecificModal();
+    }
+  }.bind(this));
   // disable file loading
   $("#loadfiles").prop("disabled", true);
   $("#annotate").prop("disabled", true);
   $("#annotate").addClass("disabled");
   $("#annotate").css("background-color", "white");
+  this.ensureSpanIds();
+  this.updateSpanClicks();
+};
+
+Annotator.prototype.ensureSpanIds = function() {
   // make sure that all spans have ids
   var spans = $("#annotationarea pre span");
+  var spansById = {};
   for (var i = 0; i < spans.length; i++) {
     if ($(spans[i]).attr("id") == undefined) {
       $(spans[i]).attr("id", 's' + this.nextSpanId);
       this.nextSpanId++;
+    } else if (spansById[$(spans[i]).attr("id")]) {
+      // Duplicate id
+      console.warn("You have duplicate span id " + $(spans[i]).attr("id"));
+      //$(spans[i]).attr("id", 's' + this.nextSpanId);
+      //this.nextSpanId++;	
     }
+    spansById[$(spans[i]).attr("id")] = $(spans[i]);
   }
-  this.updateSpanClicks();
 };
 
 Annotator.prototype.addCharactersFromXml = function($characters) {

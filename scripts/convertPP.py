@@ -54,7 +54,7 @@ def writeXml(filename, characters, chapters, includeSectionTags):
         output.write('<characters>\n') 
         for index, character in enumerate(characters):
             output.write(
-                '<character id="{0}" name="{1}" gender="{2}", aliases="{3}">'
+                '<character id="{0}" name="{1}" gender="{2}" aliases="{3}">'
                 .format(index, character['name'], character['gender'], ';'.join(character['aliases'])))
             output.write('</character>\n')
         output.write('</characters>\n')
@@ -72,6 +72,18 @@ def writeXml(filename, characters, chapters, includeSectionTags):
                 output.write('\n\n')
         output.write('</text>')
         output.write('</doc>\n')
+
+def filterCharacters(characterDict, chapters):
+    filtered = []
+    for chapter in chapters:
+        for speaker in chapter['speakers']:
+            character = characterDict.get(speaker)
+            if character:
+                if not character in filtered:
+                    filtered.append(character)
+            else:
+                print 'Unknown character ' + speaker
+    return filtered
 
 def convertToXml(filename, characters, chapters, splitChapters, includeSectionTags):
     impl = minidom.getDOMImplementation()
@@ -96,12 +108,13 @@ def convertToXml(filename, characters, chapters, splitChapters, includeSectionTa
             lineXml = lineXml.replace("''", "&quot;")
             lineXml = lineXml.replace("'", "&apos;")
             chapter['xml'].append(lineXml)
-
+    characterDict = { x['name']:x for x in characters }
     if splitChapters:
         (base, ext) = os.path.splitext(filename)
         for chindex, chapter in enumerate(chapters):
             chfile = base + '-' + str(chindex) + ext
-            writeXml(chfile, characters, [chapter], includeSectionTags)
+            chcharacters = filterCharacters(characterDict, [chapter])
+            writeXml(chfile, chcharacters, [chapter], includeSectionTags)
     else:
         writeXml(filename, characters, chapters, includeSectionTags)
 
@@ -173,18 +186,22 @@ def convert(input, outfilename, splitChapters, includeSectionTags):
         # Set index
         chapter['_nextIndex'] = 0
         chapter['speakersByLine'] = {}
+        chapter['speakers'] = []
     # Try to match annotations with the text
     for ai, annstr in enumerate(annotations):
         ann = annstr.split('\t')
         ch = int(ann[0])
         speaker = ann[1]
+        speaker = speaker.replace(' ', '_')
         quote = ann[2]
         quote = quote.replace('  ', ' ')
         chapter = chapters[ch-1]
+        
         mqIndex = chapter['mulitlineQuotesByLine']
         speakersByLine = chapter['speakersByLine']
+        chapterSpeakers = chapter['speakers']
         debug = False
-        startIndex = chapter['_nextIndex'];
+        startIndex = chapter['_nextIndex']
         if ai == 452:
             quote = quote.replace(' apology, Hunsford, Lady Catherine de Bourgh.', '') 
         elif quote == 'delightful, charming,':
@@ -211,6 +228,8 @@ def convert(input, outfilename, splitChapters, includeSectionTags):
                 #print 'matched %d to chapter %d:%d' % (ai, ch, i)
                 if i in speakersByLine and not speakersByLine[i] == speaker:
                     print 'line %d already has speaker %s' % (i, speakersByLine[i])
+                if not speaker in chapterSpeakers:
+                    chapterSpeakers.append(speaker)
                 speakersByLine[i] = speaker
                 if mulitlineQuote:
                     span = mulitlineQuote['span']
@@ -231,7 +250,7 @@ def main():
     parser.add_argument('-s', '--split', dest='splitChapters', help='split by chapter', action='store_true')
     parser.add_argument('-p', dest='includeSectionTags', help='paragraphs and headings', action='store_true')
     parser.add_argument('indir', help='directory to use', action='store')
-    parser.add_argument('outfile', nargs='?')
+    parser.add_argument('outfile')
     args = parser.parse_args()
     convert(args.indir, args.outfile, args.splitChapters, args.includeSectionTags)
 
