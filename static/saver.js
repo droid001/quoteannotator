@@ -70,7 +70,7 @@ function htmlToXmlConvert(next, childConverted) {
   var childClasses = next.attr('class');
   // find the span type, connection, and speaker classes
   var type = "";
-  var connection = "";
+  var connection = [];
   var speaker = "";
   childClasses = childClasses.split(' ');
   // TODO: make less hacky
@@ -80,11 +80,11 @@ function htmlToXmlConvert(next, childConverted) {
       speaker = childClasses[j].substring('speaker_'.length);
     }
     if (childClasses[j].startsWith('connection_')) {
-      connection = childClasses[j].substring('connection_'.length);
+      connection.push(childClasses[j].substring('connection_'.length));
     }
   }
   childConverted = "<" + type + " speaker=\"" + speaker + "\" connection=\"" +
-    connection + "\" id=\"" + childId + "\">" + childConverted + "</" + type + ">";
+    connection.join(',') + "\" id=\"" + childId + "\">" + childConverted + "</" + type + ">";
   return childConverted;
 }
 
