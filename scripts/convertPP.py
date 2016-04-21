@@ -73,6 +73,18 @@ def writeXml(filename, characters, chapters, includeSectionTags):
         output.write('</text>')
         output.write('</doc>\n')
 
+def filterCharacters(characterDict, chapters):
+    filtered = []
+    for chapter in chapters:
+        for speaker in chapter['speakers']:
+            character = characterDict.get(speaker)
+            if character:
+                if not character in filtered:
+                    filtered.append(character)
+            else:
+                print 'Unknown character ' + speaker
+    return filtered
+
 def convertToXml(filename, characters, chapters, splitChapters, includeSectionTags):
     impl = minidom.getDOMImplementation()
 
@@ -96,12 +108,13 @@ def convertToXml(filename, characters, chapters, splitChapters, includeSectionTa
             lineXml = lineXml.replace("''", "&quot;")
             lineXml = lineXml.replace("'", "&apos;")
             chapter['xml'].append(lineXml)
-
+    characterDict = { x['name']:x for x in characters }
     if splitChapters:
         (base, ext) = os.path.splitext(filename)
         for chindex, chapter in enumerate(chapters):
             chfile = base + '-' + str(chindex) + ext
-            writeXml(chfile, characters, [chapter], includeSectionTags)
+            chcharacters = filterCharacters(characterDict, [chapter])
+            writeXml(chfile, chcharacters, [chapter], includeSectionTags)
     else:
         writeXml(filename, characters, chapters, includeSectionTags)
 
@@ -173,6 +186,7 @@ def convert(input, outfilename, splitChapters, includeSectionTags):
         # Set index
         chapter['_nextIndex'] = 0
         chapter['speakersByLine'] = {}
+        chapter['speakers'] = []
     # Try to match annotations with the text
     for ai, annstr in enumerate(annotations):
         ann = annstr.split('\t')
@@ -182,10 +196,12 @@ def convert(input, outfilename, splitChapters, includeSectionTags):
         quote = ann[2]
         quote = quote.replace('  ', ' ')
         chapter = chapters[ch-1]
+        
         mqIndex = chapter['mulitlineQuotesByLine']
         speakersByLine = chapter['speakersByLine']
+        chapterSpeakers = chapter['speakers']
         debug = False
-        startIndex = chapter['_nextIndex'];
+        startIndex = chapter['_nextIndex']
         if ai == 452:
             quote = quote.replace(' apology, Hunsford, Lady Catherine de Bourgh.', '') 
         elif quote == 'delightful, charming,':
@@ -212,6 +228,8 @@ def convert(input, outfilename, splitChapters, includeSectionTags):
                 #print 'matched %d to chapter %d:%d' % (ai, ch, i)
                 if i in speakersByLine and not speakersByLine[i] == speaker:
                     print 'line %d already has speaker %s' % (i, speakersByLine[i])
+                if not speaker in chapterSpeakers:
+                    chapterSpeakers.append(speaker)
                 speakersByLine[i] = speaker
                 if mulitlineQuote:
                     span = mulitlineQuote['span']
