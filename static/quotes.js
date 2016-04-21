@@ -302,7 +302,7 @@ AnnotationOptionsUI.prototype.addOption = function() {
   this.groupType = 'spanType';
   // open add option modal
   $("#addoptionmodal").modal({
-    escapeClose: true,
+    escapeClose: false,
     clickClose: false,
     showClose: false
   });
@@ -329,7 +329,7 @@ AnnotationOptionsUI.prototype.addCharacter = function() {
   this.displayTestOption();
 
   $("#addoptionmodal").modal({
-    escapeClose: true,
+    escapeClose: false,
     clickClose: false,
     showClose: false
   });
@@ -577,7 +577,7 @@ Annotator.prototype.openSpecificModal = function() {
   }
 
   $("#specificAnns").modal({
-    escapeClose: true,
+    escapeClose: false,
     clickClose: false,
     showClose: false
   });
@@ -616,6 +616,7 @@ Annotator.prototype.closeSpecificModal = function(coords) {
   var value = $('input[name="character"]:checked').val();
   var spanType = $('input[name="spanType"]:checked').val();
   this.spanType = spanType;
+  this.lastCharacter = value;
   // now send the value to the thing doing the highlighting
   var spanId = 's' + this.nextSpanId;
   highlight(this, $('#annotationarea'), [spanType, value], coords, spanId);
@@ -636,8 +637,8 @@ Annotator.prototype.connectClick = function (event) {
       span.addClass('connect_select');
       // if there is a click that is not on a span, stop trying to connect span one
       $(window).click(function(e) {
-        if ($(e.target)[0].tagName !== 'SPAN') {
-          console.log($(e.target));
+        if ($(e.target)[0].tagName !== 'SPAN' &&
+          this.selectedSpans.length > 0) {
           this.selectedSpans[0].removeClass('connect_select');
           this.selectedSpans = [];
           $(window).off('click');
@@ -804,7 +805,6 @@ Annotator.prototype.resetSpecific = function() {
 
 Annotator.prototype.openEditModal = function(e) {
   var span = $("#" + e.target.id);
-  // TODO: let someone edit the speaker of this quote/mention
   $("#editAnnotation").modal({
     escapeClose: true,
     clickClose: true,
@@ -844,15 +844,19 @@ Annotator.prototype.closeEditModal = function(span) {
   var value = $('input[name="character"]:checked').val();
   var spanType = $('input[name="spanType"]:checked').val();
   this.spanType = spanType;
+  this.lastCharacter = value;
   // first remove any problematic classes
   // TODO: make this less hacky
   var classes = span.attr("class").split(' ');
   for (var i = 0; i < classes.length; i++) {
-    if (classes[i].startsWith("speaker_")) {
+    if (classes[i].startsWith("speaker_") ||
+        classes[i] === 'quote' || 
+        classes[i] === 'mention') {
       span.removeClass(classes[i]);
     }
   }
   span.addClass(value);
+  span.addClass(spanType);
   $("#closeedit").click();
   $(window).off('keypress');
   $("#submitedit").off('click');
