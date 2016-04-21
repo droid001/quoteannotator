@@ -54,7 +54,7 @@ def writeXml(filename, characters, chapters, includeSectionTags):
         output.write('<characters>\n') 
         for index, character in enumerate(characters):
             output.write(
-                '<character id="{0}" name="{1}" gender="{2}", aliases="{3}">'
+                '<character id="{0}" name="{1}" gender="{2}" aliases="{3}">'
                 .format(index, character['name'], character['gender'], ';'.join(character['aliases'])))
             output.write('</character>\n')
         output.write('</characters>\n')
@@ -178,6 +178,7 @@ def convert(input, outfilename, splitChapters, includeSectionTags):
         ann = annstr.split('\t')
         ch = int(ann[0])
         speaker = ann[1]
+        speaker = speaker.replace(' ', '_')
         quote = ann[2]
         quote = quote.replace('  ', ' ')
         chapter = chapters[ch-1]
@@ -231,7 +232,7 @@ def main():
     parser.add_argument('-s', '--split', dest='splitChapters', help='split by chapter', action='store_true')
     parser.add_argument('-p', dest='includeSectionTags', help='paragraphs and headings', action='store_true')
     parser.add_argument('indir', help='directory to use', action='store')
-    parser.add_argument('outfile', nargs='?')
+    parser.add_argument('outfile')
     args = parser.parse_args()
     convert(args.indir, args.outfile, args.splitChapters, args.includeSectionTags)
 
