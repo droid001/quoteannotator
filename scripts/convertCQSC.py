@@ -43,6 +43,8 @@ def readlines(input):
 def readCharacters(filename):
     characters = readlines(filename)
     characters = map(strToCharacter, characters)
+    for index,character in enumerate(characters):
+        character['id'] = str(index)
     return characters
 
 def get_all_text( node ):
@@ -265,7 +267,8 @@ def convert(input, outfilename, charactersFile, mentionLevel, splitChapters, inc
     # Output
     writeConverted(dom, outfilename, splitChapters, includeSectionTags)
     
-    (base, ext) = os.path.splitext(outfilename)
+    (temp, ext) = os.path.splitext(outfilename)
+    (base, ext2) = os.path.splitext(temp)
     writeEntities(entitiesElement, base + ".entities" + ext)
 
 def main():
