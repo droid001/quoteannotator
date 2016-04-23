@@ -296,24 +296,28 @@ def convert(input, outfilename, charactersFile, mentionLevel, splitChapters, inc
     (base, ext2) = os.path.splitext(temp)
     writeEntities(entitiesElement, base + ".entities" + ext)
 
+def convertMentionLevels(infilename, outname, charactersFile, splitChapters, includeSectionTags):
+    mentionLevels = ["ALL", "DIRECT", "QUOTES"]
+    (outbase, outext) = os.path.splitext(outname)
+    outext = outext or '.xml'
+    for mentionLevel in mentionLevels:
+        outfilename = outbase + '.' + mentionLevel.lower() + outext
+        with open(infilename, 'r') as infile:
+            convert(infile, outfilename, charactersFile,
+                mentionLevel, splitChapters, includeSectionTags)
+
+
 def main():
     # Argument processing
     parser = argparse.ArgumentParser(description='Convert CQSC XML')
     parser.add_argument('-c', '--characters', dest='charactersFile', help='characters file', action='store')
     parser.add_argument('-s', '--split', dest='splitChapters', help='split by chapter', action='store_true')
     parser.add_argument('-p', dest='includeSectionTags', help='paragraphs and headings', action='store_true')
-    parser.add_argument('infile', nargs='?', type=argparse.FileType('r'),
-                        default=sys.stdin)
+    parser.add_argument('infile')
     parser.add_argument('outfile', nargs='?')
     args = parser.parse_args()
-    mentionLevels = ["ALL", "DIRECT", "QUOTES"]
-    outname = args.outfile or args.infile.name
-    (outbase, outext) = os.path.splitext(outname)
-    outext = outext or '.xml'
-    for mentionLevel in mentionLevels:
-        args.infile.seek(0)
-        outfilename = outbase + '.' + mentionLevel.lower() + outext
-        convert(args.infile, outfilename, args.charactersFile,
-            mentionLevel, args.splitChapters, args.includeSectionTags)
+    outname = args.outfile or args.infile
+    convertMentionLevels(args.infile, outname, args.charactersFile,
+            args.splitChapters, args.includeSectionTags)
 
 if __name__ == "__main__": main()
