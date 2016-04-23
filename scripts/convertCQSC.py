@@ -161,7 +161,7 @@ def convert(input, outfilename, charactersFile, mentionLevel, splitChapters, inc
             for mention in paragraph.getElementsByTagName(nertype):
                 t = dom.createTextNode(get_all_text(mention))
                 mention.parentNode.replaceChild(t, mention)
-    # Convert mentions under PARAGRAPH        
+    # Convert mentions under PARAGRAPH
     for paragraph in root.getElementsByTagName('PARAGRAPH'):
         for nertype in nertypes:
             for mention in paragraph.getElementsByTagName(nertype):
@@ -226,22 +226,47 @@ def convert(input, outfilename, charactersFile, mentionLevel, splitChapters, inc
                     element.setAttribute(k,v)
         newdoc.insertBefore(charactersElement, entitiesElement)
 
+    # Go over mentions and fix there speakerId
+    mentionIdToSpanId = {}
+    nextMentionSpanId = 0
+    mentions = dom.getElementsByTagName('MENTION')
+    for mention in mentions:
+        entityId = mention.getAttribute('entity')
+        mentionId = mention.getAttribute('id')
+        mentionIdToSpanId[mentionId] = 's' + str(nextMentionSpanId)
+        nextMentionSpanId += 1
+        mention.setAttribute('oid', mentionId);
+        mention.setAttribute('id', mentionIdToSpanId[mentionId])
+        if entityId:
+            entity = entities[entityId]
+            speakerName =  entity['name'] if 'name' in entity else entityId
+            # Rename attributes
+            mention.setAttribute('speaker', speakerName)
+
     # Go over quotes and match them to characters
+    quoteIdToSpanId = {}
+    nextQuoteSpanId = nextMentionSpanId
     quotes = dom.getElementsByTagName('QUOTE')
     speakerMentions = Set()
     speakers = Set()
     noSpeaker = 0
     for quote in quotes:
         speakerMentionId = quote.getAttribute('speaker')
+        quoteId = quote.getAttribute('id')
+        quoteIdToSpanId[quoteId] = 's' + str(nextQuoteSpanId)
+        nextQuoteSpanId += 1
+        quote.setAttribute('oid', quoteId);
+        quote.setAttribute('id', quoteIdToSpanId[quoteId])
         if speakerMentionId and speakerMentionId != 'none':
             speakerMentions.add(speakerMentionId)
             speakerId = mentionIdToEntityId[speakerMentionId]
             entity = entities[speakerId]
             speakerName =  entity['name'] if 'name' in entity else speakerId
             # Rename attributes
-            quote.setAttribute('speakerId', speakerId)
+            #quote.setAttribute('speakerId', speakerId)
             quote.setAttribute('speaker', speakerName)
             quote.setAttribute('mention', speakerMentionId)
+            quote.setAttribute('connection', mentionIdToSpanId[speakerMentionId])
         else:
             noSpeaker += 1
             #print 'Unknown speaker for ' + quote.toxml('utf-8')
@@ -256,7 +281,7 @@ def convert(input, outfilename, charactersFile, mentionLevel, splitChapters, inc
     elif mentionLevel == 'DIRECT': # only show mention that are linked as speakers
        mentions = dom.getElementsByTagName('MENTION')
        for mention in mentions:
-           if mention.getAttribute('id') not in speakerMentions:
+           if mention.getAttribute('oid') not in speakerMentions:
                t = dom.createTextNode(get_all_text(mention))
                mention.parentNode.replaceChild(t, mention)
     # default 'ALL' (keep everything)
@@ -276,7 +301,6 @@ def main():
     parser = argparse.ArgumentParser(description='Convert CQSC XML')
     parser.add_argument('-c', '--characters', dest='charactersFile', help='characters file', action='store')
     parser.add_argument('-s', '--split', dest='splitChapters', help='split by chapter', action='store_true')
-    #parser.add_argument('--connection', dest='useConnection', help='use connection attribute', action='store_true')
     parser.add_argument('-p', dest='includeSectionTags', help='paragraphs and headings', action='store_true')
     parser.add_argument('infile', nargs='?', type=argparse.FileType('r'),
                         default=sys.stdin)
