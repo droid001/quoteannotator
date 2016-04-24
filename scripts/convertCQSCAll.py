@@ -35,11 +35,14 @@ def main():
         if not os.path.isfile(charactersFile):
             charactersFile = None
         print "convert " + filename + " with characters " + str(charactersFile)
-        outfile = filename
         if args.splitChapters:
-            if not os.path.exists(base):
-                os.mkdir(base)
-            outfile = base + "/" + file
+            outbase = base
+            outfile = outbase + "/" + file
+        else:
+            outbase = args.indir + "/converted/"
+            outfile = outbase + file
+        if not os.path.exists(outbase):
+            os.mkdir(outbase)
         cqsc.convertMentionLevels(filename, outfile, charactersFile, args.splitChapters, args.includeSectionTags)
 
 if __name__ == "__main__": main()
