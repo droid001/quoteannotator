@@ -58,15 +58,20 @@ Tools.prototype.getColor = function(i) {
   return d3_category20_colors[i];
 };
 
-Tools.prototype.getRandomColor = function() {
-  var num = Math.floor(Math.random() * 360);
-  return $.husl.toHex(num, 90, 60);
-}
+Tools.prototype.getRandomColor = function(id) {
+  var h = (-3.88 * id) % (2 * Math.PI);
+  if (h < 0) h += 2 * Math.PI;
+  h /= 2 * Math.PI;
+  h = h*360;
+  s = 0.4 + 0.2 * Math.sin(0.42 * id);
+  s = s*100;
+  return $.husl.toHex(h, s, 60);
+};
 
 Tools.prototype.getLightColor = function(i) {
   if (i < light_colors.length) {
     return light_colors[i];
   } else {
-    return this.getRandomColor();
+    return this.getRandomColor(i - light_colors.length);
   }
 };
