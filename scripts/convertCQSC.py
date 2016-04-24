@@ -21,7 +21,8 @@ log.setLevel(logging.INFO)
 def strToCharacter(str):
     fields = str.split(';')
     aliases = [fields[0]] + fields[2:]
-    return { 'name': fields[0].replace(' ', '_'), 'gender': mapGender(fields[1]), 'aliases': aliases}
+    character = { 'name': fields[0].replace(' ', '_'), 'gender': mapGender(fields[1]), 'aliases': aliases}
+    return character
 
 def mapGender(gender):
     if gender == 'M':
@@ -134,7 +135,7 @@ def findCharacter(entity, characters):
     for index,character in enumerate(characters):
         for alias1 in entity['aliases']:
             for alias2 in character['aliases']:
-                if alias2 == alias1:
+                if alias2.lower() == alias1.lower():
                     cnt[index] += 1
     best = cnt.most_common(1)
     if len(best) > 0:
@@ -158,6 +159,21 @@ def convert(input, outfilename, charactersFile, mentionLevel, splitChapters, inc
     # Process paragraphs
     entities = {}
     mentionIdToEntityId = {}
+    # clean paragraphs
+    for paragraph in root.getElementsByTagName('PARAGRAPH'):
+        if len(paragraph.childNodes) == 1:
+            child = paragraph.childNodes[0]
+            if child.nodeType ==  child.ELEMENT_NODE:
+                if child.tagName == 'HEADING':
+                    # single child that is heading (remove paragraph wrapping)
+                    paragraph.removeChild(child)
+                    paragraph.parentNode.replaceChild(child, paragraph)
+                    continue
+        if len(paragraph.childNodes) < 5:
+            text = get_all_text(paragraph)
+            if text.startswith('VOLUME') or text.startswith('STAVE') or text.startswith('CHAPTER'):
+                paragraph.tagName = 'HEADING'
+                paragraph.nodeName = 'HEADING'
     # Clean extracted mentions in HEADING
     for paragraph in root.getElementsByTagName('HEADING'):
         for nertype in nertypes:
