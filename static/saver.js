@@ -109,11 +109,16 @@ function xmlToHtmlConvert(child, childConverted) {
   var span = $('<span />');
   span.attr("id", id);
   span.addClass(child[0].tagName);
+  var title = child[0].tagName;
   for (var cl in classes) {
     var val = classes[cl].split(' ').join('_');
     val = val.split('.').join('');
     span.addClass(cl + "_" + val);
+    if (cl == 'speaker') {
+      title += ' ' + cl + "_" + val;
+    }
   }
+  span.attr('title', title);
   span.html(childConverted);
 
   return span.prop("outerHTML");
