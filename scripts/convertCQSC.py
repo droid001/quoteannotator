@@ -119,6 +119,9 @@ def writeConverted( dom, filename, splitChapters, includeSectionTags):
             for para in chapter:
                 textElem.appendChild(para.cloneNode(True))
             docElem = chdom.documentElement
+            charactersElems = dom.getElementsByTagName('characters')
+            for elem in charactersElems:
+                docElem.appendChild(elem.cloneNode(True))
             docElem.appendChild(textElem)
             chfile = base + '-' + str(chindex) + ext
             writeXml(chdom, chfile, includeSectionTags)
