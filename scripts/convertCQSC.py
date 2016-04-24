@@ -249,10 +249,12 @@ def convert(input, outfilename, charactersFile, mentionLevel, splitChapters, inc
     mentionIdToSpanId = {}
     nextMentionSpanId = 0
     mentions = dom.getElementsByTagName('MENTION')
+    mentionIdToMention = {}
     for mention in mentions:
         entityId = mention.getAttribute('entity')
         mentionId = mention.getAttribute('id')
         mentionIdToSpanId[mentionId] = 's' + str(nextMentionSpanId)
+        mentionIdToMention[mentionId] = mention
         nextMentionSpanId += 1
         mention.setAttribute('oid', mentionId);
         mention.setAttribute('id', mentionIdToSpanId[mentionId])
@@ -272,7 +274,8 @@ def convert(input, outfilename, charactersFile, mentionLevel, splitChapters, inc
     for quote in quotes:
         speakerMentionId = quote.getAttribute('speaker')
         quoteId = quote.getAttribute('id')
-        quoteIdToSpanId[quoteId] = 's' + str(nextQuoteSpanId)
+        quoteSpanId = 's' + str(nextQuoteSpanId)
+        quoteIdToSpanId[quoteId] = quoteSpanId
         nextQuoteSpanId += 1
         quote.setAttribute('oid', quoteId);
         quote.setAttribute('id', quoteIdToSpanId[quoteId])
@@ -286,6 +289,13 @@ def convert(input, outfilename, charactersFile, mentionLevel, splitChapters, inc
             quote.setAttribute('speaker', speakerName)
             quote.setAttribute('mention', speakerMentionId)
             quote.setAttribute('connection', mentionIdToSpanId[speakerMentionId])
+            # Add connection to mention
+            mention = mentionIdToMention[speakerMentionId]
+            mconn = mention.getAttribute('connection')
+            if len(mconn) > 0:
+                mention.setAttribute('connection',  mconn + ',' + quoteSpanId)
+            else:
+                mention.setAttribute('connection', quoteSpanId)
         else:
             noSpeaker += 1
             #print 'Unknown speaker for ' + quote.toxml('utf-8')
