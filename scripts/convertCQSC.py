@@ -18,6 +18,9 @@ logging.basicConfig(format=FORMAT)
 log = logging.getLogger('index')
 log.setLevel(logging.INFO)
 
+def isSectionHeading(text):
+    return text.startswith('VOLUME') or text.startswith('STAVE') or text.startswith('CHAPTER') or text.startswith('PART')
+
 def strToCharacter(str):
     fields = str.split(';')
     aliases = [fields[0]] + fields[2:]
@@ -81,7 +84,9 @@ def toChapters( dom ):
       for text in dom.getElementsByTagName('text'):
         for child in text.childNodes:
             if child.nodeType == child.ELEMENT_NODE and child.tagName == 'heading':
-                if elementCnt > 0:
+                text = get_all_text(child)
+                isSectionStart = isSectionHeading(text) or ' ' not in text
+                if isSectionStart and elementCnt > 0:
                     chapters.append(paras)
                     paras = []
                     elementCnt = 0
@@ -171,7 +176,7 @@ def convert(input, outfilename, charactersFile, mentionLevel, splitChapters, inc
                     continue
         if len(paragraph.childNodes) < 5:
             text = get_all_text(paragraph)
-            if text.startswith('VOLUME') or text.startswith('STAVE') or text.startswith('CHAPTER'):
+            if isSectionHeading(text):
                 paragraph.tagName = 'HEADING'
                 paragraph.nodeName = 'HEADING'
     # Clean extracted mentions in HEADING

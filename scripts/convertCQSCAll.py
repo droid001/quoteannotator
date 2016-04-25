@@ -36,13 +36,14 @@ def main():
             charactersFile = None
         print "convert " + filename + " with characters " + str(charactersFile)
         if args.splitChapters:
-            outbase = base
+            base2 = os.path.basename(base)
+            outbase = args.indir + "/converted_split/" + base2 
             outfile = outbase + "/" + file
         else:
             outbase = args.indir + "/converted/"
             outfile = outbase + file
         if not os.path.exists(outbase):
-            os.mkdir(outbase)
+            os.makedirs(outbase)
         cqsc.convertMentionLevels(filename, outfile, charactersFile, args.splitChapters, args.includeSectionTags)
 
 if __name__ == "__main__": main()
