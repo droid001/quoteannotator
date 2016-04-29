@@ -286,12 +286,13 @@ AnnotationOptionsUI.prototype.update = function(annotationOpts) {
       var div = groups[opt.group].div;
       var span = $('<label/>').addClass('btn').addClass(name);
       var input = $('<input/>').attr('type', 'radio').attr('name', opt.group).attr('value', name);
+      var displayText = name.replace("speaker_", "");
       span.append(input);
       if (opt.shortcut) {
         this.shortcuts[opt.shortcut.charCodeAt(0)] = input;
-        span.append('(' + opt.shortcut + ') ' + name);
+        span.append('(' + opt.shortcut + ') ' + displayText);
       } else {
-        span.append(name);
+        span.append(displayText);
       }
       div.append(span);
     } else {
