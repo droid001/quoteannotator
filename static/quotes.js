@@ -599,8 +599,8 @@ Annotator.prototype.openSpecificModal = function() {
   }
 
   $("#specificAnns").modal({
-    escapeClose: false,
-    clickClose: false,
+    escapeClose: true,
+    clickClose: true,
     showClose: false
   });
 
@@ -632,6 +632,10 @@ Annotator.prototype.openSpecificModal = function() {
   $("#submitspecific").click(function(e){
     scope.closeSpecificModal(coords);
   });
+  $(window).on($.modal.CLOSE, function(e) {
+    $(window).off('keypress');
+    $("#submitspecific").off('click');
+  });
 };
 
 Annotator.prototype.closeSpecificModal = function(coords) {
@@ -647,8 +651,6 @@ Annotator.prototype.closeSpecificModal = function(coords) {
   this.enableConnectionClicks();
   this.nextSpanId++;
   $("#closespecific").click();
-  $(window).off('keypress');
-  $("#submitspecific").off('click');
 };
 
 Annotator.prototype.connectClick = function (event) {
