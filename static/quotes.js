@@ -732,6 +732,8 @@ Annotator.prototype.updateConnections = function() {
     }
     var connectedId = connectionClass.split('_')[1];
     var connectedSpan = $("#" + connectedId);
+    // just to be doubly sure
+    connectedSpan.addClass('connection_' + span.attr('id'));
     if (connectedSpan[0] == undefined) {
       ts.alert("Span " + span.attr("id") + " connected to " + connectedId + " which doesn't exist");
       continue;
