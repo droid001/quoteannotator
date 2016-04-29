@@ -132,6 +132,7 @@ Annotator.prototype.deleteAnnotation = function(jdom) {
   var rCoords = getRealCoords(coords, elements);
   var loc = rCoords.start;
   var remove = -1;
+  var spanTarget = null;
   for (var span in spans) {
     var skeletonHtml = elements[span] + elements[spans[span]];
     var skeletonContents = $('<div/>').html(skeletonHtml).contents();
@@ -139,6 +140,7 @@ Annotator.prototype.deleteAnnotation = function(jdom) {
         (skeletonContents.hasClass('quote') ||
          skeletonContents.hasClass('mention'))) {
       remove = span;
+      spanTarget = $('#' + skeletonContents.attr('id'));
     }
   }
   if (remove >= 0) {
@@ -150,6 +152,30 @@ Annotator.prototype.deleteAnnotation = function(jdom) {
     var eStart = parseInt(endR) + parseInt(elements[endR].length);
     var end = html.substring(eStart);
     jdom.html(beginning + middle + end);
+
+    // if there is a connection associated with this span
+    // we need to remove it also!
+    // And we'll need to remove the connection id from whatever
+    // span it was connected to...
+    var spanId = spanTarget.attr('id');
+    var connections = [];
+    var classes = spanTarget.attr('class').split(' ');
+    for (var i = 0; i < classes.length; i++) {
+      if (classes[i].startsWith('connection_')) {
+        connections.push(classes[i].split('_')[1]);
+      }
+    }
+
+    console.log(classes);
+    console.log(connections);
+    for (var i = 0; i < connections.length; i++) {
+      var connection = connections[i];
+      // this could also be reversed
+      var connectionId = spanId + '_' + connection;
+      $('#' + connectionId).remove();
+      //now remove the connection class from the connected span
+      $('#' + connection).removeClass('connection_' + spanId);
+    }
   }
   this.updateSpanClicks();
 }

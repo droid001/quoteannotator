@@ -112,7 +112,9 @@ function xmlToHtmlConvert(child, childConverted) {
   for (var cl in classes) {
     var val = classes[cl].split(' ').join('_');
     val = val.split('.').join('');
-    span.addClass(cl + "_" + val);
+    if (val.length > 0) {
+      span.addClass(cl + "_" + val);
+    }
   }
   span.html(childConverted);
 
