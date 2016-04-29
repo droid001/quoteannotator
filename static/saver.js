@@ -114,7 +114,10 @@ function xmlToHtmlConvert(child, childConverted) {
     var val = classes[cl].split(' ').join('_');
     val = val.split('.').join('');
     if (val.length > 0) {
-      span.addClass(cl + "_" + val);
+      var splitList = val.split(',');
+      for (var j = 0; j < splitList.length; j++) {
+        span.addClass(cl + "_" + splitList[j]);
+      }
       if (cl == 'speaker') {
         title += ' ' + cl + "_" + val;
       }

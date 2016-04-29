@@ -171,10 +171,26 @@ Annotator.prototype.deleteAnnotation = function(jdom) {
     for (var i = 0; i < connections.length; i++) {
       var connection = connections[i];
       // this could also be reversed
-      var connectionId = spanId + '_' + connection;
-      $('#' + connectionId).remove();
+      var connectionId = '#' + spanId + '_' + connection;
+      console.log(connectionId);
+      console.log($(connectionId).length);
+      if (!$(connectionId).length) {  // this span doesn't exist
+        console.log('here');
+        connectionId = '#' + connection + '_' + spanId;
+        if (!$(connectionId).length) {  // this span doesn't exist
+          // look for an up and an over
+          connectionId = '#' + connection + '_' + spanId + '_up';
+          $(connectionId).remove();
+          connectionId = '#' + spanId + '_' + connection + '_up';
+          $(connectionId).remove();
+          connectionId = '#' + connection + '_' + spanId + '_over';
+          $(connectionId).remove();
+          connectionId = '#' + spanId + '_' + connection + '_over';
+        }
+      }
+      $(connectionId).remove();
       //now remove the connection class from the connected span
-      $('#' + connection).removeClass('connection_' + spanId);
+      $(connection).removeClass('connection_' + spanId);
     }
   }
   this.updateSpanClicks();
