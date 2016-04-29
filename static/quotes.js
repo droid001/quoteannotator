@@ -166,16 +166,11 @@ Annotator.prototype.deleteAnnotation = function(jdom) {
       }
     }
 
-    console.log(classes);
-    console.log(connections);
     for (var i = 0; i < connections.length; i++) {
       var connection = connections[i];
       // this could also be reversed
       var connectionId = '#' + spanId + '_' + connection;
-      console.log(connectionId);
-      console.log($(connectionId).length);
       if (!$(connectionId).length) {  // this span doesn't exist
-        console.log('here');
         connectionId = '#' + connection + '_' + spanId;
         if (!$(connectionId).length) {  // this span doesn't exist
           // look for an up and an over
@@ -271,7 +266,7 @@ function AnnotationOptionsUI(params) {
   this.shortcuts = {};
   // Annotation opts
   this.annotationOpts = params.annotationOpts || {};
-  this.maxCharacterId = -1;
+  this.maxCharacterId = 0;
   this.groupType = 'spanType';
   this.attachListeners();
 }
@@ -288,7 +283,7 @@ AnnotationOptionsUI.prototype.update = function(annotationOpts) {
   var allowsGroups = ['spanType', 'character'];
   var groupNames = ['Span', 'Character'];
   var groups = {};
-  var maxId = -1;
+  var maxId = 0;
   for (var i = 0; i < allowsGroups.length; i++) {
     var btnClass = (allowsGroups[i] === 'spanType')? 'btn-group' : 'btn-group-vertical';
     var div = $('<div/>').addClass(btnClass).attr('data-toggle', 'buttons').attr('role', 'group');
@@ -341,28 +336,8 @@ AnnotationOptionsUI.prototype.update = function(annotationOpts) {
   }
 };
 
-AnnotationOptionsUI.prototype.addOption = function() {
-  this.groupType = 'spanType';
-  // open add option modal
-  $("#addoptionmodal").modal({
-    escapeClose: false,
-    clickClose: false,
-    showClose: false
-  });
-
-  // listen for key press events
-  $(window).keypress(function(e) {
-    var key = e.which;
-    if (key == 13) {
-      // 13 is return
-      $("#submitoption").click();
-    }
-  });
-};
-
 AnnotationOptionsUI.prototype.addCharacter = function() {
   // open add option modal
-  this.maxCharacterId++;
   this.groupType = 'character';
   var characterId = this.maxCharacterId;
   var nextColor = ts.getLightColor(characterId);
@@ -372,8 +347,8 @@ AnnotationOptionsUI.prototype.addCharacter = function() {
   this.displayTestOption();
 
   $("#addoptionmodal").modal({
-    escapeClose: false,
-    clickClose: false,
+    escapeClose: true,
+    clickClose: true,
     showClose: false
   });
 
@@ -384,6 +359,9 @@ AnnotationOptionsUI.prototype.addCharacter = function() {
       // 13 is return
       $("#submitoption").click();
     }
+  });
+  $(window).on($.modal.CLOSE, function(e) {
+    $(window).off('keypress');
   });
 };
 
@@ -395,22 +373,24 @@ AnnotationOptionsUI.prototype.displayTestOption = function() {
 AnnotationOptionsUI.prototype.submit = function() {
   // TODO: class name shouldn't have punctuation either
   var name = $("#optionname").val().trim().replace(/\s/g, "_");
-  // prefix so that we can process/differentiate classes better!
-  name = 'speaker_' + name;
+  if (name.length != 0) {
+    // prefix so that we can process/differentiate classes better!
+    name = 'speaker_' + name;
+    this.maxCharacterId++;
 
-  // Check that values are reasonable
-  if (this.containsCharacter(name)) {
-    // This annotation option already exists
-    // Let's not allow adding
-    ts.alert('Cannot add duplicate annotation: ' + name);
-    return false;
+    // Check that values are reasonable
+    if (this.containsCharacter(name)) {
+      // This annotation option already exists
+      // Let's not allow adding
+      ts.alert('Cannot add duplicate annotation: ' + name);
+      return false;
+    }
+
+    var css = $("#optioncss").val();
+    this.addCharacterToConfig(name, this.maxCharacterId, this.groupType, css);
+    $('#addtest p').attr("style", "");
   }
-
-  var css = $("#optioncss").val();
-  this.addCharacterToConfig(name, this.maxCharacterId, this.groupType, css);
-  $('#addtest p').attr("style", "");
   $("#closeaddoption").click();
-  $(window).off('keypress');
 };
 
 AnnotationOptionsUI.prototype.attachOptionsToDiv = function(parentDiv) {
@@ -434,7 +414,6 @@ AnnotationOptionsUI.prototype.containsCharacter = function(name) {
 
 AnnotationOptionsUI.prototype.attachListeners = function() {
   // Annotation option stuff
-  $("#addoption").click( this.addOption.bind(this) );
   $("#addcharacter").click( this.addCharacter.bind(this) );
   $("#optioncss").keyup( this.displayTestOption.bind(this) );
   $("#submitoption").click( this.submit.bind(this) );
