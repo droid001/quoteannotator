@@ -74,14 +74,20 @@ function htmlToXmlConvert(next, childConverted) {
   var speaker = "";
   childClasses = childClasses.split(' ');
   // TODO: make less hacky
-  type = childClasses[0];
-  for (var j = 1; j < childClasses.length; j++) {
+  type = null;
+  for (var j = 0; j < childClasses.length; j++) {
   if (childClasses[j].startsWith('speaker_')) {
       speaker = childClasses[j].substring('speaker_'.length);
     }
     if (childClasses[j].startsWith('connection_')) {
       connection.push(childClasses[j].substring('connection_'.length));
     }
+    if (childClasses[j] === 'quote' || childClasses[j] === 'mention') {
+      type = childClasses[j];
+    }
+  }
+  if (type == null) {
+    console.log("Warning! generating xml tag without a type!");
   }
   childConverted = "<" + type + " speaker=\"" + speaker + "\" connection=\"" +
     connection.join(',') + "\" id=\"" + childId + "\">" + childConverted + "</" + type + ">";
@@ -174,8 +180,10 @@ function convertToHtml(xml, ann) {
   var xmlDoc = $.parseXML(xml);
   $xml = $( xmlDoc );
   // take care of adding the characters in the doc to the annotator
-  $characters = $xml.find( "characters" );
-  ann.addCharactersFromXml($characters);
+  if (ann != undefined) {
+    $characters = $xml.find( "characters" );
+    ann.addCharactersFromXml($characters);
+  }
   // now we want to load everything for real
   $text = $xml.find( "text");
   var inner = convertSingleSpan($text, xmlToHtmlConvert);

@@ -6,4 +6,7 @@ $(window).load(function() {
 
   var annotator = new Annotator(annotationOpts);
   annotator.launch();
+  pageAnn = annotator;
 });
+
+var pageAnn = null;
