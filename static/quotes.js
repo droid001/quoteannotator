@@ -656,6 +656,7 @@ Annotator.prototype.closeSpecificModal = function(coords) {
 Annotator.prototype.connectClick = function (event) {
   if (event.metaKey || event.ctrlKey) { // command key, essentially
     var span = $("#" + event.target.id);
+    console.log(span)
     if (this.selectedSpans.indexOf(span) < 0) {
       this.selectedSpans.push(span);
       span.addClass('connect_select');
@@ -897,8 +898,10 @@ Annotator.prototype.directSpanClicks = function(e) {
     this.connectClick(e);
   } else {
     // open the edit modal
-    this.openEditModal(e);
     // egads, if it was a highlight, we want to make a new span instead!
-    // TODO: this!!!!
+    var coords = getHighlightSpan($("#annotationarea"));
+    if (coords == null) {
+      this.openEditModal(e);
+    }
   }
 }
