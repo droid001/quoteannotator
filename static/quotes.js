@@ -508,6 +508,7 @@ function Annotator(annotationOpts) {
   this.lastCharacter = undefined;
   this.nextSpanId = 0; // TOOD: update this when annotated file is loaded.
   this.selectedSpans = [];
+  this.connectionTimes = [];
   this.allowConnections = true;
   this.savingUI = new Saver();
 };
@@ -737,25 +738,29 @@ Annotator.prototype.closeSpecificModal = function(coords) {
 Annotator.prototype.connectClick = function (event) {
   if (event.metaKey || event.ctrlKey) { // command key, essentially
     var span = $("#" + event.target.id);
-    console.log(span)
-    if (this.selectedSpans.indexOf(span) < 0) {
-      this.selectedSpans.push(span);
+    var id = event.target.id;
+    if (this.connectionTimes.length > 4) {
+      this.connectionTimes.shift();
+    }
+    if (this.selectedSpans.indexOf(id) < 0 && this.connectionTimes.indexOf(event.timeStamp) < 0) {
+      this.selectedSpans.push(id);
+      this.connectionTimes.push(event.timeStamp);
       span.addClass('connect_select');
       // if there is a click that is not on a span, stop trying to connect span one
       $(window).click(function(e) {
         if ($(e.target)[0].tagName !== 'SPAN' &&
           this.selectedSpans.length > 0) {
-          this.selectedSpans[0].removeClass('connect_select');
+          $("#" + this.selectedSpans[0]).removeClass('connect_select');
           this.selectedSpans = [];
           $(window).off('click');
         }
       });
       if (this.selectedSpans.length === 2) {
-        this.selectedSpans[0].addClass("connection_" + this.selectedSpans[1].attr('id'));
-        this.selectedSpans[1].addClass("connection_" + this.selectedSpans[0].attr('id'));
-        this.drawConnection(this.selectedSpans[0], this.selectedSpans[1]);
-        this.selectedSpans[0].removeClass('connect_select');
-        this.selectedSpans[1].removeClass('connect_select');
+        $("#" + this.selectedSpans[0]).addClass("connection_" + $("#" + this.selectedSpans[1]).attr('id'));
+        $("#" + this.selectedSpans[1]).addClass("connection_" + $("#" + this.selectedSpans[0]).attr('id'));
+        this.drawConnection($("#" + this.selectedSpans[0]), $("#" + this.selectedSpans[1]));
+        $("#" + this.selectedSpans[0]).removeClass('connect_select');
+        $("#" + this.selectedSpans[1]).removeClass('connect_select');
         this.selectedSpans = [];
         $(window).off('click');
       }
