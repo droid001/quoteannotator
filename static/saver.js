@@ -180,8 +180,10 @@ function convertToHtml(xml, ann) {
   var xmlDoc = $.parseXML(xml);
   $xml = $( xmlDoc );
   // take care of adding the characters in the doc to the annotator
-  $characters = $xml.find( "characters" );
-  ann.addCharactersFromXml($characters);
+  if (ann != undefined) {
+    $characters = $xml.find( "characters" );
+    ann.addCharactersFromXml($characters);
+  }
   // now we want to load everything for real
   $text = $xml.find( "text");
   var inner = convertSingleSpan($text, xmlToHtmlConvert);

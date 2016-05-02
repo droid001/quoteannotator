@@ -898,5 +898,7 @@ Annotator.prototype.directSpanClicks = function(e) {
   } else {
     // open the edit modal
     this.openEditModal(e);
+    // egads, if it was a highlight, we want to make a new span instead!
+    // TODO: this!!!!
   }
 }

@@ -3,148 +3,154 @@
   <head>
     <title>Annotation Guidelines</title>
     <script type="text/javascript" src="../static/lib/jquery-2.0.2.min.js"></script>
-    <script type="text/javascript" src="static/config.js"></script>
-    <script type="text/javascript" src="../static/quotes.js"></script>
+    <script type="text/javascript" src="../static/saver.js"></script>
+    <script type="text/javascript" src="../static/guide.js"></script>
     <link rel="stylesheet" type="text/css" href="../static/css/quotes.css">
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
     <meta content="utf-8" http-equiv="encoding">
   </head>
   <body>
-    <h1>Quote Annotation Guidelines</h1>
-    <h2>Marking Quotes</h2>
-    <ul>
-      <li> Quote marking should include the beginning and ending quotation marks and nothing more.</li>
-      <li> If a quote spans multiple paragraphs, mark the whole quote as one entity.
-        <ul>
-          <li>
-            <pre>
- <span class="quote UNKNOWN">"If I had a Llama, it would be named Sue and she and I would ride into
- the sunset every evening.
 
-  "Of course, everyone would be jealous, so Sue and I would need to learn to run very quickly so
-as to avoid those who would do us harm."</span>
-          </li>
-        </ul>
-      </li>
-      <li> If a quote is split by narrative text like "Maria said", "she said", "he wailed", etc., it should not be included in any of the quote.
-        <ul>
-          <li>
-            <pre>
- <span class="quote FEMALE">"I should like to go sailing today,"</span>Maria said. <span class="quote FEMALE">"The waves look ever so inviting."</span>
-          </li>
-        </ul>
-      </li>
-      <li> All quoted text should be marked, whether it is spoken or otherwise. If it is not spoken, it should have speaker "None".
-        <ul>
-          <li>
-            <span class="quote MALE">"I want a unicorn!"</span> he said.
-          </li>
-          <li>
-            The jar was labeled <span class="quote NONE">"unicorn hair"</span>, which frightened him.
-          </li>
-        </ul>
-      </li>
+    <div id="example1area" class="left bordered">
+      <pre id="example1"></pre>
+    </div>
+    <div id="directions" class="right bordered">
+      <h1>Quote Annotation Guidelines</h1>
+      <h2>Marking Quotes</h2>
+      <ul>
+        <li> Quote marking should include the beginning and ending quotation marks and nothing more.</li>
+        <li> If a quote spans multiple paragraphs, mark the whole quote as one entity.
+          <ul>
+            <li>
+              <pre>
+   <span class="quote UNKNOWN">"If I had a Llama, it would be named Sue and she and I would ride into
+   the sunset every evening.
 
-      <li> Quotes should be marked regardless of the type of quotes used (double, single, typographic, etc.).
-        <ul>
-          <li>
-            <span class="quote MALE">'I want a unicorn!'</span> he said.
-          </li>
-          <li>
-            The jar was labeled <span class="quote NONE">'unicorn hair'</span>, which frightened him.
-          </li>
-          <li>
-            <span class="quote FEMALE">“They took all biscuits and absconded!”</span> she cried.
-          </li>
-        </ul>
-      </li>
+    "Of course, everyone would be jealous, so Sue and I would need to learn to run very quickly so
+  as to avoid those who would do us harm."</span>
+            </li>
+          </ul>
+        </li>
+        <li> If a quote is split by narrative text like "Maria said", "she said", "he wailed", etc., it should not be included in any of the quote.
+          <ul>
+            <li>
+              <pre>
+   <span class="quote FEMALE">"I should like to go sailing today,"</span>Maria said. <span class="quote FEMALE">"The waves look ever so inviting."</span>
+            </li>
+          </ul>
+        </li>
+        <li> All quoted text should be marked, whether it is spoken or otherwise. If it is not spoken, it should have speaker "None".
+          <ul>
+            <li>
+              <span class="quote MALE">"I want a unicorn!"</span> he said.
+            </li>
+            <li>
+              The jar was labeled <span class="quote NONE">"unicorn hair"</span>, which frightened him.
+            </li>
+          </ul>
+        </li>
 
-      <li> Typos in quote demarkation should be ignored (missing quotes, typographic quotes pointing the wrong way). The beginning of the quote should occur when, if there were no typos, the first quotation mark would have occurred and should end when the last quotation mark would have occurred. 
-        <ul>
-          <li>
-            <span class="quote MALE">'I want a unicorn!</span> he said.
-          </li>
-          <li>
-            Evelina looked into the cabinet and stepped back, astounded. <span class="quote FEMALE">They took all biscuits and absconded!”</span> she cried.
-          </li>
-          <li>
-            <span class="quote FEMALE">”They took all biscuits and absconded!”</span> she cried.
-          </li>
-        </ul>
-      </li>
-      <li> Implicit quotations should be ignored.
-        <ul>
-          <li>
-            He had said that we wanted to go to the fair, but Maybelline didn't believe him. 
-          </li>
-          <li>
-            The owl hooted in a sultry manner before flying away, thinking about how its chick had implored it to come home with a tasty field mouse.
-          </li>
-        </ul>
-      </li>
+        <li> Quotes should be marked regardless of the type of quotes used (double, single, typographic, etc.).
+          <ul>
+            <li>
+              <span class="quote MALE">'I want a unicorn!'</span> he said.
+            </li>
+            <li>
+              The jar was labeled <span class="quote NONE">'unicorn hair'</span>, which frightened him.
+            </li>
+            <li>
+              <span class="quote FEMALE">“They took all biscuits and absconded!”</span> she cried.
+            </li>
+          </ul>
+        </li>
 
-      <li> Embedded quotations should follow the same guidelines as the higher-level quotations.
-        <ul>
-          <li>
-            <span class="quote FEMALE">"When I went to the dungeon, he screamed <span class="quote MALE">'No! Don't let the Furbies loose!'</span> so that's exactly what I did!"</span>, Maurit crowed.
-          </li>
-        </ul>
-      </li>
-    </ul> 
-    <h2>Marking Quote Speaker</h2>
-    <ul>
-      <li> In this description "speaker" is generally interpreted, and so may be the writer of quoted text, etc.</li>
-      <li> Every quote should have an assigned speaker:
-        <ol>
-          <li> <span class="FEMALE">FEMALE</span> - if the quote's speaker gender is female.</li>
-            <ul>
-              <li>
-                <span class="quote FEMALE">'I want a unicorn!'</span> she said.
-              </li>
-              <li>
-                <pre>
-<span class="quote FEMALE">'What are you doing with my Hedgehog?'</span> she asked.
-<span class="quote UNKNOWN">'Taking him for a walk...</span>
-<span class="quote FEMALE">'As long as that's what he wants to do!'</span>
-                </pre>
-              </li>
-            </ul>
-          <li> <span class="MALE">MALE</span> - if the quote's speaker gender is male.</li>
-            <ul>
-              <li>
-                <span class="quote MALE">'I want a unicorn!'</span> Maxwell said.
-              </li>
-              <li>
-                <pre>
-<span class="quote FEMALE">'What are you doing with my Hedgehog?'</span> she asked.
-<span class="quote MALE">'Taking him for a walk...</span> he replied.
-<span class="quote FEMALE">'As long as that's what he wants to do!'</span>
-                </pre>
-              </li>
-            </ul>
-          <li> <span class="UNKNOWN">UNKNOWN</span> - if the quote has an identifiable speaker, but who is not associated with a binary gender OR if the quote's speaker gender is unknown, possibly because the speaker, though obviously present, is anonymous.</li>
-            <ul>
-              <li>
-                <span class="quote UNKNOWN">"They wondered if I was even alive! The nerve!"</span> thought the chair in a vociferous manner.
-              </li>
-              <li>
-                <span class="quote UNKNOWN">"I don't know where I put my flamethrower!"</span> they exclaimed.
-              </li>
-              <li>
-                <span class="quote UNKNOWN">"Someone ate my soup!"</span>
-              </li>
-            </ul>
-          <li> <span class="NONE">NONE</span> - if the quoted text does not have a speaker (frequently labels and scare quotes).</li>
-            <ul>
-              <li>
-                <span class="quote NONE">"The Forbidden Tower"</span> was found ten years ago.
-              </li>
-              <li>
-                He was <span class="quote NONE">"fun"</span>, if you count endless scrubbing as fun.
-              </li>
-            </ul>
-        </ol>
-      </li>
-    </ul>
+        <li> Typos in quote demarkation should be ignored (missing quotes, typographic quotes pointing the wrong way). The beginning of the quote should occur when, if there were no typos, the first quotation mark would have occurred and should end when the last quotation mark would have occurred. 
+          <ul>
+            <li>
+              <span class="quote MALE">'I want a unicorn!</span> he said.
+            </li>
+            <li>
+              Evelina looked into the cabinet and stepped back, astounded. <span class="quote FEMALE">They took all biscuits and absconded!”</span> she cried.
+            </li>
+            <li>
+              <span class="quote FEMALE">”They took all biscuits and absconded!”</span> she cried.
+            </li>
+          </ul>
+        </li>
+        <li> Implicit quotations should be ignored.
+          <ul>
+            <li>
+              He had said that we wanted to go to the fair, but Maybelline didn't believe him. 
+            </li>
+            <li>
+              The owl hooted in a sultry manner before flying away, thinking about how its chick had implored it to come home with a tasty field mouse.
+            </li>
+          </ul>
+        </li>
+
+        <li> Embedded quotations should follow the same guidelines as the higher-level quotations.
+          <ul>
+            <li>
+              <span class="quote FEMALE">"When I went to the dungeon, he screamed <span class="quote MALE">'No! Don't let the Furbies loose!'</span> so that's exactly what I did!"</span>, Maurit crowed.
+            </li>
+          </ul>
+        </li>
+      </ul> 
+      <h2>Marking Quote Speaker</h2>
+      <ul>
+        <li> In this description "speaker" is generally interpreted, and so may be the writer of quoted text, etc.</li>
+        <li> Every quote should have an assigned speaker:
+          <ol>
+            <li> <span class="FEMALE">FEMALE</span> - if the quote's speaker gender is female.</li>
+              <ul>
+                <li>
+                  <span class="quote FEMALE">'I want a unicorn!'</span> she said.
+                </li>
+                <li>
+                  <pre>
+  <span class="quote FEMALE">'What are you doing with my Hedgehog?'</span> she asked.
+  <span class="quote UNKNOWN">'Taking him for a walk...</span>
+  <span class="quote FEMALE">'As long as that's what he wants to do!'</span>
+                  </pre>
+                </li>
+              </ul>
+            <li> <span class="MALE">MALE</span> - if the quote's speaker gender is male.</li>
+              <ul>
+                <li>
+                  <span class="quote MALE">'I want a unicorn!'</span> Maxwell said.
+                </li>
+                <li>
+                  <pre>
+  <span class="quote FEMALE">'What are you doing with my Hedgehog?'</span> she asked.
+  <span class="quote MALE">'Taking him for a walk...</span> he replied.
+  <span class="quote FEMALE">'As long as that's what he wants to do!'</span>
+                  </pre>
+                </li>
+              </ul>
+            <li> <span class="UNKNOWN">UNKNOWN</span> - if the quote has an identifiable speaker, but who is not associated with a binary gender OR if the quote's speaker gender is unknown, possibly because the speaker, though obviously present, is anonymous.</li>
+              <ul>
+                <li>
+                  <span class="quote UNKNOWN">"They wondered if I was even alive! The nerve!"</span> thought the chair in a vociferous manner.
+                </li>
+                <li>
+                  <span class="quote UNKNOWN">"I don't know where I put my flamethrower!"</span> they exclaimed.
+                </li>
+                <li>
+                  <span class="quote UNKNOWN">"Someone ate my soup!"</span>
+                </li>
+              </ul>
+            <li> <span class="NONE">NONE</span> - if the quoted text does not have a speaker (frequently labels and scare quotes).</li>
+              <ul>
+                <li>
+                  <span class="quote NONE">"The Forbidden Tower"</span> was found ten years ago.
+                </li>
+                <li>
+                  He was <span class="quote NONE">"fun"</span>, if you count endless scrubbing as fun.
+                </li>
+              </ul>
+          </ol>
+        </li>
+      </ul>
+    </div>
   </body>
 </html>

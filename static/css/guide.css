@@ -1,0 +1,17 @@
+
+#annotationareacontainer {
+  overflow: hidden;
+  width: 55%;
+}
+
+#directions {
+  overflow-y: scroll;
+  width: 45%;
+  border: 1px solid green;
+  height: 700px;
+}
+
+#directions div {
+  margin: 5px;
+  padding: 5px;
+}
