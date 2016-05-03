@@ -497,6 +497,30 @@ Annotator.prototype.updateSpanClicks = function() {
   $("#annotationarea pre span").off('click');
   // listen to span clicks
   $("#annotationarea pre span").click( this.directSpanClicks.bind(this) );
+  $("#annotationarea pre span").mouseenter( this.hoverHighlight.bind(this) );
+  $("#annotationarea pre span").mouseleave( this.hoverUnhighlight.bind(this) );
+}
+
+Annotator.prototype.hoverHighlight = function(e) {
+  // this is the mouse entre function
+  // now find everthing that this quote is "attached to" to highlight them too
+  var connectionClass = '.connection_' + e.target.id;
+  var connectedBits = $(connectionClass);
+  for (var i = 0; i < connectedBits.length; i++) {
+    $(connectedBits[i]).addClass('hover');
+  }
+  $('#' + e.target.id).addClass('hover');
+}
+
+Annotator.prototype.hoverUnhighlight = function(e) {
+  // this is the mouse exit function
+  // now find everthing that this quote is "attached to" to highlight them too
+  var connectionClass = '.connection_' + e.target.id;
+  var connectedBits = $(connectionClass);
+  for (var i = 0; i < connectedBits.length; i++) {
+    $(connectedBits[i]).removeClass('hover');
+  }
+  $('#' + e.target.id).removeClass('hover');
 }
 
 Annotator.prototype.enterAnnotateMode = function() {
@@ -730,6 +754,8 @@ Annotator.prototype.updateConnections = function() {
 };
 
 Annotator.prototype.drawConnection = function(span1, span2) {
+  var connectionS1 = 'connection_' + span1.prop('id');
+  var connectionS2 = 'connection_' + span2.prop('id');
   var s1Left = span1.prop("offsetLeft");
   var s1Top = span1.prop("offsetTop");
   var s2Left = span2.prop("offsetLeft");
@@ -767,6 +793,8 @@ Annotator.prototype.drawConnection = function(span1, span2) {
       });
     div.click( this.deleteConnection );
     div.attr("id", span1.attr("id") + "_" + span2.attr("id"));
+    div.addClass(connectionS1);
+    div.addClass(connectionS2);
     $("#annotationarea").append(div);
   } else {
     var divOver = $('<div />');
@@ -804,6 +832,10 @@ Annotator.prototype.drawConnection = function(span1, span2) {
     divUp.attr("id", span1.attr("id") + "_" + span2.attr("id") + '_up');
     divOver.click( this.deleteConnection );
     divOver.attr("id", span1.attr("id") + "_" + span2.attr("id") + '_over');
+    divUp.addClass(connectionS1);
+    divUp.addClass(connectionS2);
+    divOver.addClass(connectionS1);
+    divOver.addClass(connectionS2);
     $("#annotationarea").append(divUp);
     $("#annotationarea").append(divOver);
   }
