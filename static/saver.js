@@ -114,8 +114,13 @@ function xmlToHtmlConvert(child, childConverted) {
   }
   var span = $('<span />');
   span.attr("id", id);
-  span.addClass(child[0].tagName);
-  var title = child[0].tagName;
+  var tagName = child[0].tagName;
+  // this was a hack to fix old files
+//  if (tagName === "null") {
+//    tagName = "quote";
+//  }
+  span.addClass(tagName);
+  var title = tagName;
   for (var cl in classes) {
     var val = classes[cl].split(' ').join('_');
     val = val.split('.').join('');

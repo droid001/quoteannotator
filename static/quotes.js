@@ -608,7 +608,9 @@ Annotator.prototype.hoverHighlight = function(e) {
   for (var i = 0; i < connectedBits.length; i++) {
     $(connectedBits[i]).addClass('hover');
   }
-  $('#' + e.target.id).addClass('hover');
+  if (connectedBits.length > 0) {
+    $('#' + e.target.id).addClass('hover');
+  }
 }
 
 Annotator.prototype.hoverUnhighlight = function(e) {
