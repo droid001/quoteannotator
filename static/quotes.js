@@ -266,10 +266,78 @@ function AnnotationOptionsUI(params) {
   this.shortcuts = {};
   // Annotation opts
   this.annotationOpts = params.annotationOpts || {};
+  this.selectDone = params.selectDone;
+  this.groupSearchMin = (params.groupSearchMin != undefined)? params.groupSearchMin : 6;
   this.maxCharacterId = 0;
   this.groupType = 'spanType';
   this.attachListeners();
 }
+
+AnnotationOptionsUI.prototype.addGroupSearch = function(group, min) {
+  // Add a text field for filtering/selecting characters
+  var scope = this;
+  group.suggestions = Object.keys(this.annotationOpts)
+    .filter( function(x) { return scope.annotationOpts[x].group === group.name; } )
+    .map( function(x) {
+      var label = x.replace("speaker_", "");
+      return { value: label, label: label, original: x };
+    });
+  if (group.suggestions.length <= min) {
+    // Don't add search field (not that many options)
+    return;
+  }
+  var textfield = $('<input/>').attr('type', 'text');
+  textfield.autocomplete({
+    source: group.suggestions,
+    minLength: 0,
+    select: function(event,ui) {
+      var v = ui.item.original;
+      var selection = $('input[name="' + group.name + '"][value="' + v + '"]');
+      if (selection.length > 0) {
+        selection.click();
+        if (scope.selectDone) { scope.selectDone(); }
+      }
+    },
+    response: function(event,ui) {
+      // Only show fields that are in our list of suggestions
+      scope.showGroup(group, ui.content.map( function(x) { return x.original; }));
+    }
+  });
+  //So that typing into the textbox doesn't trigger other keyboard shortcuts:
+  textfield.bind('keypress', null, function () {
+    event.stopPropagation();
+  }).change(function() {
+    var v = textfield.val().trim();
+    if (group.name === 'character') {
+      v = "speaker_" + v;
+    }
+    var selection = $('input[name="' + group.name + '"][value="' + v + '"]');
+    if (selection.length > 0) {
+      selection.click();
+      if (scope.selectDone) { scope.selectDone(); }
+    }
+    return false;
+  });
+  group.div.append(textfield);
+}
+
+AnnotationOptionsUI.prototype.showAll = function() {
+  $('label').show();
+};
+
+AnnotationOptionsUI.prototype.showGroup = function(group, values) {
+  console.log(values);
+  var selection = $('input[name="' + group.name + '"]');
+  selection.each(function(index, element) {
+    element = $(element);
+    var value = element.attr('value');
+    if (values.indexOf(value) >= 0) {
+      element.parent().show();
+    } else {
+      element.parent().hide();
+    }
+  });
+};
 
 AnnotationOptionsUI.prototype.update = function(annotationOpts) {
   // AnnotationOpts was updated, lets update our UI (optional annotationOpts param)
@@ -280,6 +348,7 @@ AnnotationOptionsUI.prototype.update = function(annotationOpts) {
 
   // remove any content first
   this.jdom.html("");
+
   var allowsGroups = ['spanType', 'character'];
   var groupNames = ['Span', 'Character'];
   var groups = {};
@@ -287,10 +356,14 @@ AnnotationOptionsUI.prototype.update = function(annotationOpts) {
   for (var i = 0; i < allowsGroups.length; i++) {
     var btnClass = (allowsGroups[i] === 'spanType')? 'btn-group' : 'btn-group-vertical';
     var div = $('<div/>').addClass(btnClass).attr('data-toggle', 'buttons').attr('role', 'group');
-    groups[allowsGroups[i]] = { div: div, text: groupNames[i]};
+    groups[allowsGroups[i]] = { name: allowsGroups[i], div: div, text: groupNames[i]};
     var gdiv = $('<div/>').append($('<b></b>').append(groupNames[i])).append(div);
     this.jdom.append(gdiv);
+    if (allowsGroups[i] === 'character') {
+      this.addGroupSearch(groups[allowsGroups[i]], this.groupSearchMin);
+    }
   }
+  var scope = this;
   for (var name in this.annotationOpts) {
     var opt = this.annotationOpts[name];
     if (groups[opt.group]) {
@@ -311,6 +384,11 @@ AnnotationOptionsUI.prototype.update = function(annotationOpts) {
     }
     // look for the max characterId that is being preloaded
     if (opt.group == 'character') {
+      span.dblclick(function(event) {
+        if (scope.selectDone) {
+          scope.selectDone();
+        }
+      });
       var id = opt.id;
       if (id > maxId) {
         maxId = id;
@@ -423,7 +501,9 @@ AnnotationOptionsUI.prototype.attachListeners = function() {
 function Annotator(annotationOpts) {
   this.annotationOptsUI = new AnnotationOptionsUI(
     { jdom: $('#annotationOpts'),
-      annotationOpts: annotationOpts });
+      selectDone: function() { $("#submitspecific").click(); },
+      annotationOpts: annotationOpts
+    });
   this.spanType = 'quote';
   this.lastCharacter = undefined;
   this.nextSpanId = 0; // TOOD: update this when annotated file is loaded.
@@ -629,6 +709,7 @@ Annotator.prototype.openSpecificModal = function() {
     showClose: false
   });
 
+  this.annotationOptsUI.showAll();
   this.annotationOptsUI.attachOptionsToDiv($("#specificAnnotationOpts"));
   
   var scope = this;
