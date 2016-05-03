@@ -579,6 +579,25 @@ Annotator.prototype.updateSpanClicks = function() {
   $("#annotationarea pre span").click( this.directSpanClicks.bind(this) );
   $("#annotationarea pre span").mouseenter( this.hoverHighlight.bind(this) );
   $("#annotationarea pre span").mouseleave( this.hoverUnhighlight.bind(this) );
+  // change pointer depending on tool
+  //$(window).keydown( this.pointerMagic.bind(this) );
+  //$(window).keyup( this.pointerNormal.bind(this) );
+}
+
+Annotator.prototype.pointerMagic = function(e) {
+  if (e.altKey) {
+    // delete the annotation
+    $('#annotationarea pre').addClass('deletePointer');
+  } else if (e.metaKey || e.ctrlKey) {
+    // do the connection
+    $('#annotationarea pre span').addClass('connectPointer');
+  } else {
+  }
+}
+
+Annotator.prototype.pointerNormal = function(e) {
+  $('#annotationarea *').removeClass('deletePointer');
+  $('#annotationarea *').removeClass('connectPointer');
 }
 
 Annotator.prototype.hoverHighlight = function(e) {
@@ -771,11 +790,12 @@ Annotator.prototype.connectClick = function (event) {
       this.connectionTimes.push(event.timeStamp);
       span.addClass('connect_select');
       // if there is a click that is not on a span, stop trying to connect span one
+      var ann = this;
       $(window).click(function(e) {
         if ($(e.target)[0].tagName !== 'SPAN' &&
-          this.selectedSpans.length > 0) {
-          $("#" + this.selectedSpans[0]).removeClass('connect_select');
-          this.selectedSpans = [];
+          ann.selectedSpans.length > 0) {
+          $("#" + ann.selectedSpans[0]).removeClass('connect_select');
+          ann.selectedSpans = [];
           $(window).off('click');
         }
       });
