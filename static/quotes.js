@@ -307,31 +307,34 @@ AnnotationOptionsUI.prototype.addGroupSearch = function(group, min) {
       scope.showGroup(group, ui.content.map( function(x) { return x.original; }));
     }
   });
+  function onNameEnter() {
+      var v = textfield.val().trim();
+      if (group.name === 'character') {
+        v = "speaker_" + v;
+      }
+      var selection = $('input[name="' + group.name + '"][value="' + v + '"]');
+      if (selection.length > 0) {
+        selection.click();
+        if (scope.selectDone) { scope.selectDone(); }
+      }
+      return false;
+  }
   //So that typing into the textbox doesn't trigger other keyboard shortcuts:
   textfield.bind('keypress', null, function () {
     event.stopPropagation();
-  }).change(function() {
-    var v = textfield.val().trim();
-    if (group.name === 'character') {
-      v = "speaker_" + v;
+    if (event.which == 13) { // enter 
+      onNameEnter();
     }
-    var selection = $('input[name="' + group.name + '"][value="' + v + '"]');
-    if (selection.length > 0) {
-      selection.click();
-      if (scope.selectDone) { scope.selectDone(); }
-    }
-    return false;
-  });
+  }).change(onNameEnter);
   group.div.append(textfield);
 };
 
 AnnotationOptionsUI.prototype.showAll = function() {
-  $('label').show();
+  this.jdom.find('label').show();
 };
 
 AnnotationOptionsUI.prototype.showGroup = function(group, values) {
-  console.log(values);
-  var selection = $('input[name="' + group.name + '"]');
+  var selection = this.jdom.find('input[name="' + group.name + '"]');
   selection.each(function(index, element) {
     element = $(element);
     var value = element.attr('value');
@@ -488,11 +491,11 @@ AnnotationOptionsUI.prototype.addCharacterToConfig = function(name, id, group, c
     }
   }
   this.update();
-}
+};
 
 AnnotationOptionsUI.prototype.containsCharacter = function(name) {
   return this.annotationOpts[name];
-}
+};
 
 AnnotationOptionsUI.prototype.attachListeners = function() {
   // Annotation option stuff
@@ -505,7 +508,6 @@ AnnotationOptionsUI.prototype.attachListeners = function() {
 function Annotator(annotationOpts) {
   this.annotationOptsUI = new AnnotationOptionsUI(
     { jdom: $('#annotationOpts'),
-      selectDone: function() { $("#submitspecific").click(); },
       annotationOpts: annotationOpts
     });
   this.spanType = 'quote';
@@ -735,6 +737,9 @@ Annotator.prototype.openSpecificModal = function() {
   });
 
   this.annotationOptsUI.showAll();
+  this.annotationOptsUI.selectDone = function() { 
+    scope.closeSpecificModal(coords);
+  };
   this.annotationOptsUI.attachOptionsToDiv($("#specificAnnotationOpts"));
   
   var scope = this;
@@ -981,6 +986,10 @@ Annotator.prototype.openEditModal = function(e) {
     clickClose: true,
     showClose: false
   });
+  this.annotationOptsUI.showAll();
+  this.annotationOptsUI.selectDone = function() { 
+    scope.closeEditModal(span);
+  };
   this.annotationOptsUI.attachOptionsToDiv($("#editAnnotationOpts"));
 
   var scope = this;
