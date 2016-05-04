@@ -47,14 +47,6 @@ h1 {
   background-color: silver;
 }
 
-.quote .quote {
-  background-color: #c5b0d5;
-}
-
-.quote .quote .quote {
-  background-color: #ff9896;
-}
-
 .config {
   border: 1px dashed red;
 }

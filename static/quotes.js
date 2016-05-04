@@ -319,7 +319,7 @@ AnnotationOptionsUI.prototype.addGroupSearch = function(group, min) {
     return false;
   });
   group.div.append(textfield);
-}
+};
 
 AnnotationOptionsUI.prototype.showAll = function() {
   $('label').show();
@@ -511,7 +511,7 @@ function Annotator(annotationOpts) {
   this.connectionTimes = [];
   this.allowConnections = true;
   this.savingUI = new Saver();
-};
+}
 
 
 Annotator.prototype.launch = function() {
@@ -571,7 +571,7 @@ Annotator.prototype.updateSpanIds = function() {
   }
   this.nextSpanId = maxId + 1;
   this.ensureSpanIds();
-}
+};
 
 Annotator.prototype.updateSpanClicks = function() {
   $("#annotationarea pre span").off('click');
@@ -582,7 +582,7 @@ Annotator.prototype.updateSpanClicks = function() {
   // change pointer depending on tool
   //$(window).keydown( this.pointerMagic.bind(this) );
   //$(window).keyup( this.pointerNormal.bind(this) );
-}
+};
 
 Annotator.prototype.pointerMagic = function(e) {
   if (e.altKey) {
@@ -593,12 +593,12 @@ Annotator.prototype.pointerMagic = function(e) {
     $('#annotationarea pre span').addClass('connectPointer');
   } else {
   }
-}
+};
 
 Annotator.prototype.pointerNormal = function(e) {
   $('#annotationarea *').removeClass('deletePointer');
   $('#annotationarea *').removeClass('connectPointer');
-}
+};
 
 Annotator.prototype.hoverHighlight = function(e) {
   // this is the mouse entre function
@@ -611,7 +611,7 @@ Annotator.prototype.hoverHighlight = function(e) {
   if (connectedBits.length > 0) {
     $('#' + e.target.id).addClass('hover');
   }
-}
+};
 
 Annotator.prototype.hoverUnhighlight = function(e) {
   // this is the mouse exit function
@@ -622,7 +622,7 @@ Annotator.prototype.hoverUnhighlight = function(e) {
     $(connectedBits[i]).removeClass('hover');
   }
   $('#' + e.target.id).removeClass('hover');
-}
+};
 
 Annotator.prototype.enterAnnotateMode = function() {
   var text = $("#annotationarea textarea").val().trim();
@@ -647,7 +647,7 @@ Annotator.prototype.enterAnnotateMode = function() {
     var modded = i % 100;
     var xtra = "";
     if (i % 2 == 0) {
-      xtra = " zebra"
+      xtra = " zebra";
     }
     lineNums += "<span class=\"linenum" + xtra + "\">"+ i + "</span>\n";
   }
@@ -1044,4 +1044,4 @@ Annotator.prototype.directSpanClicks = function(e) {
       this.openEditModal(e);
     }
   }
-}
+};
