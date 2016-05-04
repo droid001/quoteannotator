@@ -12,12 +12,12 @@ Saver.prototype.save = function(evt) {
   var content = "";
   if (id == 'save') {
     savename = $('#savefilename').val().trim();
-    name = savename + '.xml';
+    name = (savename.endsWith('.xml'))? savename : savename + '.xml';
     var html = $("#annotationarea pre").html();
     content = convertToXml(html, this.annotationOptsUI.annotationOpts);
   } else if (id == 'saveconfig') {
     savename = $('#savefilenameconfig').val().trim();
-    name = savename + '.json';
+    name = (savename.endsWith('.json'))? savename : savename + '.json';
     content = JSON.stringify(this.annotationOptsUI.annotationOpts);
   }
   if (savename.length == 0) {
