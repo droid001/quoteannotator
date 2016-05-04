@@ -99,13 +99,17 @@ function getHighlightSpan(jdom){
   if (toWrap.trim().length == 0) {
     return null;
   }
-  return {"start": rs, "end": re};
+  return {"start": rs, "end": re, "totalLength": html.length};
 }
 
 function highlight(annotator, jdom, annotations, coords, id) {
+  var html = jdom.html();
+  if (html.length != coords.totalLength) {
+    // Hmm something in the html has changed, recomputed the coords
+    coords = getHighlightSpan(jdom);
+  }
   var rs = coords.start;
   var re = coords.end;
-  var html = jdom.html();
   var before = html.substring(0, rs);
   var classAttr = annotations.join(' ');
   var span = $('<span />');
@@ -749,7 +753,7 @@ Annotator.prototype.openSpecificModal = function() {
     // 49 is the numeral "1"'s code
     //var ind = key - 49;
     if (scope.annotationOptsUI.shortcuts[key]) {
-      scope.annotationOptsUI.shortcuts[key].click()
+      scope.annotationOptsUI.shortcuts[key].click();
     } else if (key == 13) {
       // 13 is return
       scope.closeSpecificModal(coords);
@@ -995,7 +999,7 @@ Annotator.prototype.openEditModal = function(e) {
     // 49 is the numeral "1"'s code
     //var ind = key - 49;
     if (scope.annotationOptsUI.shortcuts[key]) {
-      scope.annotationOptsUI.shortcuts[key].click()
+      scope.annotationOptsUI.shortcuts[key].click();
     } else if (key == 13) {
       // 13 is return
       scope.closeEditModal(span);
