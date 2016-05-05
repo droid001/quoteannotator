@@ -528,6 +528,8 @@ function Annotator(annotationOpts) {
   this.connectionTimes = [];
   this.allowConnections = true;
   this.savingUI = new Saver();
+  this.ctrlDown = false;
+  this.altDown = false;
 }
 
 
@@ -597,27 +599,29 @@ Annotator.prototype.updateSpanClicks = function() {
   $("#annotationarea pre span").mouseenter( this.hoverHighlight.bind(this) );
   $("#annotationarea pre span").mouseleave( this.hoverUnhighlight.bind(this) );
   // change pointer depending on tool
-  //$(window).keydown( this.pointerMagic.bind(this) );
-  //$(window).keyup( this.pointerNormal.bind(this) );
+  $(window).keydown( this.pointerMagic.bind(this) );
+  $(window).keyup( this.pointerNormal.bind(this) );
 };
 
 Annotator.prototype.pointerMagic = function(e) {
   if (e.altKey) {
     // delete the annotation
-    $('#annotationarea pre').addClass('deletePointer');
+    this.altDown = true;
   } else if (e.metaKey || e.ctrlKey) {
     // do the connection
-    $('#annotationarea pre span').addClass('connectPointer');
-  } else {
+    this.ctrlDown = true;
   }
 };
 
 Annotator.prototype.pointerNormal = function(e) {
-  $('#annotationarea *').removeClass('deletePointer');
-  $('#annotationarea *').removeClass('connectPointer');
+  this.altDown = false;
+  this.ctrlDown = false;
 };
 
 Annotator.prototype.hoverHighlight = function(e) {
+  if (this.altDown || this.ctrlDown) {
+    return;
+  }
   // this is the mouse entre function
   // now find everthing that this quote is "attached to" to highlight them too
   var connectionClass = '.connection_' + e.target.id;
