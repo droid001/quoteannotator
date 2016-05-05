@@ -52,7 +52,7 @@ Saver.prototype.load = function(evt) {
         ann.updateSpanIds();
         ann.updateConnections();
         ann.enableConnectionClicks();
-      }
+      };
     } else if (id == 'loadconfig') {
       reader.onload = function(e) {
         var content = reader.result;
@@ -63,6 +63,14 @@ Saver.prototype.load = function(evt) {
     reader.readAsText(file);
   }
 };
+
+function attrsToString(data) {
+  var attrs = Object.keys(data).map( function(key) {
+    return key + '="' + data[key] + '"'; 
+  });
+  var attrStr = attrs.join(" ");
+  return attrStr;
+}
 
 function htmlToXmlConvert(next, childConverted) {
   // now replace the outer xml bits
@@ -89,30 +97,37 @@ function htmlToXmlConvert(next, childConverted) {
   if (type == null) {
     console.log("Warning! generating xml tag without a type!");
   }
-  childConverted = "<" + type + " speaker=\"" + speaker + "\" connection=\"" +
-    connection.join(',') + "\" id=\"" + childId + "\">" + childConverted + "</" + type + ">";
+  var data = next.data();
+  data['speaker'] = speaker;
+  data['connection'] = connection.join(','),
+  data['id'] = childId;
+  var attrStr = attrsToString(data);
+  childConverted = "<" + type + " " + attrStr + ">" + childConverted + "</" + type + ">";
   return childConverted;
 }
 
 function xmlToHtmlConvert(child, childConverted) {
   // now replace the outer xml bits
-  var speaker = child.attr("speaker");
+  var classAttrs =  ['connection', 'speaker']; // properties to turn into classes (rest gets turned into data)
   var id = child.attr("id");
-  var connection = child.attr("connection");
   var attrs = child.prop("attributes");
   var id = null;
   var classes = {};
+  var dataAttrs = {};
   for (var attr = 0; attr < attrs.length; attr++) {
     var $attr = $(attrs[attr]);
     var name = $attr[0].name;
     var val = $attr.val();
     if (name === "id") {
       id = val;
-    } else {
+    } else if (classAttrs.indexOf(name) >= 0){
       classes[name] = val;
+    } else {
+      // Everything else store as 'data-xxx' attribute in HTML
+      dataAttrs[name] = val;
     }
   }
-  var span = $('<span />');
+  var span = $('<span/>');
   span.attr("id", id);
   var tagName = child[0].tagName;
   // this was a hack to fix old files
@@ -132,6 +147,11 @@ function xmlToHtmlConvert(child, childConverted) {
       if (cl == 'speaker') {
         title += ' ' + cl + "_" + val;
       }
+    }
+  }
+  for (var attr in dataAttrs) {
+    if (dataAttrs.hasOwnProperty(attr)) {
+      span.attr('data-' + attr, dataAttrs[attr]);
     }
   }
   span.attr('title', title);
@@ -169,8 +189,9 @@ function convertToXml(html, annotationOpts) {
   
   head += "<characters>";
   for (var name in annotationOpts) {
-    if (name.startsWith('speaker_')) {
-      var character = "<character name=\"" + name + "\" id=\"" + annotationOpts[name].id + "\">" +
+    var annOpt = annotationOpts[name];
+    if (annOpt.group == 'character') {
+      var character = "<character " + attrsToString(annOpt.data) + ">" +
         "</character>";
       head += character;
     }
@@ -179,7 +200,7 @@ function convertToXml(html, annotationOpts) {
   var xmled = convertSingleSpan($("#annotationarea pre"), htmlToXmlConvert);
   var butt = "</text></doc>";
   return head + xmled + butt;
-};
+}
 
 function convertToHtml(xml, ann) {
   var xmlDoc = $.parseXML(xml);
@@ -190,7 +211,7 @@ function convertToHtml(xml, ann) {
     ann.addCharactersFromXml($characters);
   }
   // now we want to load everything for real
-  $text = $xml.find( "text");
+  $text = $xml.find("text");
   var inner = convertSingleSpan($text, xmlToHtmlConvert);
   return inner;
-};
+}

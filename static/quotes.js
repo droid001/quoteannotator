@@ -193,7 +193,7 @@ Annotator.prototype.deleteAnnotation = function(jdom) {
     }
   }
   this.updateSpanClicks();
-}
+};
 
 function getCaretCharacterOffsetWithin(element) {
   var caretOffset = 0;
@@ -273,7 +273,6 @@ function AnnotationOptionsUI(params) {
   this.selectDone = params.selectDone;
   this.groupSearchMin = (params.groupSearchMin != undefined)? params.groupSearchMin : 6;
   this.maxCharacterId = 0;
-  this.groupType = 'spanType';
   this.attachListeners();
 }
 
@@ -423,7 +422,6 @@ AnnotationOptionsUI.prototype.update = function(annotationOpts) {
 
 AnnotationOptionsUI.prototype.addCharacter = function() {
   // open add option modal
-  this.groupType = 'character';
   var characterId = this.maxCharacterId;
   var nextColor = ts.getLightColor(characterId);
   var optionCssElem = $("#optioncss");
@@ -472,7 +470,7 @@ AnnotationOptionsUI.prototype.submit = function() {
     }
 
     var css = $("#optioncss").val();
-    this.addCharacterToConfig(name, this.maxCharacterId, this.groupType, css);
+    this.addCharacterToConfig({name: name, id: this.maxCharacterId, css: css});
     $('#addtest p').attr("style", "");
   }
   $("#closeaddoption").click();
@@ -482,13 +480,14 @@ AnnotationOptionsUI.prototype.attachOptionsToDiv = function(parentDiv) {
   parentDiv.append(this.jdom);
 };
 
-AnnotationOptionsUI.prototype.addCharacterToConfig = function(name, id, group, css) {
-  this.annotationOpts[name] = { css: css, name: name, group: group };
-  if (group === 'character') {
-    this.annotationOpts[name].id = id;
-    if (id <= 9) {
-      this.annotationOpts[name].shortcut = id + "";
-    }
+AnnotationOptionsUI.prototype.addCharacterToConfig = function(character) {
+  this.annotationOpts[character.name] = character;
+  character.data = character.data || {};
+  character.data['id'] = character.id;
+  character.data['name'] = character.name;
+  character.group = 'character';
+  if (character.id != undefined && character.id <= 9) {
+    character.shortcut = character.id + "";
   }
   this.update();
 };
@@ -701,24 +700,40 @@ Annotator.prototype.ensureSpanIds = function() {
 Annotator.prototype.addCharactersFromXml = function($characters) {
   var children = $characters.children();
   for (var i = 0; i < children.length; i++) {
-    var child = $( children[i] );
+    var child = $(children[i]);
     var id = child.attr("id");
+    // Name cleanup
     var name = "";
     if (child.attr("name") == undefined) {
       if (child.attr("aliases") == undefined) {
+        console.warning("skipping character without name");
+        console.log(child);
         continue;
       }
-      //TODO: deal with aliases!
-      name = child.attr("aliases").replace(' ', '_');
+      name = child.attr("aliases").split(';')[0];
     } else {
-      name = child.attr("name").split(' ').join('_');
-      name = name.replace('.', '');
-      if (!name.startsWith('speaker_')) {
-        name = 'speaker_' + name;
+      name = child.attr("name");
+    }
+    name = name.replace(/\s+/, '_');
+    name = name.replace('.', '');
+    if (!name.startsWith('speaker_')) {
+      name = 'speaker_' + name;
+    }
+    console.log(id + ': ' + name);
+    // Keep other attribute from child
+    var data = {};
+    var attrs = child.prop("attributes");
+    for (var j = 0; j < attrs.length; j++) {
+      var $attr = $(attrs[j]);
+      var attr = $attr[0].name;
+      var val = $attr.val();
+      if (attr !== 'name' && attr !== 'id') {
+        data[attr] = val;
       }
     }
     var css = 'background-color: ' + ts.getLightColor(id);
-    this.annotationOptsUI.addCharacterToConfig(name, id, 'character', css);
+    var character = { name: name, id: id, css: css, data: data };
+    this.annotationOptsUI.addCharacterToConfig(character);
   }
 };
 
