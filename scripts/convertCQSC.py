@@ -229,13 +229,13 @@ def convert(input, outfilename, charactersFile, mentionLevel, splitChapters, inc
     newdoc = dom.createElement('DOC')
     root.tagName = 'TEXT'
     root.nodeName = 'TEXT'
-    entitiesElement = dom.createElement('ENTITIES');
+    entitiesElement = dom.createElement('ENTITIES')
     entitiesElement.appendChild(entityElementsByType['PERSON']['elements'])
     entitiesElement.appendChild(entityElementsByType['LOCATION']['elements'])
     entitiesElement.appendChild(entityElementsByType['ORGANIZATION']['elements'])
     newdoc.appendChild(entitiesElement)
     newdoc.appendChild(root)
-    dom.appendChild(newdoc);
+    dom.appendChild(newdoc)
 
     # Add characters
     if characters:
