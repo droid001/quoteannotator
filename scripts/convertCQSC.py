@@ -293,14 +293,16 @@ def convert(input, outfilename, charactersFile, mentionLevel, splitChapters, inc
             #quote.setAttribute('speakerId', speakerId)
             quote.setAttribute('speaker', speakerName)
             quote.setAttribute('mention', speakerMentionId)
-            quote.setAttribute('connection', mentionIdToSpanId[speakerMentionId])
+            if not mentionLevel == 'QUOTES':  # No need to set connection if no mentions will be output
+                quote.setAttribute('connection', mentionIdToSpanId[speakerMentionId])
             # Add connection to mention
             mention = mentionIdToMention[speakerMentionId]
-            mconn = mention.getAttribute('connection')
-            if len(mconn) > 0:
-                mention.setAttribute('connection',  mconn + ',' + quoteSpanId)
-            else:
-                mention.setAttribute('connection', quoteSpanId)
+            if not mentionLevel == 'QUOTES':  # No need to set connection if no mentions will be output
+                mconn = mention.getAttribute('connection')
+                if len(mconn) > 0:
+                    mention.setAttribute('connection',  mconn + ',' + quoteSpanId)
+                else:
+                    mention.setAttribute('connection', quoteSpanId)
         else:
             noSpeaker += 1
             #print 'Unknown speaker for ' + quote.toxml('utf-8')
