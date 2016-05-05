@@ -415,7 +415,7 @@ AnnotationOptionsUI.prototype.update = function(annotationOpts) {
       if (str.length == 0) {
         continue;
       }
-      $('<style>.' + name + ' { ' + str + ' }</style>').appendTo('head');
+      $('<style>.' + CSS.escape(name) + ' { ' + str + ' }</style>').appendTo('head');
     }
   }
 };
