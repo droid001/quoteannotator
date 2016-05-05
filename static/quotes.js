@@ -189,7 +189,7 @@ Annotator.prototype.deleteAnnotation = function(jdom) {
       }
       $(connectionId).remove();
       //now remove the connection class from the connected span
-      $(connection).removeClass('connection_' + spanId);
+      $('#' + connection).removeClass('connection_' + spanId);
     }
   }
   this.updateSpanClicks();
