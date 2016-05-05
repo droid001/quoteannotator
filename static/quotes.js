@@ -453,12 +453,21 @@ AnnotationOptionsUI.prototype.displayTestOption = function() {
   $("#addtest p").attr("style", val);
 };
 
+function normalizeSpeakerName(name) {
+  name = name.replace(/\s+/g, '_');
+  name = name.replace('.', '');
+  // prefix so that we can process/differentiate classes better!
+  if (!name.startsWith('speaker_')) {
+    name = 'speaker_' + name;
+  }
+  return name;
+}
+
 AnnotationOptionsUI.prototype.submit = function() {
   // TODO: class name shouldn't have punctuation either
-  var name = $("#optionname").val().trim().replace(/\s/g, "_");
-  if (name.length != 0) {
-    // prefix so that we can process/differentiate classes better!
-    name = 'speaker_' + name;
+  var originalName = $("#optionname").val().trim();
+  if (originalName.length > 0) {
+    var name = normalizeSpeakerName(originalName);
     this.maxCharacterId++;
 
     // Check that values are reasonable
@@ -470,7 +479,9 @@ AnnotationOptionsUI.prototype.submit = function() {
     }
 
     var css = $("#optioncss").val();
-    this.addCharacterToConfig({name: name, id: this.maxCharacterId, css: css});
+    var data = { aliases: [originalName] };
+    this.addCharacterToConfig(
+      {name: name, id: this.maxCharacterId, css: css, data: data});
     $('#addtest p').attr("style", "");
   }
   $("#closeaddoption").click();
@@ -484,7 +495,8 @@ AnnotationOptionsUI.prototype.addCharacterToConfig = function(character) {
   this.annotationOpts[character.name] = character;
   character.data = character.data || {};
   character.data['id'] = character.id;
-  character.data['name'] = character.name;
+  character.data['name'] = character.name.startsWith('speaker_')?
+    character.name.substring('speaker_'.length) : character.name;
   character.group = 'character';
   if (character.id != undefined && character.id <= 9) {
     character.shortcut = character.id + "";
@@ -714,14 +726,9 @@ Annotator.prototype.addCharactersFromXml = function($characters) {
     } else {
       name = child.attr("name");
     }
-    name = name.replace(/\s+/, '_');
-    name = name.replace('.', '');
-    if (!name.startsWith('speaker_')) {
-      name = 'speaker_' + name;
-    }
-    console.log(id + ': ' + name);
+    name = normalizeSpeakerName(name);
     // Keep other attribute from child
-    var data = {};
+    var data = { };
     var attrs = child.prop("attributes");
     for (var j = 0; j < attrs.length; j++) {
       var $attr = $(attrs[j]);
