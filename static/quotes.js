@@ -272,7 +272,7 @@ function AnnotationOptionsUI(params) {
   this.annotationOpts = params.annotationOpts || {};
   this.selectDone = params.selectDone;
   this.groupSearchMin = (params.groupSearchMin != undefined)? params.groupSearchMin : 6;
-  this.maxCharacterId = 0;
+  this.nextCharacterId = 0;
   this.attachListeners();
 }
 
@@ -358,7 +358,7 @@ AnnotationOptionsUI.prototype.update = function(annotationOpts) {
   var allowsGroups = ['spanType', 'character'];
   var groupNames = ['Span', 'Character'];
   var groups = {};
-  var maxId = 0;
+  var maxId = -1;
   for (var i = 0; i < allowsGroups.length; i++) {
     var btnClass = (allowsGroups[i] === 'spanType')? 'btn-group' : 'btn-group-vertical';
     var div = $('<div/>').addClass(btnClass).attr('data-toggle', 'buttons').attr('role', 'group');
@@ -401,7 +401,7 @@ AnnotationOptionsUI.prototype.update = function(annotationOpts) {
       }
     }
   }
-  this.maxCharacterId = maxId;
+  this.nextCharacterId = maxId+1;
 
   // Update our styles
   $("head style").remove();
@@ -422,7 +422,7 @@ AnnotationOptionsUI.prototype.update = function(annotationOpts) {
 
 AnnotationOptionsUI.prototype.addCharacter = function() {
   // open add option modal
-  var characterId = this.maxCharacterId;
+  var characterId = this.nextCharacterId;
   var nextColor = ts.getLightColor(characterId);
   var optionCssElem = $("#optioncss");
   var value = (nextColor)? "background-color:" + nextColor + ';' : optionCssElem.attr('title') || '';
@@ -468,7 +468,6 @@ AnnotationOptionsUI.prototype.submit = function() {
   var originalName = $("#optionname").val().trim();
   if (originalName.length > 0) {
     var name = normalizeSpeakerName(originalName);
-    this.maxCharacterId++;
 
     // Check that values are reasonable
     if (this.containsCharacter(name)) {
@@ -481,8 +480,9 @@ AnnotationOptionsUI.prototype.submit = function() {
     var css = $("#optioncss").val();
     var data = { aliases: [originalName] };
     this.addCharacterToConfig(
-      {name: name, id: this.maxCharacterId, css: css, data: data});
+      {name: name, id: this.nextCharacterId, css: css, data: data});
     $('#addtest p').attr("style", "");
+    this.nextCharacterId++;
   }
   $("#closeaddoption").click();
 };
@@ -713,7 +713,7 @@ Annotator.prototype.addCharactersFromXml = function($characters) {
   var children = $characters.children();
   for (var i = 0; i < children.length; i++) {
     var child = $(children[i]);
-    var id = child.attr("id");
+    var id = parseInt(child.attr("id"));
     // Name cleanup
     var name = "";
     if (child.attr("name") == undefined) {
