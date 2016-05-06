@@ -530,6 +530,7 @@ function Annotator(annotationOpts) {
   this.savingUI = new Saver();
   this.ctrlDown = false;
   this.altDown = false;
+  this.connectionNum = 0;
 }
 
 
@@ -916,8 +917,11 @@ Annotator.prototype.drawConnection = function(span1, span2) {
     topMostSpan = span2;
     bottomSpan = span1;
   }
+  // we also want to select slightly varying colors
+  var connectionColor = ts.getConnectionColor(this.connectionNum);
   var widthDiv = Math.abs(s1Left - s2Left);
   var heightDiv = Math.abs(s1Top - s2Top);
+  var leftOffset = (this.connectionNum % 10) * 2;
   if (Math.abs(s1Top - s2Top) < 10) {
     heightDiv = 10;
     var div = $('<div />'); 
@@ -927,7 +931,8 @@ Annotator.prototype.drawConnection = function(span1, span2) {
         height : (heightDiv - 10) + "px",
         width : widthDiv + "px",
         top : (topMostSpan.prop("offsetTop") - 4) + "px",
-        left : (leftMostSpan.prop("offsetLeft") + 10) + "px"
+        left : (leftMostSpan.prop("offsetLeft") + leftOffset) + "px",
+        "border-color": connectionColor + " " + connectionColor + " transparent " + connectionColor
       });
     div.click( this.deleteConnection );
     div.attr("id", span1.attr("id") + "_" + span2.attr("id"));
@@ -944,28 +949,30 @@ Annotator.prototype.drawConnection = function(span1, span2) {
           height : (heightDiv - 5) + "px",
           width : "4px",
           top : (leftMostSpan.prop("offsetTop") + (leftMostSpan.height() - 4)) + "px",
-          left : (leftMostSpan.prop("offsetLeft") + 10) + "px",
+          left : (leftMostSpan.prop("offsetLeft") + leftOffset) + "px",
         });
       divOver.css({
           height : "2px",
           width : widthDiv + "px",
           top : (bottomSpan.prop("offsetTop") + 4) + "px",
-          left : (leftMostSpan.prop("offsetLeft") + 10) + "px",
+          left : (leftMostSpan.prop("offsetLeft") + leftOffset) + "px",
         });
     } else {
       divUp.css({
           height : heightDiv + "px",
           width : "4px",
           top : (rightSpan.prop("offsetTop") + 4) + "px",
-          left : (leftMostSpan.prop("offsetLeft") + 10) + "px",
+          left : (leftMostSpan.prop("offsetLeft") + leftOffset) + "px",
         });
       divOver.css({
           height : "2px",
           width : widthDiv + "px",
           top : (rightSpan.prop("offsetTop") + 4) + "px",
-          left : (leftMostSpan.prop("offsetLeft") + 10) + "px",
+          left : (leftMostSpan.prop("offsetLeft") + leftOffset) + "px",
         });
     }
+    divUp.css({'background-color' : connectionColor});
+    divOver.css({'background-color' : connectionColor});
     divUp.click( this.deleteConnection );
     divUp.attr("id", span1.attr("id") + "_" + span2.attr("id") + '_up');
     divOver.click( this.deleteConnection );
@@ -977,6 +984,7 @@ Annotator.prototype.drawConnection = function(span1, span2) {
     $("#annotationarea").append(divUp);
     $("#annotationarea").append(divOver);
   }
+  this.connectionNum++;
 };
 
 Annotator.prototype.deleteConnection = function(e) {

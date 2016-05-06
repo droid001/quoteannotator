@@ -10,8 +10,12 @@ var d3_category20_colors = [ '#1f77b4', '#aec7e8', '#ff7f0e', '#ffbb78', '#2ca02
 
 // Subset of light colors as defaults for character coloring (also exclude grays)
 // Other colors are okay too but maybe black doesn't show up as well...
-var light_colors = ['#aec7e8', '#ffbb78', '#98df8a', '#ff9896', '#c5b0d5',
+// '#aec7e8', this is a blue that I took out so that we can have blue connections
+var light_colors = ['#ffbb78', '#98df8a', '#ff9896', '#c5b0d5',
   '#c49c94', '#f7b6d2', '#dbdb8d', '#9edae5'];
+
+
+var connection_colors = ['#344f62', '#366b91', '#3787c0', '#5e9fcd', '#85b8d9'];
 
 Tools.prototype.selectSelector = function() {
   if (!this.selection){
@@ -52,6 +56,11 @@ Tools.prototype.highlight = function() {
 Tools.prototype.alert = function(message, callback){
   alert(message);
 };
+
+Tools.prototype.getConnectionColor = function(i) {
+  var ind = i % connection_colors.length;
+  return connection_colors[ind];
+}
 
 Tools.prototype.getColor = function(i) {
   // TODO: generate a random color if i >= array_length

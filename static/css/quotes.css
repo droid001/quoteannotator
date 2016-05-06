@@ -68,7 +68,9 @@ h1 {
 .upConnect, .overConnect {
   position: absolute;
   background-color: #007bff;
+  opacity: .75;
 }
+
 
 .connect_select {
   color: red;
