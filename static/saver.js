@@ -157,8 +157,8 @@ function xmlToHtmlConvert(child, childConverted) {
   }
   span.attr('title', title);
   span.html(childConverted);
-
-  return span.prop("outerHTML");
+  // Need to convert &amp; back into & for some reason
+  return span.prop("outerHTML").replace("&amp;", "&");
 }
 
 function convertSingleSpan(span, conversionFunction) {
@@ -214,5 +214,7 @@ function convertToHtml(xml, ann) {
   // now we want to load everything for real
   $text = $xml.find("text");
   var inner = convertSingleSpan($text, xmlToHtmlConvert);
+  // Need to convert &amp; back into & for some reason
+  inner = inner.replace("&amp;", "&");
   return inner;
 }
