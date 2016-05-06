@@ -479,10 +479,14 @@ AnnotationOptionsUI.prototype.submit = function() {
 
     var css = $("#optioncss").val();
     var data = { aliases: [originalName] };
-    this.addCharacterToConfig(
-      {name: name, id: this.nextCharacterId, css: css, data: data});
+    var character = {name: name, id: this.nextCharacterId, css: css, data: data};
+    this.addCharacterToConfig(character);
     $('#addtest p').attr("style", "");
-    this.nextCharacterId++;
+    if (this.nextCharacterId <= character.id) {
+      // character id should have been updated in addCharacterToConfig
+      // increment if not already incremented
+      this.nextCharacterId = character.id + 1;
+    }
   }
   $("#closeaddoption").click();
 };
