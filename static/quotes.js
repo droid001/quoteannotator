@@ -67,8 +67,8 @@ function getRealCoords(coords, elements) {
 }
 
 // Given jquery object jdom, returns the span with start and end coordinate
-function getHighlightSpan(jdom){
-  var coords = getCaretCharacterOffsetWithin(jdom[0]);
+function getHighlightSpan(jdom, charOffsets){
+  var coords = charOffsets || getCaretCharacterOffsetWithin(jdom[0]);
   // if the user clicks and doesn't highlight anything
   if (coords.start == coords.end) {
     return null;
@@ -99,14 +99,14 @@ function getHighlightSpan(jdom){
   if (toWrap.trim().length == 0) {
     return null;
   }
-  return {"start": rs, "end": re, "totalLength": html.length};
+  return {"start": rs, "end": re, "totalLength": html.length, "characterOffsets": coords};
 }
 
 function highlight(annotator, jdom, annotations, coords, id) {
   var html = jdom.html();
   if (html.length != coords.totalLength) {
     // Hmm something in the html has changed, recomputed the coords
-    coords = getHighlightSpan(jdom);
+    coords = getHighlightSpan(jdom, coords.characterOffsets);
   }
   var rs = coords.start;
   var re = coords.end;
@@ -766,7 +766,6 @@ Annotator.prototype.openSpecificModal = function() {
     clickClose: true,
     showClose: false
   });
-
   this.annotationOptsUI.showAll();
   this.annotationOptsUI.selectDone = function() { 
     scope.closeSpecificModal(coords);
