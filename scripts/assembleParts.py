@@ -23,10 +23,29 @@ def writeXml(dom, filename):
 
 def getPartNumber(filename):
     m = re.match(r"(.*?)-([0-9]+)(-[^0-9]+)?\.xml",filename)
-    if m:
-        return float(m.group(2))
+    return float(m.group(2)) if m else -1
+
+def updateId(id, offset):
+    if len(id) > 0:
+        m = re.match(r"([a-zA-Z]+)([0-9]+)", id)
+        d = int(m.group(2)) + offset
+        mid = m.group(1) + str(d)
+        return (mid,d)
     else:
-        return -1
+        return (id,None)
+
+def updateIds(elements, offset):
+    maxId = -1
+    for element in elements:
+        eid = updateId(element.getAttribute('id'), offset)
+        if eid[1] > maxId:
+            maxId = eid[1]
+        element.setAttribute('id', eid[0])
+        connections = element.getAttribute('connection').split(",")
+        connections = [updateId(c,offset)[0] for c in connections]
+        connection = ",".join(connections)
+        element.setAttribute('connection', connection)
+    return maxId+1
 
 def assemble(input, outfilename):
     # Get filelist
@@ -37,6 +56,7 @@ def assemble(input, outfilename):
     chapters = []
     characters = []
     charactersByName = {}
+    maxSpanId = 0
     for file in files:
         chdom = minidom.parse(input + '/' + file)
         characterElems = chdom.getElementsByTagName('character')
@@ -48,7 +68,12 @@ def assemble(input, outfilename):
                 characters.append(charactersByName[name])
         textElems = chdom.getElementsByTagName('text')
         for textElem in textElems:
-            # TODO: fix up span ids
+            # TODO: fix up span ids for quote, mention, connection
+            spanOffset = maxSpanId
+            m1 = updateIds(chdom.getElementsByTagName('quote'), spanOffset)
+            m2 = updateIds(chdom.getElementsByTagName('mention'), spanOffset)
+            maxSpanId = m1 if m1 > maxSpanId else maxSpanId
+            maxSpanId = m2 if m2 > maxSpanId else maxSpanId
             chapters.append( { 'xml': textElem } )
     # Final output
     impl = minidom.getDOMImplementation()
