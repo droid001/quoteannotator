@@ -47,7 +47,7 @@ def updateIds(elements, offset):
         element.setAttribute('connection', connection)
     return maxId+1
 
-def assemble(input, outfilename):
+def assemble(input, includeSectionTags, outfilename):
     # Get filelist
     files = [f for f in os.listdir(input) if f.endswith('.xml')]
     # Sort files by order
@@ -74,7 +74,7 @@ def assemble(input, outfilename):
             m2 = updateIds(chdom.getElementsByTagName('mention'), spanOffset)
             maxSpanId = m1 if m1 > maxSpanId else maxSpanId
             maxSpanId = m2 if m2 > maxSpanId else maxSpanId
-            chapters.append( { 'xml': textElem } )
+            chapters.append({'xml': textElem})
     # Final output
     impl = minidom.getDOMImplementation()
     dom = impl.createDocument(None, "doc", None)
@@ -83,11 +83,18 @@ def assemble(input, outfilename):
     for character in characters:
         charactersElem.appendChild(character['xml'].cloneNode(True))
     docElem.appendChild(charactersElem)
+    docElem.appendChild(dom.createTextNode('\n'))
     textElem = dom.createElement('text')
     for chapter in chapters:
         t = chapter['xml']
+        if includeSectionTags:
+            chapterElem = dom.createElement('chapter')
+            textElem.appendChild(dom.createTextNode('\n'))
+            textElem.appendChild(chapterElem)
+        else:
+            chapterElem = textElem
         for c in t.childNodes:
-            textElem.appendChild(c.cloneNode(True))
+            chapterElem.appendChild(c.cloneNode(True))
     docElem.appendChild(textElem)
     writeXml(dom, outfilename)
 
@@ -95,9 +102,10 @@ def main():
     # Argument processing
     parser = argparse.ArgumentParser(description='Assembles annotated parts together')
     parser.add_argument('infile')
+    parser.add_argument('-p', dest='includeSectionTags', help='paragraphs and headings', action='store_true')
     parser.add_argument('outfile', nargs='?')
     args = parser.parse_args()
     outname = args.outfile or args.infile + '.xml'
-    assemble(args.infile, outname)
+    assemble(args.infile, args.includeSectionTags, outname)
 
 if __name__ == "__main__": main()
