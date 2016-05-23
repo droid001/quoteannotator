@@ -1,0 +1,369 @@
+[
+  {
+    "id": "0",
+    "gender": "female",
+    "name": "Emma_Woodhouse",
+    "aliases": [
+      "Emma Woodhouse",
+      "Emma",
+      "Miss Woodhouse"
+    ]
+  },
+  {
+    "id": "1",
+    "gender": "female",
+    "name": "Isabella_Woodhouse",
+    "aliases": [
+      "Isabella Woodhouse",
+      "Isabella",
+      "Mrs. John Knightley",
+      "Mrs. Knightley"
+    ]
+  },
+  {
+    "id": "2",
+    "gender": "male",
+    "name": "Mr._John_Knightley",
+    "aliases": [
+      "Mr. John Knightley",
+      "John Knightley",
+      "Mr. Knightley",
+      "John"
+    ]
+  },
+  {
+    "id": "3",
+    "gender": "female",
+    "name": "Miss_Taylor",
+    "aliases": [
+      "Miss Taylor",
+      "Mrs. Weston",
+      "Anne Taylor"
+    ]
+  },
+  {
+    "id": "4",
+    "gender": "male",
+    "name": "Mr._George_Knightley",
+    "aliases": [
+      "Mr. George Knightley",
+      "George"
+    ]
+  },
+  {
+    "id": "5",
+    "gender": "male",
+    "name": "Mr._Elton",
+    "aliases": [
+      "Mr. Elton",
+      "Elton"
+    ]
+  },
+  {
+    "id": "6",
+    "gender": "male",
+    "name": "Mr._Frank_Churchill",
+    "aliases": [
+      "Mr. Frank Churchill",
+      "Frank C. Weston Churchill",
+      "F. C. Weston Churchill",
+      "Weston Churchill",
+      "Frank Churchill",
+      "Frank"
+    ]
+  },
+  {
+    "id": "7",
+    "gender": "male",
+    "name": "Mr._Weston",
+    "aliases": [
+      "Mr. Weston",
+      "Weston"
+    ]
+  },
+  {
+    "id": "8",
+    "gender": "female",
+    "name": "Miss_Harriet_Smith",
+    "aliases": [
+      "Miss Harriet Smith",
+      "Harriet Smith",
+      "Harriet",
+      "Mrs. Robert Martin",
+      "Mrs. Martin"
+    ]
+  },
+  {
+    "id": "9",
+    "gender": "male",
+    "name": "Mr._Robert_Martin",
+    "aliases": [
+      "Mr. Robert Martin",
+      "Mr. Martin",
+      "Robert Martin"
+    ]
+  },
+  {
+    "id": "10",
+    "gender": "female",
+    "name": "Miss_Jane_Fairfax",
+    "aliases": [
+      "Miss Jane Fairfax",
+      "Jane Fairfax",
+      "Miss Fairfax",
+      "Jane"
+    ]
+  },
+  {
+    "id": "11",
+    "gender": "male",
+    "name": "Lieutenant_Fairfax",
+    "aliases": [
+      "Lieutenant Fairfax",
+      "Lieut. Fairfax"
+    ]
+  },
+  {
+    "id": "12",
+    "gender": "female",
+    "name": "Miss_Jane_Bates",
+    "aliases": [
+      "Miss Jane Bates",
+      "Jane Bates",
+      "Miss Bates",
+      "Bates"
+    ]
+  },
+  {
+    "id": "13",
+    "gender": "female",
+    "name": "Miss_Hawkins",
+    "aliases": [
+      "Miss Hawkins",
+      "Mrs. Elton"
+    ]
+  },
+  {
+    "id": "14",
+    "gender": "female",
+    "name": "Mrs._Woodhouse",
+    "aliases": [
+      "Mrs. Woodhouse"
+    ]
+  },
+  {
+    "id": "15",
+    "gender": "male",
+    "name": "Mr._Henry_Woodhouse",
+    "aliases": [
+      "Mr. Henry Woodhouse",
+      "Mr. Woodhouse"
+    ]
+  },
+  {
+    "id": "16",
+    "gender": "male",
+    "name": "James",
+    "aliases": [
+      "James"
+    ]
+  },
+  {
+    "id": "17",
+    "gender": "female",
+    "name": "Hannah",
+    "aliases": [
+      "Hannah"
+    ]
+  },
+  {
+    "id": "18",
+    "gender": "female",
+    "name": "Miss_Churchill",
+    "aliases": [
+      "Miss Churchill"
+    ]
+  },
+  {
+    "id": "19",
+    "gender": "female",
+    "name": "Mrs._Churchill",
+    "aliases": [
+      "Mrs. Churchill"
+    ]
+  },
+  {
+    "id": "20",
+    "gender": "male",
+    "name": "Mr._Churchill",
+    "aliases": [
+      "Mr. Churchill"
+    ]
+  },
+  {
+    "id": "21",
+    "gender": "male",
+    "name": "Mr._Perry",
+    "aliases": [
+      "Mr. Perry",
+      "Perry"
+    ]
+  },
+  {
+    "id": "22",
+    "gender": "female",
+    "name": "Mrs._Bates",
+    "aliases": [
+      "Mrs. Bates"
+    ]
+  },
+  {
+    "id": "23",
+    "gender": "female",
+    "name": "Mrs._Goddard",
+    "aliases": [
+      "Mrs. Goddard"
+    ]
+  },
+  {
+    "id": "24",
+    "gender": "female",
+    "name": "Miss_Nash",
+    "aliases": [
+      "Miss Nash"
+    ]
+  },
+  {
+    "id": "25",
+    "gender": "male",
+    "name": "Henry_Knightley",
+    "aliases": [
+      "Henry Knightley",
+      "Henry"
+    ]
+  },
+  {
+    "id": "26",
+    "gender": "male",
+    "name": "Mr._Wingfield",
+    "aliases": [
+      "Mr. Wingfield"
+    ]
+  },
+  {
+    "id": "27",
+    "gender": "male",
+    "name": "Mr._Cole",
+    "aliases": [
+      "Mr. Cole"
+    ]
+  },
+  {
+    "id": "28",
+    "gender": "female",
+    "name": "Mrs._Cole",
+    "aliases": [
+      "Mrs. Cole"
+    ]
+  },
+  {
+    "id": "29",
+    "gender": "female",
+    "name": "Mrs._Dixon",
+    "aliases": [
+      "Mrs. Dixon",
+      "Miss Campbell"
+    ]
+  },
+  {
+    "id": "30",
+    "gender": "male",
+    "name": "Mr._Dixon",
+    "aliases": [
+      "Mr. Dixon"
+    ]
+  },
+  {
+    "id": "31",
+    "gender": "female",
+    "name": "Mrs._Perry",
+    "aliases": [
+      "Mrs. Perry"
+    ]
+  },
+  {
+    "id": "32",
+    "gender": "female",
+    "name": "Elizabeth_Martin",
+    "aliases": [
+      "Elizabeth Martin",
+      "Elizabeth",
+      "Miss Martin"
+    ]
+  },
+  {
+    "id": "33",
+    "gender": "female",
+    "name": "Miss_Richardson",
+    "aliases": [
+      "Miss Richardson"
+    ]
+  },
+  {
+    "id": "34",
+    "gender": "female",
+    "name": "Hetty_Bates",
+    "aliases": [
+      "Hetty Bates",
+      "Hetty"
+    ]
+  },
+  {
+    "id": "35",
+    "gender": "male",
+    "name": "Clayton_Park",
+    "aliases": [
+      "Clayton Park"
+    ]
+  },
+  {
+    "id": "36",
+    "gender": "female",
+    "name": "Miss_Smith",
+    "aliases": [
+      "Miss Smith"
+    ]
+  },
+  {
+    "id": "37",
+    "gender": "male",
+    "name": "William_Coxe",
+    "aliases": [
+      "William Coxe"
+    ]
+  },
+  {
+    "id": "38",
+    "gender": "male",
+    "name": "Wakefield",
+    "aliases": [
+      "Wakefield"
+    ]
+  },
+  {
+    "id": "39",
+    "gender": "female",
+    "name": "Mrs._Campbell",
+    "aliases": [
+      "Mrs. Campbell"
+    ]
+  },
+  {
+    "id": "40",
+    "gender": "male",
+    "name": "Mitchell",
+    "aliases": [
+      "Mitchell"
+    ]
+  }
+]

@@ -1,0 +1,37 @@
+[
+  {
+    "id": "0",
+    "gender": "male",
+    "name": "Sherlock_Holmes",
+    "aliases": [
+      "Sherlock Holmes",
+      "Holmes"
+    ]
+  },
+  {
+    "id": "1",
+    "gender": "male",
+    "name": "Dr_Watson",
+    "aliases": [
+      "Dr Watson",
+      "I"
+    ]
+  },
+  {
+    "id": "2",
+    "gender": "female",
+    "name": "Miss_Mary_Sutherland",
+    "aliases": [
+      "Miss Mary Sutherland",
+      "Miss Sutherland"
+    ]
+  },
+  {
+    "id": "3",
+    "gender": "male",
+    "name": "Mr._Windibank",
+    "aliases": [
+      "Mr. Windibank"
+    ]
+  }
+]

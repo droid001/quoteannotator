@@ -1,0 +1,218 @@
+[
+  {
+    "id": "0",
+    "gender": "female",
+    "name": "Aunt_Polly",
+    "aliases": [
+      "Aunt Polly",
+      "Polly",
+      "his aunt",
+      "the old lady"
+    ],
+    "description": "Tom’s aunt and guardian. Aunt Polly is a simple, kindhearted woman who struggles to balance her love for her nephew with her duty to discipline him."
+  },
+  {
+    "id": "1",
+    "gender": "male",
+    "name": "Tom_Sawyer",
+    "aliases": [
+      "Tom Sawyer",
+      "Tom",
+      "Thomas Sawyer"
+    ],
+    "description": "Tom is a mischievous boy with an active imagination who spends most of the novel getting himself, and often his friends, into and out of trouble."
+  },
+  {
+    "id": "2",
+    "gender": "male",
+    "name": "Huckleberry_Finn",
+    "aliases": [
+      "Huckleberry Finn",
+      "Huckleberry",
+      "Huck"
+    ],
+    "description": "The son of the town drunk. Huck is a juvenile outcast who is shunned by respectable society and adored by the local boys, who envy his freedom. "
+  },
+  {
+    "id": "3",
+    "gender": "female",
+    "name": "Becky_Thatcher",
+    "aliases": [
+      "Becky Thatcher",
+      "Becky",
+      "Rebecca Thatcher"
+    ],
+    "description": "Judge Thatcher’s pretty, yellow-haired daughter. She wins Tom's love from the first moment he sees her."
+  },
+  {
+    "id": "4",
+    "gender": "male",
+    "name": "Ben_Rogers",
+    "aliases": [
+      "Ben Rogers",
+      "Ben"
+    ],
+    "description": "One of Tom’s friends, whom Tom persuades to whitewash Aunt Polly’s fence."
+  },
+  {
+    "id": "5",
+    "gender": "male",
+    "name": "Joe_Harper",
+    "aliases": [
+      "Joe Harper",
+      "Joe"
+    ],
+    "description": "Tom’s friend and frequent playmate"
+  },
+  {
+    "id": "6",
+    "gender": "male",
+    "name": "Muff_Potter",
+    "aliases": [
+      "Muff Potter",
+      "Potter"
+    ],
+    "description": "A hapless drunk and friend of Injun Joe. Potter is kind and grateful toward Tom and Huck, who bring him presents after he is wrongly jailed for Dr. Robinson’s murder. Potter’s naïve trust eventually pushes Tom’s conscience to the breaking point, compelling Tom to tell the truth at Potter’s trial about who actually committed the murder."
+  },
+  {
+    "id": "7",
+    "gender": "male",
+    "name": "Peter",
+    "aliases": [
+      "Peter"
+    ]
+  },
+  {
+    "id": "8",
+    "gender": "male",
+    "name": "Sid_Sawyer",
+    "aliases": [
+      "Sid Sawyer",
+      "Sid"
+    ],
+    "description": "Tom's whiny half-brother, who also lives with Aunt Polly and Mary. He behaves well but enjoys getting Tom into trouble and tattles on Tom."
+  },
+  {
+    "id": "9",
+    "gender": "female",
+    "name": "Mary",
+    "aliases": [
+      "Mary"
+    ],
+    "description": "Aunt Polly's daughter and Tom and Sid's cousin. She is gentle and good-natured, and has great patience with Tom despite his antics."
+  },
+  {
+    "id": "10",
+    "gender": "female",
+    "name": "Mrs._Harper",
+    "aliases": [
+      "Mrs. Harper",
+      "Sereny Harper"
+    ],
+    "description": "Joe Harper's mother"
+  },
+  {
+    "id": "11",
+    "gender": "male",
+    "name": "Mr._Walters",
+    "aliases": [
+      "Mr. Walters",
+      "Walters"
+    ],
+    "description": "The somewhat ridiculous Sunday school superintendent. Because he aspires to please Judge Thatcher, Mr. Walters rewards Tom with a Bible, even though he knows that Tom hasn’t earned it."
+  },
+  {
+    "id": "12",
+    "gender": "male",
+    "name": "Doctor_Robinson",
+    "aliases": [
+      "Doctor Robinson",
+      "Dr. Robinson"
+    ],
+    "description": "A respected local physician. Dr. Robinson shows his more sordid side on the night of his murder: he hires Injun Joe and Muff Potter to dig up Hoss Williams’s grave because he wants to use the corpse for medical experiments."
+  },
+  {
+    "id": "13",
+    "gender": "male",
+    "name": "Injun_Joe",
+    "aliases": [
+      "Injun Joe"
+    ],
+    "description": "A violent, villainous man who commits murder, becomes a robber, and plans to mutilate the Widow Douglas. Injun Joe’s predominant motivation is revenge. Half Native American and half Caucasian, he has suffered social exclusion, probably because of his race."
+  },
+  {
+    "id": "14",
+    "gender": "male",
+    "name": "Mr._Sprague",
+    "aliases": [
+      "Mr. Sprague",
+      "the minister"
+    ],
+    "description": "The minister of the town church."
+  },
+  {
+    "id": "14",
+    "gender": "male",
+    "name": "Mr._Dobbins",
+    "aliases": [
+      "Mr. Dobbins",
+      "the schoolmaster"
+    ],
+    "description": "The hated schoolmaster at Tom's school, who has taken the job after failing to become a doctor. "
+  },
+  {
+    "id": "15",
+    "gender": "female",
+    "name": "Grace_Miller",
+    "aliases": [
+      "Grace Miller",
+      "Grace"
+    ]
+  },
+  {
+    "id": "16",
+    "gender": "female",
+    "name": "Sally_Rogers",
+    "aliases": [
+      "Sally Rogers",
+      "Sally"
+    ]
+  },
+  {
+    "id": "17",
+    "gender": "female",
+    "name": "Suzy_Harper",
+    "aliases": [
+      "Suzy Harper",
+      "Suzy"
+    ]
+  },
+  {
+    "id": "18",
+    "gender": "male",
+    "name": "Jim",
+    "aliases": [
+      "Jim"
+    ],
+    "description": "Aunt Polly’s young slave"
+  },
+  {
+    "id": "19",
+    "gender": "male",
+    "name": "Alfred_Temple",
+    "aliases": [
+      "Alfred Temple",
+      "Alfred"
+    ],
+    "description": "A well-dressed new boy in town. Becky pretends to like him in order to make Tom jealous."
+  },
+  {
+    "id": "20",
+    "gender": "male",
+    "name": "Judge_Thatcher",
+    "aliases": [
+      "Judge Thatcher"
+    ],
+    "description": "Becky’s father, the county judge. A local celebrity, Judge Thatcher inspires the respect of all the townspeople. "
+  }
+]

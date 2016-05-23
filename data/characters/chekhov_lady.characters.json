@@ -1,0 +1,22 @@
+[
+  {
+    "id": "0",
+    "gender": "male",
+    "name": "Dmitri_Gurov",
+    "aliases": [
+      "Dmitri Gurov",
+      "Gurov",
+      "Dmitri"
+    ]
+  },
+  {
+    "id": "1",
+    "gender": "female",
+    "name": "Anna_Sergeyevna",
+    "aliases": [
+      "Anna Sergeyevna",
+      "Anna",
+      "the lady"
+    ]
+  }
+]

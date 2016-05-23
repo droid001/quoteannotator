@@ -1,0 +1,470 @@
+[
+  {
+    "id": "0",
+    "gender": "female",
+    "name": "Mrs._Annesley",
+    "aliases": [
+      "Mrs. Annesley",
+      "Annesley"
+    ]
+  },
+  {
+    "id": "1",
+    "gender": "female",
+    "name": "Elizabeth_Bennet",
+    "aliases": [
+      "Elizabeth Bennet",
+      "Miss Elizabeth Bennet",
+      "Miss Elizabeth",
+      "Miss Lizzy",
+      "Miss Bennet",
+      "Miss Eliza",
+      "Eliza Bennet",
+      "Elizabeth",
+      "Lizzy",
+      "Liz",
+      "Eliza"
+    ]
+  },
+  {
+    "id": "2",
+    "gender": "female",
+    "name": "Jane_Bennet",
+    "aliases": [
+      "Jane Bennet",
+      "Jane"
+    ]
+  },
+  {
+    "id": "3",
+    "gender": "female",
+    "name": "Lydia_Bennet",
+    "aliases": [
+      "Lydia Bennet",
+      "Miss Lydia Bennet",
+      "Miss Lydia",
+      "Lydia"
+    ]
+  },
+  {
+    "id": "4",
+    "gender": "female",
+    "name": "Kitty_Bennet",
+    "aliases": [
+      "Kitty Bennet",
+      "Catherine Bennet",
+      "Kitty"
+    ]
+  },
+  {
+    "id": "5",
+    "gender": "female",
+    "name": "Mary_Bennet",
+    "aliases": [
+      "Mary Bennet",
+      "Mary"
+    ]
+  },
+  {
+    "id": "6",
+    "gender": "female",
+    "name": "Mrs._Bennet",
+    "aliases": [
+      "Mrs. Bennet",
+      "Bennet"
+    ]
+  },
+  {
+    "id": "7",
+    "gender": "male",
+    "name": "Mr._Bennet",
+    "aliases": [
+      "Mr. Bennet",
+      "Bennet"
+    ]
+  },
+  {
+    "id": "8",
+    "gender": "male",
+    "name": "Mr._Bingley",
+    "aliases": [
+      "Mr. Bingley",
+      "Bingley"
+    ]
+  },
+  {
+    "id": "9",
+    "gender": "female",
+    "name": "Caroline_Bingley",
+    "aliases": [
+      "Caroline Bingley",
+      "Caroline",
+      "Miss Bingley"
+    ]
+  },
+  {
+    "id": "10",
+    "gender": "female",
+    "name": "Charlotte",
+    "aliases": [
+      "Charlotte",
+      "Charlotte Lucas",
+      "Mrs. Collins",
+      "Miss Lucas"
+    ]
+  },
+  {
+    "id": "11",
+    "gender": "male",
+    "name": "Captain_Carter",
+    "aliases": [
+      "Captain Carter"
+    ]
+  },
+  {
+    "id": "12",
+    "gender": "male",
+    "name": "Mr._Collins",
+    "aliases": [
+      "Mr. Collins",
+      "William Collins"
+    ]
+  },
+  {
+    "id": "13",
+    "gender": "female",
+    "name": "Lady_Catherine",
+    "aliases": [
+      "Lady Catherine",
+      "Catherine"
+    ]
+  },
+  {
+    "id": "14",
+    "gender": "male",
+    "name": "Mr._Chamberlayne",
+    "aliases": [
+      "Mr. Chamberlayne"
+    ]
+  },
+  {
+    "id": "15",
+    "gender": "male",
+    "name": "Dawson",
+    "aliases": [
+      "Dawson"
+    ]
+  },
+  {
+    "id": "16",
+    "gender": "female",
+    "name": "Mr._Denny",
+    "aliases": [
+      "Mr. Denny"
+    ]
+  },
+  {
+    "id": "17",
+    "gender": "male",
+    "name": "Mr._Darcy",
+    "aliases": [
+      "Mr. Darcy",
+      "Mr. Fitzwilliam Darcy",
+      "Fitzwilliam Darcy",
+      "Darcy"
+    ]
+  },
+  {
+    "id": "18",
+    "gender": "male",
+    "name": "Old_Mr._Darcy",
+    "aliases": [
+      "Old Mr. Darcy"
+    ]
+  },
+  {
+    "id": "19",
+    "gender": "female",
+    "name": "Lady_Anne_Darcy",
+    "aliases": [
+      "Lady Anne Darcy",
+      "Lady Anne",
+      "Anne"
+    ]
+  },
+  {
+    "id": "20",
+    "gender": "female",
+    "name": "Georgiana_Darcy",
+    "aliases": [
+      "Georgiana Darcy",
+      "Georgiana",
+      "Miss Darcy"
+    ]
+  },
+  {
+    "id": "21",
+    "gender": "male",
+    "name": "Colonel_Fitzwilliam",
+    "aliases": [
+      "Colonel Fitzwilliam",
+      "Colonel F."
+    ]
+  },
+  {
+    "id": "22",
+    "gender": "male",
+    "name": "Colonel_Forster",
+    "aliases": [
+      "Colonel Forster"
+    ]
+  },
+  {
+    "id": "23",
+    "gender": "female",
+    "name": "Miss_Grantley",
+    "aliases": [
+      "Miss Grantley"
+    ]
+  },
+  {
+    "id": "24",
+    "gender": "female",
+    "name": "Mrs._Gardiner",
+    "aliases": [
+      "Mrs. Gardiner"
+    ]
+  },
+  {
+    "id": "25",
+    "gender": "male",
+    "name": "Mr._Gardiner",
+    "aliases": [
+      "Mr. Gardiner",
+      "EDW. Gardiner",
+      "E. Gardiner"
+    ]
+  },
+  {
+    "id": "26",
+    "gender": "male",
+    "name": "William_Goulding",
+    "aliases": [
+      "William Goulding"
+    ]
+  },
+  {
+    "id": "27",
+    "gender": "male",
+    "name": "Haggerston",
+    "aliases": [
+      "Haggerston"
+    ]
+  },
+  {
+    "id": "28",
+    "gender": "female",
+    "name": "Mrs._Hill",
+    "aliases": [
+      "Mrs. Hill"
+    ]
+  },
+  {
+    "id": "29",
+    "gender": "female",
+    "name": "Mrs._Jenkinson",
+    "aliases": [
+      "Mrs. Jenkinson"
+    ]
+  },
+  {
+    "id": "30",
+    "gender": "male",
+    "name": "Mr._Jones",
+    "aliases": [
+      "Mr. Jones"
+    ]
+  },
+  {
+    "id": "31",
+    "gender": "female",
+    "name": "Miss_Mary_King",
+    "aliases": [
+      "Miss Mary King",
+      "Mary King"
+    ]
+  },
+  {
+    "id": "32",
+    "gender": "female",
+    "name": "Mrs._Long",
+    "aliases": [
+      "Mrs. Long"
+    ]
+  },
+  {
+    "id": "33",
+    "gender": "female",
+    "name": "Lady_Lucas",
+    "aliases": [
+      "Lady Lucas"
+    ]
+  },
+  {
+    "id": "34",
+    "gender": "female",
+    "name": "Maria_Lucas",
+    "aliases": [
+      "Maria Lucas",
+      "Miss Lucas",
+      "Maria"
+    ]
+  },
+  {
+    "id": "35",
+    "gender": "male",
+    "name": "Mr._Hurst",
+    "aliases": [
+      "Mr. Hurst"
+    ]
+  },
+  {
+    "id": "36",
+    "gender": "female",
+    "name": "Louisa_Hurst",
+    "aliases": [
+      "Louisa Hurst",
+      "Louisa",
+      "Mrs. Hurst"
+    ]
+  },
+  {
+    "id": "37",
+    "gender": "female",
+    "name": "Lady_Metcalfe",
+    "aliases": [
+      "Lady Metcalfe"
+    ]
+  },
+  {
+    "id": "38",
+    "gender": "male",
+    "name": "Mr._Morris",
+    "aliases": [
+      "Mr. Morris"
+    ]
+  },
+  {
+    "id": "39",
+    "gender": "female",
+    "name": "Mrs._Nicholls",
+    "aliases": [
+      "Mrs. Nicholls",
+      "Nicholls"
+    ]
+  },
+  {
+    "id": "40",
+    "gender": "male",
+    "name": "Mr._Philips",
+    "aliases": [
+      "Mr. Philips",
+      "Philips"
+    ]
+  },
+  {
+    "id": "41",
+    "gender": "female",
+    "name": "Miss_Pope",
+    "aliases": [
+      "Miss Pope"
+    ]
+  },
+  {
+    "id": "42",
+    "gender": "male",
+    "name": "Mr._Pratt",
+    "aliases": [
+      "Mr. Pratt",
+      "Pratt"
+    ]
+  },
+  {
+    "id": "43",
+    "gender": "female",
+    "name": "Mrs._Reynolds",
+    "aliases": [
+      "Mrs. Reynolds"
+    ]
+  },
+  {
+    "id": "44",
+    "gender": "male",
+    "name": "Mr._Robinson",
+    "aliases": [
+      "Mr. Robinson"
+    ]
+  },
+  {
+    "id": "45",
+    "gender": "male",
+    "name": "Mr._Stone",
+    "aliases": [
+      "Mr. Stone"
+    ]
+  },
+  {
+    "id": "46",
+    "gender": "female",
+    "name": "Miss_Watson",
+    "aliases": [
+      "Miss Watson"
+    ]
+  },
+  {
+    "id": "47",
+    "gender": "male",
+    "name": "Old_Mr._Wickham",
+    "aliases": [
+      "Old Mr. Wickham"
+    ]
+  },
+  {
+    "id": "48",
+    "gender": "male",
+    "name": "Sir_William",
+    "aliases": [
+      "Sir William",
+      "Sir William Lucas"
+    ]
+  },
+  {
+    "id": "49",
+    "gender": "female",
+    "name": "Anne_de_Bourgh",
+    "aliases": [
+      "Anne de Bourgh",
+      "Miss de Bourgh",
+      "Bourgh"
+    ]
+  },
+  {
+    "id": "50",
+    "gender": "male",
+    "name": "Mr._Wickham",
+    "aliases": [
+      "Mr. Wickham",
+      "George Wickham",
+      "George",
+      "Wickham"
+    ]
+  },
+  {
+    "id": "51",
+    "gender": "female",
+    "name": "Mrs._Philips",
+    "aliases": [
+      "Mrs. Philips"
+    ]
+  }
+]

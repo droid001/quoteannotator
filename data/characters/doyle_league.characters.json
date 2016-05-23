@@ -1,0 +1,46 @@
+[
+  {
+    "id": "0",
+    "gender": "male",
+    "name": "Sherlock_Holmes",
+    "aliases": [
+      "Sherlock Holmes",
+      "Holmes"
+    ]
+  },
+  {
+    "id": "1",
+    "gender": "male",
+    "name": "Dr_Watson",
+    "aliases": [
+      "Dr Watson",
+      "I"
+    ]
+  },
+  {
+    "id": "2",
+    "gender": "male",
+    "name": "Mr._Jabez_Wilson",
+    "aliases": [
+      "Mr. Jabez Wilson",
+      "Jabez Wilson",
+      "Mr. Wilson"
+    ]
+  },
+  {
+    "id": "3",
+    "gender": "male",
+    "name": "Mr._Merryweather",
+    "aliases": [
+      "Mr. Merryweather"
+    ]
+  },
+  {
+    "id": "4",
+    "gender": "male",
+    "name": "John_Clay",
+    "aliases": [
+      "John Clay"
+    ]
+  }
+]

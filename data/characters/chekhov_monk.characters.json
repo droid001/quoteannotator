@@ -1,0 +1,37 @@
+[
+  {
+    "id": "0",
+    "gender": "male",
+    "name": "Andrey_Kovrin",
+    "aliases": [
+      "Andrey Kovrin",
+      "Kovrin"
+    ]
+  },
+  {
+    "id": "1",
+    "gender": "female",
+    "name": "Tanya_Pesotsky",
+    "aliases": [
+      "Tanya Pesotsky",
+      "Tanya"
+    ]
+  },
+  {
+    "id": "2",
+    "gender": "male",
+    "name": "Yegor_Semyonitch",
+    "aliases": [
+      "Yegor Semyonitch"
+    ]
+  },
+  {
+    "id": "3",
+    "gender": "male",
+    "name": "the_black_monk",
+    "aliases": [
+      "the black monk",
+      "the monk"
+    ]
+  }
+]

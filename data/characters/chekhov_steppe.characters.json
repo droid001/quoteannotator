@@ -1,0 +1,118 @@
+[
+  {
+    "id": "0",
+    "gender": "male",
+    "name": "Father_Christopher_Siriysky",
+    "aliases": [
+      "Father Christopher Siriysky",
+      "Father Christopher"
+    ]
+  },
+  {
+    "id": "1",
+    "gender": "male",
+    "name": "Ivan_Kuzmichov",
+    "aliases": [
+      "Ivan Kuzmichov",
+      "Kuzmichov",
+      "Ivan Ivanitch"
+    ]
+  },
+  {
+    "id": "2",
+    "gender": "male",
+    "name": "Yegorushka",
+    "aliases": [
+      "Yegorushka"
+    ]
+  },
+  {
+    "id": "3",
+    "gender": "female",
+    "name": "Deniska",
+    "aliases": [
+      "Deniska"
+    ]
+  },
+  {
+    "id": "4",
+    "gender": "male",
+    "name": "Moisey_Moisevitch",
+    "aliases": [
+      "Moisey Moisevitch"
+    ]
+  },
+  {
+    "id": "5",
+    "gender": "male",
+    "name": "Solomon",
+    "aliases": [
+      "Solomon",
+      ""
+    ]
+  },
+  {
+    "id": "6",
+    "gender": "female",
+    "name": "the_Jewess",
+    "aliases": [
+      "the Jewess"
+    ]
+  },
+  {
+    "id": "7",
+    "gender": "male",
+    "name": "Panteley",
+    "aliases": [
+      "Panteley"
+    ]
+  },
+  {
+    "id": "8",
+    "gender": "male",
+    "name": "Emelyan",
+    "aliases": [
+      "Emelyan"
+    ]
+  },
+  {
+    "id": "9",
+    "gender": "male",
+    "name": "Vassya",
+    "aliases": [
+      "Vassya"
+    ]
+  },
+  {
+    "id": "10",
+    "gender": "male",
+    "name": "Dymov",
+    "aliases": [
+      "Dymov"
+    ]
+  },
+  {
+    "id": "11",
+    "gender": "male",
+    "name": "Kiruha",
+    "aliases": [
+      "Kiruha"
+    ]
+  },
+  {
+    "id": "12",
+    "gender": "male",
+    "name": "Styopka",
+    "aliases": [
+      "Styopka"
+    ]
+  },
+  {
+    "id": "13",
+    "gender": "female",
+    "name": "Nastasya_Petrovna",
+    "aliases": [
+      "Nastasya Petrovna"
+    ]
+  }
+]

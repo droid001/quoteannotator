@@ -1,0 +1,139 @@
+[
+  {
+    "id": "0",
+    "gender": "male",
+    "name": "Scrooge",
+    "aliases": [
+      "Scrooge",
+      "Mr. Scrooge",
+      "Mr. Ebenezer Scrooge",
+      "the uncle"
+    ]
+  },
+  {
+    "id": "1",
+    "gender": "male",
+    "name": "Fred",
+    "aliases": [
+      "Fred",
+      "Scrooge's nephew",
+      "the nephew"
+    ]
+  },
+  {
+    "id": "2",
+    "gender": "male",
+    "name": "Bob_Cratchit",
+    "aliases": [
+      "Bob Cratchit",
+      "Bob"
+    ]
+  },
+  {
+    "id": "3",
+    "gender": "female",
+    "name": "Mrs._Cratchit",
+    "aliases": [
+      "Mrs. Cratchit",
+      "Cratchit's wife"
+    ]
+  },
+  {
+    "id": "4",
+    "gender": "male",
+    "name": "Tiny_Tim",
+    "aliases": [
+      "Tiny Tim",
+      "Tim"
+    ]
+  },
+  {
+    "id": "5",
+    "gender": "male",
+    "name": "Joe",
+    "aliases": [
+      "Joe"
+    ]
+  },
+  {
+    "id": "6",
+    "gender": "male",
+    "name": "Peter",
+    "aliases": [
+      "Peter"
+    ]
+  },
+  {
+    "id": "7",
+    "gender": "female",
+    "name": "Fan",
+    "aliases": [
+      "Fan"
+    ]
+  },
+  {
+    "id": "8",
+    "gender": "male",
+    "name": "Marley's_Ghost",
+    "aliases": [
+      "Marley's Ghost",
+      "Marley's voice"
+    ]
+  },
+  {
+    "id": "9",
+    "gender": "unknown",
+    "name": "the_Ghost_of_Christmas_Past",
+    "aliases": [
+      "the Ghost of Christmas Past"
+    ]
+  },
+  {
+    "id": "10",
+    "gender": "unknown",
+    "name": "the_Ghost_of_Christmas_Present",
+    "aliases": [
+      "the Ghost of Christmas Present"
+    ]
+  },
+  {
+    "id": "11",
+    "gender": "unknown",
+    "name": "the_Ghost_of_Christmas_Yet_to_Come",
+    "aliases": [
+      "the Ghost of Christmas Yet to Come"
+    ]
+  },
+  {
+    "id": "12",
+    "gender": "male",
+    "name": "Fezziwig",
+    "aliases": [
+      "Fezziwig"
+    ]
+  },
+  {
+    "id": "13",
+    "gender": "female",
+    "name": "Belle",
+    "aliases": [
+      "Belle"
+    ]
+  },
+  {
+    "id": "14",
+    "gender": "male",
+    "name": "Dick_Wilkins",
+    "aliases": [
+      "Dick Wilkins"
+    ]
+  },
+  {
+    "id": "15",
+    "gender": "female",
+    "name": "Scrooge's_niece",
+    "aliases": [
+      "Scrooge's niece"
+    ]
+  }
+]

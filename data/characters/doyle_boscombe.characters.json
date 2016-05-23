@@ -1,0 +1,28 @@
+[
+  {
+    "id": "0",
+    "gender": "male",
+    "name": "Sherlock_Holmes",
+    "aliases": [
+      "Sherlock Holmes",
+      "Holmes"
+    ]
+  },
+  {
+    "id": "1",
+    "gender": "male",
+    "name": "Dr_Watson",
+    "aliases": [
+      "Dr Watson",
+      "I"
+    ]
+  },
+  {
+    "id": "2",
+    "gender": "male",
+    "name": "Lestrade",
+    "aliases": [
+      "Lestrade"
+    ]
+  }
+]
