@@ -7,7 +7,8 @@
       "Emma Woodhouse",
       "Emma",
       "Miss Woodhouse"
-    ]
+    ],
+    "description": "The protagonist of the novel. A beautiful, high-spirited, intelligent, and 'slightly' spoiled young woman. Her mother died when she was young. She has been mistress of the house since her older sister got married."
   },
   {
     "id": "1",
@@ -18,7 +19,8 @@
       "Isabella",
       "Mrs. John Knightley",
       "Mrs. Knightley"
-    ]
+    ],
+    "description": "Emma’s older sister, who lives in London with her husband, Mr. John Knightley, and their five children."
   },
   {
     "id": "2",
@@ -29,7 +31,8 @@
       "John Knightley",
       "Mr. Knightley",
       "John"
-    ]
+    ],
+    "description": "Emma’s brother-in-law, and Mr. George Knightley’s brother."
   },
   {
     "id": "3",
@@ -39,7 +42,8 @@
       "Miss Taylor",
       "Mrs. Weston",
       "Anne Taylor"
-    ]
+    ],
+    "description": "Formerly Miss Taylor, Emma’s beloved governess and companion. Known for her kind temperament and her devotion to Emma, Mrs. Weston lives at Randalls with her husband, Frank Churchill’s father."
   },
   {
     "id": "4",
@@ -48,7 +52,8 @@
     "aliases": [
       "Mr. George Knightley",
       "George"
-    ]
+    ],
+    "description": "Emma’s brother-in-law and the Woodhouses’ trusted friend and advisor. Knightley is a respected landowner in his late thirties. He lives at Donwell Abbey."
   },
   {
     "id": "5",
@@ -57,7 +62,8 @@
     "aliases": [
       "Mr. Elton",
       "Elton"
-    ]
+    ],
+    "description": "A good-looking, initially well-mannered, and ambitious young vicar."
   },
   {
     "id": "6",
@@ -70,7 +76,8 @@
       "Weston Churchill",
       "Frank Churchill",
       "Frank"
-    ]
+    ],
+    "description": "Mr. Weston’s son and Mrs. Weston’s stepson. Frank Churchill lives at Enscombe with his aunt and uncle, Mr. and Mrs. Churchill. He is considered a potential suitor for Emma."
   },
   {
     "id": "7",
@@ -79,7 +86,8 @@
     "aliases": [
       "Mr. Weston",
       "Weston"
-    ]
+    ],
+    "description": "The widower and proprietor of Randalls, who has just married Miss Taylor when the novel begins. Mr. Weston has a son, Frank, from his first marriage to Miss Churchill."
   },
   {
     "id": "8",
@@ -91,7 +99,8 @@
       "Harriet",
       "Mrs. Robert Martin",
       "Mrs. Martin"
-    ]
+    ],
+    "description": "A pretty but unremarkable seventeen-year-old woman of uncertain parentage, who lives at the local boarding school."
   },
   {
     "id": "9",
@@ -101,7 +110,8 @@
       "Mr. Robert Martin",
       "Mr. Martin",
       "Robert Martin"
-    ]
+    ],
+    "description": "A twenty-four-year-old farmer. Mr. Martin is industrious and good-hearted, though he lacks the refinements of a gentleman. He lives at Abbey-Mill Farm, a property owned by Knightley, with his mother and sisters."
   },
   {
     "id": "10",
@@ -112,7 +122,8 @@
       "Jane Fairfax",
       "Miss Fairfax",
       "Jane"
-    ]
+    ],
+    "description": "Miss Bates’s niece, whose arrival in Highbury irritates Emma.  Later married to Frank Churchill."
   },
   {
     "id": "11",
@@ -132,7 +143,8 @@
       "Jane Bates",
       "Miss Bates",
       "Bates"
-    ]
+    ],
+    "description": "Friend of Mr. Woodhouse and aunt of Jane Fairfax, Miss Bates is a middle-aged spinster without beauty or cleverness but with universal goodwill and a gentle temperament."
   },
   {
     "id": "13",
@@ -141,7 +153,8 @@
     "aliases": [
       "Miss Hawkins",
       "Mrs. Elton"
-    ]
+    ],
+    "description": "Formerly Augusta Hawkins, Mrs. Elton hails from Bristol and meets Mr. Elton in Bath."
   },
   {
     "id": "14",
@@ -158,7 +171,8 @@
     "aliases": [
       "Mr. Henry Woodhouse",
       "Mr. Woodhouse"
-    ]
+    ],
+    "description": "Emma’s father and the patriarch of Hartfield, the Woodhouse estate."
   },
   {
     "id": "16",
@@ -190,7 +204,8 @@
     "name": "Mrs._Churchill",
     "aliases": [
       "Mrs. Churchill"
-    ]
+    ],
+    "description": "Mr. Weston’s ailing former sister-in-law and Frank Churchill’s aunt and guardian."
   },
   {
     "id": "20",
@@ -198,7 +213,8 @@
     "name": "Mr._Churchill",
     "aliases": [
       "Mr. Churchill"
-    ]
+    ],
+    "description": "Brother to the first Mrs Weston."
   },
   {
     "id": "21",
@@ -207,7 +223,8 @@
     "aliases": [
       "Mr. Perry",
       "Perry"
-    ]
+    ],
+    "description": "An apothecary and associate of Emma’s father. Mr. Perry is highly esteemed by Mr. Woodhouse for his medical advice even though he is not a proper physician."
   },
   {
     "id": "22",
@@ -215,7 +232,8 @@
     "name": "Mrs._Bates",
     "aliases": [
       "Mrs. Bates"
-    ]
+    ],
+    "description": "Mother to Miss Bates and friend of Mr. Woodhouse. An elderly woman, Mrs. Bates is quiet, amiable, and somewhat deaf."
   },
   {
     "id": "23",
@@ -223,7 +241,8 @@
     "name": "Mrs._Goddard",
     "aliases": [
       "Mrs. Goddard"
-    ]
+    ],
+    "description": "Mistress of the local boarding school. Mrs. Goddard introduces Harriet Smith to the Woodhouses."
   },
   {
     "id": "24",
@@ -273,7 +292,8 @@
     "aliases": [
       "Mrs. Dixon",
       "Miss Campbell"
-    ]
+    ],
+    "description": "The Campbells’ daughter and Jane’s friend. Mrs. Dixon lacks beauty and lives with her husband in Ireland."
   },
   {
     "id": "30",
@@ -281,7 +301,8 @@
     "name": "Mr._Dixon",
     "aliases": [
       "Mr. Dixon"
-    ]
+    ],
+    "description": "Husband to the Campbells’ daughter. Emma suspects that Mr. Dixon had a romance with Jane Fairfax before his marriage."
   },
   {
     "id": "31",
@@ -299,7 +320,8 @@
       "Elizabeth Martin",
       "Elizabeth",
       "Miss Martin"
-    ]
+    ],
+    "description": "Mr. Martin’s kind sister, with whom Harriet was good friends before meeting Emma and turning down Mr. Martin’s marriage proposal."
   },
   {
     "id": "33",

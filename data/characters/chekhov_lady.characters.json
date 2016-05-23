@@ -7,7 +7,8 @@
       "Dmitri Gurov",
       "Gurov",
       "Dmitri"
-    ]
+    ],
+    "description": "A forty-year-old man."
   },
   {
     "id": "1",
@@ -17,6 +18,16 @@
       "Anna Sergeyevna",
       "Anna",
       "the lady"
-    ]
+    ],
+    "description": "The lady with the dog."
+  },
+  {
+    "id": "2",
+    "gender": "female",
+    "name": "Gurov's_daughter",
+    "aliases": [
+      "Gurov's daughter"
+    ],
+    "description": "Gurov's daughter."
   }
 ]

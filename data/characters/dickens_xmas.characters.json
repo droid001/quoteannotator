@@ -8,7 +8,8 @@
       "Mr. Scrooge",
       "Mr. Ebenezer Scrooge",
       "the uncle"
-    ]
+    ],
+    "description": "The miserly owner of a London counting-house, a nineteenth century term for an accountant's office."
   },
   {
     "id": "1",
@@ -18,7 +19,8 @@
       "Fred",
       "Scrooge's nephew",
       "the nephew"
-    ]
+    ],
+    "description": "Scrooge's nephew, a genial man who loves Christmas. He invites Scrooge to his Christmas party each and every year, only to be refused by his grumpy uncle."
   },
   {
     "id": "2",
@@ -27,7 +29,8 @@
     "aliases": [
       "Bob Cratchit",
       "Bob"
-    ]
+    ],
+    "description": "Scrooge's clerk, a kind, mild, and very poor man with a large family."
   },
   {
     "id": "3",
@@ -36,7 +39,8 @@
     "aliases": [
       "Mrs. Cratchit",
       "Cratchit's wife"
-    ]
+    ],
+    "description": "Bob's wife, a kind and loving woman."
   },
   {
     "id": "4",
@@ -45,7 +49,8 @@
     "aliases": [
       "Tiny Tim",
       "Tim"
-    ]
+    ],
+    "description": "Bob Cratchit's young son, crippled from birth."
   },
   {
     "id": "5",
@@ -53,23 +58,28 @@
     "name": "Joe",
     "aliases": [
       "Joe"
-    ]
+    ],
+    "description": ""
   },
   {
     "id": "6",
     "gender": "male",
-    "name": "Peter",
+    "name": "Peter_Cratchit",
     "aliases": [
+      "Peter Cratchit",
       "Peter"
-    ]
+    ],
+    "description": "Bob's oldest son, who inherits his father's stiff-collared shirt for Christmas."
   },
   {
     "id": "7",
     "gender": "female",
-    "name": "Fan",
+    "name": "Martha_Cratchit",
     "aliases": [
-      "Fan"
-    ]
+      "Martha Cratchit",
+      "Martha"
+    ],
+    "description": "Bob's oldest daughter, who works in a milliner's shop."
   },
   {
     "id": "8",
@@ -78,7 +88,8 @@
     "aliases": [
       "Marley's Ghost",
       "Marley's voice"
-    ]
+    ],
+    "description": "Ghost of Scrooge's dead partner."
   },
   {
     "id": "9",
@@ -86,7 +97,8 @@
     "name": "the_Ghost_of_Christmas_Past",
     "aliases": [
       "the Ghost of Christmas Past"
-    ]
+    ],
+    "description": "The first spirit to visit Scrooge, a curiously childlike apparition with a glowing head."
   },
   {
     "id": "10",
@@ -94,7 +106,8 @@
     "name": "the_Ghost_of_Christmas_Present",
     "aliases": [
       "the Ghost of Christmas Present"
-    ]
+    ],
+    "description": "The second spirit to visit Scrooge, a majestic giant clad in a green robe."
   },
   {
     "id": "11",
@@ -102,38 +115,52 @@
     "name": "the_Ghost_of_Christmas_Yet_to_Come",
     "aliases": [
       "the Ghost of Christmas Yet to Come"
-    ]
+    ],
+    "description": "The third and final spirit to visit Scrooge, a silent phantom clad in a hooded black robe."
   },
   {
     "id": "12",
+    "gender": "female",
+    "name": "Fan",
+    "aliases": [
+      "Fan"
+    ],
+    "description": "Scrooge's sister; Fred's mother. In Scrooge's vision of Christmases past, he remembers Fan picking him up from school and walking him home."
+  },
+  {
+    "id": "13",
     "gender": "male",
     "name": "Fezziwig",
     "aliases": [
       "Fezziwig"
-    ]
+    ],
+    "description": "The jovial merchant with whom the young Scrooge apprenticed. Fezziwig was renowned for his wonderful Christmas parties."
   },
   {
-    "id": "13",
+    "id": "14",
     "gender": "female",
     "name": "Belle",
     "aliases": [
       "Belle"
-    ]
+    ],
+    "description": "A beautiful woman who Scrooge loved deeply when he was a young man. Belle broke off their engagement after Scrooge became consumed with greed and the lust for wealth. She later married another man."
   },
   {
-    "id": "14",
+    "id": "15",
     "gender": "male",
     "name": "Dick_Wilkins",
     "aliases": [
       "Dick Wilkins"
-    ]
+    ],
+    "description": ""
   },
   {
-    "id": "15",
+    "id": "16",
     "gender": "female",
     "name": "Scrooge's_niece",
     "aliases": [
       "Scrooge's niece"
-    ]
+    ],
+    "description": ""
   }
 ]

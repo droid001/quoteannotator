@@ -6,7 +6,8 @@
     "aliases": [
       "Father Christopher Siriysky",
       "Father Christopher"
-    ]
+    ],
+    "description": "Yegorushka’s parish priest, a Russian Orthodox priest."
   },
   {
     "id": "1",
@@ -16,7 +17,8 @@
       "Ivan Kuzmichov",
       "Kuzmichov",
       "Ivan Ivanitch"
-    ]
+    ],
+    "description": "Yegorushka’s uncle, a provincial merchant."
   },
   {
     "id": "2",
@@ -24,7 +26,8 @@
     "name": "Yegorushka",
     "aliases": [
       "Yegorushka"
-    ]
+    ],
+    "description": "A boy on the way to his first boarding school."
   },
   {
     "id": "3",
@@ -48,7 +51,6 @@
     "name": "Solomon",
     "aliases": [
       "Solomon",
-      ""
     ]
   },
   {

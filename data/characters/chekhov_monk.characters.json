@@ -6,7 +6,8 @@
     "aliases": [
       "Andrey Kovrin",
       "Kovrin"
-    ]
+    ],
+    "description": "A Russian scholar who is seemingly brilliant."
   },
   {
     "id": "1",
@@ -15,7 +16,8 @@
     "aliases": [
       "Tanya Pesotsky",
       "Tanya"
-    ]
+    ],
+    "description": "Yegor's daughter."
   },
   {
     "id": "2",
@@ -23,7 +25,8 @@
     "name": "Yegor_Semyonitch",
     "aliases": [
       "Yegor Semyonitch"
-    ]
+    ],
+    "description": "Kovrin's former guardian."
   },
   {
     "id": "3",

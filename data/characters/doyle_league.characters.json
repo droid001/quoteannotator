@@ -6,7 +6,8 @@
     "aliases": [
       "Sherlock Holmes",
       "Holmes"
-    ]
+    ],
+    "description": "Consulting detective known for a proficiency with observation, forensic science, and logical reasoning."
   },
   {
     "id": "1",
@@ -15,7 +16,8 @@
     "aliases": [
       "Dr Watson",
       "I"
-    ]
+    ],
+    "description": "Sherlock Holmes's friend and partner. Watson narrates the stories and acts as something like Holmes's biographer."
   },
   {
     "id": "2",
@@ -25,7 +27,8 @@
       "Mr. Jabez Wilson",
       "Jabez Wilson",
       "Mr. Wilson"
-    ]
+    ],
+    "description": "Pawnshop owner, red-headed man, Holmes's client, and all-around dunce."
   },
   {
     "id": "3",
@@ -33,14 +36,27 @@
     "name": "Mr._Merryweather",
     "aliases": [
       "Mr. Merryweather"
-    ]
+    ],
+    "description": "Manager of the Coburg branch of the City and Suburban Bank."
   },
   {
     "id": "4",
     "gender": "male",
     "name": "John_Clay",
     "aliases": [
-      "John Clay"
-    ]
+      "John Clay",
+      "Vincent Spaulding"
+    ],
+    "description": "Major criminal who has been posing as Wilson's assistant in order to dig a hole underneath the man's pawnshop so he can rob a local bank branch."
+  },
+  {
+    "id": "5",
+    "gender": "male",
+    "name": "Peter_Jones",
+    "aliases": [
+      "Peter Jones",
+      "Jones"
+    ],
+    "description": "The police officer who comes to help nab John Clay in the act of robbing the Coburg branch of the City and Suburban Bank."
   }
 ]

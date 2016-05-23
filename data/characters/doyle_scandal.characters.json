@@ -6,7 +6,8 @@
     "aliases": [
       "Sherlock Holmes",
       "Holmes"
-    ]
+    ],
+    "description": "Consulting detective known for a proficiency with observation, forensic science, and logical reasoning."
   },
   {
     "id": "1",
@@ -15,33 +16,37 @@
     "aliases": [
       "Dr Watson",
       "I"
-    ]
+    ],
+    "description": "Sherlock Holmes's friend and partner. Watson narrates the stories and acts as something like Holmes's biographer."
   },
   {
     "id": "2",
     "gender": "male",
-    "name": "Count_Von_Kramm",
-    "aliases": [
-      "Count Von Kramm",
-      "The Count"
-    ]
-  },
-  {
-    "id": "3",
-    "gender": "male",
     "name": "King_of_Bohemia",
     "aliases": [
       "King of Bohemia",
-      "the King"
-    ]
+      "the King",
+      "Count Von Kramm",
+      "The Count"
+    ],
+    "description": "Wilhelm Gottsreich Sigismond von Ormstein, Grand Duke of Cassel-Felstein and Hereditary King of Bohemia. Holmes's client and former lover of Irene Adler."
   },
   {
-    "id": "4",
+    "id": "3",
     "gender": "female",
     "name": "Irene_Adler",
     "aliases": [
       "Irene Adler",
       "Irene Norton"
     ]
+  },
+  {
+    "id": "4",
+    "gender": "male",
+    "name": "Godfrey_Norton",
+    "aliases": [
+      "Godfrey Norton"
+    ],
+    "description": "Lawyer and Irene Adler's fiance."
   }
 ]
