@@ -384,8 +384,8 @@ AnnotationOptionsUI.prototype.update = function(annotationOpts) {
       } else {
         span.append(displayText);
       }
-      if (opt.data && opt.data.description) {
-        span.attr('title', opt.data.description);
+      if (opt.title) {
+        span.attr('title', opt.title);
       }
       div.append(span);
     } else {
@@ -501,6 +501,25 @@ AnnotationOptionsUI.prototype.attachOptionsToDiv = function(parentDiv) {
 AnnotationOptionsUI.prototype.addCharacterToConfig = function(character) {
   this.annotationOpts[character.name] = character;
   character.data = character.data || {};
+  if (!character.title) {
+    var parts = [];
+    if (character.data.aliases) {
+      var aliases = character.data.aliases.split(';');
+      var name = character.name.replace(/[._]+/g, ' ');
+      // Look for aliases that are not included in the character name
+      aliases = aliases.filter( function(alias) {
+        alias = alias.replace(/[._]+/g, ' ');
+        return name.indexOf(alias) < 0;
+      });
+      if (aliases.length > 0) {
+        parts.push('Names: ' + aliases.join(','));
+      }
+    }
+    if (character.data.description) {
+      parts.push(character.data.description);
+    }
+    character.title = parts.join('\n');
+  }
   character.data['id'] = character.id;
   character.data['name'] = character.name.startsWith('speaker_')?
     character.name.substring('speaker_'.length) : character.name;
