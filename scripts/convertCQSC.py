@@ -3,6 +3,7 @@
 # Convert Columbia Quote Speech Corpus xml to our format
 
 import argparse
+import json
 import os
 import sys
 import logging
@@ -44,12 +45,25 @@ def readlines(input):
                 lines.append(line)
     return lines
 
-def readCharacters(filename):
+def readCharactersTxt(filename):
     characters = readlines(filename)
     characters = map(strToCharacter, characters)
     for index,character in enumerate(characters):
         character['id'] = str(index)
     return characters
+
+def readCharactersJson(filename):
+    with open(filename) as file:
+        return json.load(file)
+
+def readCharacters(filename):
+    (base,ext) = os.path.splitext(filename)
+    if ext == '.json':
+        return readCharactersJson(filename)
+    elif ext == '.txt':
+        return readCharactersTxt(filename)
+    else:
+        raise Exception('Unsupported character format ' + filename)
 
 def get_all_text( node ):
     if node.nodeType ==  node.TEXT_NODE:
@@ -233,7 +247,7 @@ def convert(input, outfilename, charactersFile, mentionLevel, splitChapters, inc
     entitiesElement.appendChild(entityElementsByType['PERSON']['elements'])
     entitiesElement.appendChild(entityElementsByType['LOCATION']['elements'])
     entitiesElement.appendChild(entityElementsByType['ORGANIZATION']['elements'])
-    newdoc.appendChild(entitiesElement)
+    #newdoc.appendChild(entitiesElement)
     newdoc.appendChild(root)
     dom.appendChild(newdoc)
 
@@ -248,7 +262,7 @@ def convert(input, outfilename, charactersFile, mentionLevel, splitChapters, inc
                     element.setAttribute(k,';'.join(v))
                 else:
                     element.setAttribute(k,v)
-        newdoc.insertBefore(charactersElement, entitiesElement)
+        newdoc.insertBefore(charactersElement, root)
 
     # Go over mentions and fix there speakerId
     mentionIdToSpanId = {}

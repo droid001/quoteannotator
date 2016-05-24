@@ -31,7 +31,7 @@ def main():
         match = re.match(r"(.*)_(\d+)", base)
         if match: 
             base = match.group(1)
-        charactersFile = base + ".characters.txt"
+        charactersFile = base + ".characters.json"
         if not os.path.isfile(charactersFile):
             charactersFile = None
         print "convert " + filename + " with characters " + str(charactersFile)
@@ -44,6 +44,9 @@ def main():
             outfile = outbase + file
         if not os.path.exists(outbase):
             os.makedirs(outbase)
-        cqsc.convertMentionLevels(filename, outfile, charactersFile, args.splitChapters, args.includeSectionTags)
+        try:
+            cqsc.convertMentionLevels(filename, outfile, charactersFile, args.splitChapters, args.includeSectionTags)
+        except:
+            log.error("Unexpected error processing " + filename + ": ", exc_info=True)
 
 if __name__ == "__main__": main()

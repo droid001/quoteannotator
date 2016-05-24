@@ -7,7 +7,7 @@
       "Father Christopher Siriysky",
       "Father Christopher"
     ],
-    "description": "Yegorushka’s parish priest, a Russian Orthodox priest."
+    "description": "Yegorushka's parish priest, a Russian Orthodox priest."
   },
   {
     "id": "1",
@@ -18,7 +18,7 @@
       "Kuzmichov",
       "Ivan Ivanitch"
     ],
-    "description": "Yegorushka’s uncle, a provincial merchant."
+    "description": "Yegorushka's uncle, a provincial merchant."
   },
   {
     "id": "2",
@@ -50,7 +50,7 @@
     "gender": "male",
     "name": "Solomon",
     "aliases": [
-      "Solomon",
+      "Solomon"
     ]
   },
   {

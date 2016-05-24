@@ -384,6 +384,9 @@ AnnotationOptionsUI.prototype.update = function(annotationOpts) {
       } else {
         span.append(displayText);
       }
+      if (opt.data && opt.data.description) {
+        span.attr('title', opt.data.description);
+      }
       div.append(span);
     } else {
       console.warn('Ignoring opt ' + name + ' in unknown group ' + opt.group);
