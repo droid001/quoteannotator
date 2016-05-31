@@ -606,13 +606,15 @@ Annotator.prototype.updateSpanIds = function() {
   for (var i = 0; i < spans.length; i++) {
     var targId = $(spans[i]).attr('id');
     // trim off the 's' that prepends it
-    if (targId.startsWith('s')) {
-      targId = parseInt(targId.substring(1), 10);
-      if (targId > maxId) {
-        maxId = targId;
+    if (targId) {
+      if (targId.startsWith('s')) {
+        targId = parseInt(targId.substring(1), 10);
+        if (targId > maxId) {
+          maxId = targId;
+        }
+      } else {
+        console.log("weirdly formatted id: " + targId);
       }
-    } else {
-      console.log("weirdly formatted id: " + targId);
     }
   }
   this.nextSpanId = maxId + 1;
@@ -718,7 +720,7 @@ Annotator.prototype.enterAnnotateMode = function() {
   $("#annotate").prop("disabled", true);
   $("#annotate").addClass("disabled");
   $("#annotate").css("background-color", "white");
-  this.ensureSpanIds();
+  this.updateSpanIds();
   this.updateSpanClicks();
 };
 
@@ -729,6 +731,7 @@ Annotator.prototype.ensureSpanIds = function() {
   for (var i = 0; i < spans.length; i++) {
     if ($(spans[i]).attr("id") == undefined) {
       $(spans[i]).attr("id", 's' + this.nextSpanId);
+      console.warn("Assigning span id " + this.nextSpanId);
       this.nextSpanId++;
     } else if (spansById[$(spans[i]).attr("id")]) {
       // Duplicate id
