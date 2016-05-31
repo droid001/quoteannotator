@@ -61,14 +61,59 @@ def guessCharacter(name, allCharactersByAlias):
     if result['score'] < 100:
         # match without punctuation
         m = normalizeName(result['name'])
-        print m
         result['score'] = fuzz.ratio(name, m)
+    result['ok'] = result['score'] == 100 and len(result['characters']) == 1
     return result
 
 def normalizeName(s):
     s = s.replace(" ", "_")
     s = re.sub(r'[^\w\s]','',s)
     return s
+
+def printMismatchedCharacter(name, subpart, guessed):
+    detail = ' (' + subpart + ')' if subpart else ''
+    log.warning('Character not found: "' + name + '"' + detail + 
+        ' best match is ' + guessed['name'] + 
+        ', score=' + str(guessed['score']) + 
+        ', options=' + str(len(guessed['characters'])))
+
+def updateSpeaker(elements, old, new):
+    n = 0
+    for element in elements:
+        speaker = element.getAttribute('speaker')
+        if speaker == old:
+            element.setAttribute('speaker', new)
+            n = n+1
+    return n
+
+def fixupCharacter(doc, character):
+    dom = character['xml']
+    name = dom.getAttribute('name')
+    c = character['character']
+    normalized = c['normalized']
+    if c.get('mappedCharacter'):
+        character['duplicate'] = True
+    else:
+        character['duplicate'] = False
+        c['mappedCharacter'] = character
+    # Ensure character dom contains all the necessary information
+    props = ["gender", "aliases", "description"]
+    for prop in props:
+        v = c.get(prop)
+        if v:
+            if prop == "aliases":
+                dom.setAttribute(prop, ";".join(v))
+            else:
+                dom.setAttribute(prop, v)
+    if not name == normalized:
+        dom.setAttribute('name', normalized)
+        # Go through chapters, and replace reference to name by normalized
+        chapters = doc['chapters']
+        for chapter in chapters:
+            chdom = chapter['xml']
+            updateSpeaker(chdom.getElementsByTagName('quote'), name, normalized)
+            updateSpeaker(chdom.getElementsByTagName('mention'), name, normalized)
+
 
 def processCharacters(doc, allCharacterList):
     # Make sure all characters are found in our character list
@@ -80,6 +125,7 @@ def processCharacters(doc, allCharacterList):
         name = character['name']
         # Strip . (guess that's something the javascript did)
         name = name.replace(".", "")
+        character['normalized'] = name
         if not allCharactersByName.get(name):
             allCharactersByName[name] = character
         else:
@@ -93,18 +139,37 @@ def processCharacters(doc, allCharacterList):
     # Go through characters and make sure they are found in our character list!
     characters = doc['characters']
     for character in characters:
-        name = character['xml'].getAttribute('name')
-        if not allCharactersByName.get(name):
+        dom = character['xml']
+        name = dom.getAttribute('name')
+        if allCharactersByName.get(name):
+            character['character'] = allCharactersByName.get(name)
+            fixupCharacter(doc, character)
+        else:
             # Why character not found???
             if "_and_" in name:
                 names = name.split("_and_")
+                dom.setAttribute('group', "true")
+                members = []
                 for nm in names:
                     guessed = guessCharacter(nm, allCharactersByAlias)
-                    print 'Character not found: ' + name + ' matched ' + nm + ' to: ' + str(guessed)
+                    if guessed['ok']:
+                        members.append(guessed['characters'][0]['normalized'])
+                    else:
+                        printMismatchedCharacter(name, nm, guessed)
+                if len(members) > 0:
+                    dom.setAttribute('members', ';'.join(members))
             else:
                 guessed = guessCharacter(name, allCharactersByAlias)
-                print 'Character not found: ' + name + ' matched: ' + str(guessed)
-
+                if guessed['ok']:
+                    character['character'] = guessed['characters'][0]
+                    fixupCharacter(doc, character)
+                else:
+                    printMismatchedCharacter(name, None, guessed)
+    # Remove duplicates
+    deduped = [x for x in characters if not x.get('duplicate') == True] 
+    for i,c in enumerate(deduped):
+        c['xml'].setAttribute('id', str(i))
+    doc['characters'] = deduped
 
 # input: directory of files to merge
 # allCharacterList: list of all known characters 
@@ -148,13 +213,17 @@ def assemble(input, allCharacterList, includeSectionTags, outfilename):
             "charactersByName": charactersByName
         }
         processCharacters(doc, allCharacterList)
+        characters = doc['characters']
     # Final output
     impl = minidom.getDOMImplementation()
     dom = impl.createDocument(None, "doc", None)
     docElem = dom.documentElement
     charactersElem = dom.createElement('characters')
     for character in characters:
+        charactersElem.appendChild(dom.createTextNode('\n'))
         charactersElem.appendChild(character['xml'].cloneNode(True))
+    charactersElem.appendChild(dom.createTextNode('\n'))
+    docElem.appendChild(dom.createTextNode('\n'))
     docElem.appendChild(charactersElem)
     docElem.appendChild(dom.createTextNode('\n'))
     textElem = dom.createElement('text')
