@@ -24,6 +24,24 @@
   {
     "id": "2",
     "gender": "female",
+    "name": "Gurov's_wife",
+    "aliases": [
+      "Gurov's wife",
+      "his wife"
+    ],
+    "description": "Gurov's wife."
+  },
+  {
+    "id": "3",
+    "gender": "male",
+    "name": "the_official",
+    "aliases": [
+      "the official"
+    ]
+  },
+  {
+    "id": "4",
+    "gender": "female",
     "name": "Gurov's_daughter",
     "aliases": [
       "Gurov's daughter"
