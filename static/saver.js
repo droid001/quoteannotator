@@ -204,7 +204,9 @@ function convertToXml(html, annotationOpts) {
 }
 
 function convertToHtml(xml, ann) {
+  console.log('converting...');
   var xmlDoc = $.parseXML(xml);
+  console.log(xmlDoc);
   $xml = $( xmlDoc );
   // take care of adding the characters in the doc to the annotator
   if (ann != undefined) {

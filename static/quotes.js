@@ -1,4 +1,5 @@
 
+
 var ts = new Tools();
 
 // Utility functions
@@ -535,6 +536,8 @@ function Annotator(annotationOpts) {
   this.ctrlDown = false;
   this.altDown = false;
   this.connectionNum = 0;
+  this.errorChecker = new ErrorChecker();
+  this.bouncer = new Enforcer();
 }
 
 
@@ -576,6 +579,8 @@ Annotator.prototype.attachListeners = function() {
   // Loading
   $("#loadfiles").change( this.savingUI.load.bind(this) );
   $("#loadconfig").change( this.savingUI.load.bind(this) );
+  // Error checking
+  $("#checkconnections").click( this.errorChecker.checkConnections.bind(this) );
 };
 
 Annotator.prototype.updateSpanIds = function() {
@@ -826,16 +831,18 @@ Annotator.prototype.connectClick = function (event) {
     if (this.connectionTimes.length > 4) {
       this.connectionTimes.shift();
     }
-    if (this.selectedSpans.indexOf(id) < 0 && this.connectionTimes.indexOf(event.timeStamp) < 0) {
+    if (this.selectedSpans.indexOf(id) < 0 &&
+        this.connectionTimes.indexOf(event.timeStamp) < 0 &&
+        this.bouncer.enforceSpanTypes(this.selectedSpans, id)) {
       this.selectedSpans.push(id);
       this.connectionTimes.push(event.timeStamp);
-      span.addClass('connect_select');
+      span.addClass('connectSelect');
       // if there is a click that is not on a span, stop trying to connect span one
       var ann = this;
       $(window).click(function(e) {
         if ($(e.target)[0].tagName !== 'SPAN' &&
           ann.selectedSpans.length > 0) {
-          $("#" + ann.selectedSpans[0]).removeClass('connect_select');
+          $("#" + ann.selectedSpans[0]).removeClass('connectSelect');
           ann.selectedSpans = [];
           $(window).off('click');
         }
@@ -844,13 +851,15 @@ Annotator.prototype.connectClick = function (event) {
         $("#" + this.selectedSpans[0]).addClass("connection_" + $("#" + this.selectedSpans[1]).attr('id'));
         $("#" + this.selectedSpans[1]).addClass("connection_" + $("#" + this.selectedSpans[0]).attr('id'));
         this.drawConnection($("#" + this.selectedSpans[0]), $("#" + this.selectedSpans[1]));
-        $("#" + this.selectedSpans[0]).removeClass('connect_select');
-        $("#" + this.selectedSpans[1]).removeClass('connect_select');
+        $("#" + this.selectedSpans[0]).removeClass('connectSelect');
+        $("#" + this.selectedSpans[1]).removeClass('connectSelect');
+        $("#" + this.selectedSpans[0]).removeClass('missingConnection');
+        $("#" + this.selectedSpans[1]).removeClass('missingConnection');
         this.selectedSpans = [];
         $(window).off('click');
       }
     } else {
-      console.log('Selected spans already contain span');
+      console.log('Selected spans already contain span or span doesn\'t match already selected');
     }
   }
 };

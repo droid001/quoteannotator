@@ -47,6 +47,11 @@ h1 {
   background-color: silver;
 }
 
+.missingConnection {
+  font-weight: bold;
+  color: red;
+}
+
 .config {
   border: 1px dashed red;
 }
@@ -72,8 +77,10 @@ h1 {
 }
 
 
-.connect_select {
-  color: red;
+.connectSelect {
+  -webkit-box-shadow: 5px 5px 10px 0px rgba(53,53,53,1);
+  -moz-box-shadow: 5px 5px 10px 0px rgba(53,53,53,1);
+  box-shadow: 5px 5px 10px 0px rgba(53,53,53,1);
 }
 
 .flat {
