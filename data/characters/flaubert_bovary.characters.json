@@ -1,0 +1,159 @@
+[
+  {
+    "id": "0",
+    "gender": "male",
+    "name": "Charles_Bovary",
+    "aliases": [
+      "Charles Bovary",
+      "Charles,Bovary"
+    ],
+    "description": "Emma Bovary's husband, a country doctor."
+  },
+  {
+    "id": "1",
+    "gender": "male",
+    "name": "Monsieur_Rouault",
+    "aliases": [
+      "Monsieur Rouault",
+      "old Rouault"
+    ],
+    "description": "Emma Bovary's father, a farmer."
+  },
+  {
+    "id": "2",
+    "gender": "female",
+    "name": "Emma_Bovary",
+    "aliases": [
+      "Emma Bovary",
+      "Emma",
+      "Emma Rouault",
+      "Madame Bovary"
+    ],
+    "description": "The novel's protagonist, the Madame Bovary of the title. A country girl educated in a convent and married to Charles Bovary at a young age."
+  },
+  {
+    "id": "3",
+    "gender": "male",
+    "name": "Leon_Dupuis",
+    "aliases": [
+      "Leon Dupuis",
+      "Leon"
+    ],
+    "description": "Emma's friend in Yonville, who later becomes her lover."
+  },
+  {
+    "id": "4",
+    "gender": "male",
+    "name": "Rodolphe_Boulanger",
+    "aliases": [
+      "Rodolphe Boulanger",
+      "Rodolphe",
+      "Monsieur Boulanger"
+    ],
+    "description": "Emma's first lover, a wealthy landowner with an estate near Yonville."
+  },
+  {
+    "id": "5",
+    "gender": "male",
+    "name": "Monsieur_Homais",
+    "aliases": [
+      "Monsieur Homais",
+      "Homais",
+      "the chemist"
+    ],
+    "description": "The apothecary at Yonville; a pompous, self-impressed man of the bourgeois class who helps Charles become established as a doctor in the town."
+  },
+  {
+    "id": "6",
+    "gender": "female",
+    "name": "Madame_Homais",
+    "aliases": [
+      "Madame Homais"
+    ],
+    "description": "Monsieur Homais's wife."
+  },
+  {
+    "id": "7",
+    "gender": "female",
+    "name": "Berthe",
+    "aliases": [
+      "Berthe"
+    ],
+    "description": "Charles and Emma's daughter."
+  },
+  {
+    "id": "8",
+    "gender": "male",
+    "name": "Monsieur_Guillaumin",
+    "aliases": [
+      "Monsieur Guillaumin",
+      "Guillaumin"
+    ],
+    "description": "Leon's first employer, the well-to-do lawyer in Yonville. "
+  },
+  {
+    "id": "9",
+    "gender": "female",
+    "name": "Madame_Lefrancois",
+    "aliases": [
+      "Madame Lefrancois",
+      "the landlady"
+    ],
+    "description": "The proprietress of the inn in Yonville."
+  },
+  {
+    "id": "10",
+    "gender": "male",
+    "name": "Monsieur_Lheureux",
+    "aliases": [
+      "Monsieur Lheureux"
+    ],
+    "description": "A sly, sinister merchant and moneylender in Yonville who leads Emma into debt, financial ruin, and eventually suicide."
+  },
+  {
+    "id": "11",
+    "gender": "male",
+    "name": "Abbe_Bournisien",
+    "aliases": [
+      "Abbe Bournisien"
+    ],
+    "description": "The town priest in Yonville."
+  },
+  {
+    "id": "12",
+    "gender": "male",
+    "name": "Binet",
+    "aliases": [
+      "Binet"
+    ],
+    "description": "The tax collector in Yonville."
+  },
+  {
+    "id": "13",
+    "gender": "male",
+    "name": "Justin",
+    "aliases": [
+      "Justin"
+    ],
+    "description": "The assistant in the shop of Mr. Homais."
+  },
+  {
+    "id": "14",
+    "gender": "female",
+    "name": "Felicite",
+    "aliases": [
+      "Felicite"
+    ],
+    "description": "The Bovarys' maid."
+  },
+  {
+    "id": "15",
+    "gender": "male",
+    "name": "Hippolyte_Tautain",
+    "aliases": [
+      "Hippolyte Tautain",
+      "Hippolyte"
+    ],
+    "description": "A mentally retarded, clubfooted boy operated on by Charles Bovary at the insistence of M. Homais."
+  } 
+]

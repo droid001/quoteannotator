@@ -1,0 +1,40 @@
+[
+  {
+    "id": "0",
+    "gender": "male",
+    "name": "Andrey_Kovrin",
+    "aliases": [
+      "Andrey Kovrin",
+      "Kovrin"
+    ],
+    "description": "A Russian scholar who is seemingly brilliant."
+  },
+  {
+    "id": "1",
+    "gender": "female",
+    "name": "Tanya_Pesotsky",
+    "aliases": [
+      "Tanya Pesotsky",
+      "Tanya"
+    ],
+    "description": "Yegor's daughter."
+  },
+  {
+    "id": "2",
+    "gender": "male",
+    "name": "Yegor_Semyonitch",
+    "aliases": [
+      "Yegor Semyonitch"
+    ],
+    "description": "Kovrin's former guardian."
+  },
+  {
+    "id": "3",
+    "gender": "male",
+    "name": "the_black_monk",
+    "aliases": [
+      "the black monk",
+      "the monk"
+    ]
+  }
+]

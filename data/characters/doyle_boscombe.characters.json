@@ -1,0 +1,69 @@
+[
+  {
+    "id": "0",
+    "gender": "male",
+    "name": "Sherlock_Holmes",
+    "aliases": [
+      "Sherlock Holmes",
+      "Holmes"
+    ],
+    "description": "Consulting detective known for a proficiency with observation, forensic science, and logical reasoning."
+  },
+  {
+    "id": "1",
+    "gender": "male",
+    "name": "Dr_Watson",
+    "aliases": [
+      "Dr Watson",
+      "I"
+    ],
+    "description": "Sherlock Holmes's friend and partner. Watson narrates the stories and acts as something like Holmes's biographer."
+  },
+  {
+    "id": "2",
+    "gender": "female",
+    "name": "Mary_Morstan",
+    "aliases": [
+      "Mary Morstan",
+      "my wife"
+    ],
+    "description": "Dr. Watson's wife."
+  },
+  {
+    "id": "3",
+    "gender": "male",
+    "name": "Inspector_Lestrade",
+    "aliases": [
+      "Inspector Lestrade",
+      "Lestrade"
+    ]
+  },
+  {
+    "id": "4",
+    "gender": "male",
+    "name": "John_Turner",
+    "aliases": [
+      "John Turner",
+      "Turner",
+      "old man"
+    ],
+    "description": "Elderly man from Australia who has established a fine estate in England."
+  },
+  {
+    "id": "5",
+    "gender": "female",
+    "name": "Miss_Turner",
+    "aliases": [
+      "Miss Turner"
+    ],
+    "description": "John Turner's daughter and James McCarthy's beloved."
+  },
+  {
+    "id": "6",
+    "gender": "male",
+    "name": "hotel_waiter",
+    "aliases": [
+      "hotel waiter"
+    ]
+  }
+]

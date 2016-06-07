@@ -1,0 +1,43 @@
+[
+  {
+    "id": "0",
+    "gender": "male",
+    "name": "Sherlock_Holmes",
+    "aliases": [
+      "Sherlock Holmes",
+      "Holmes"
+    ],
+    "description": "Consulting detective known for a proficiency with observation, forensic science, and logical reasoning."
+  },
+  {
+    "id": "1",
+    "gender": "male",
+    "name": "Dr_Watson",
+    "aliases": [
+      "Dr Watson",
+      "I"
+    ],
+    "description": "Sherlock Holmes's friend and partner. Watson narrates the stories and acts as something like Holmes's biographer."
+  },
+  {
+    "id": "2",
+    "gender": "female",
+    "name": "Miss_Mary_Sutherland",
+    "aliases": [
+      "Miss Mary Sutherland",
+      "Miss Sutherland"
+    ],
+    "description": "Holmes's client, a typist and the victim of a scheme to keep her unmarried."
+  },
+  {
+    "id": "3",
+    "gender": "male",
+    "name": "Mr._Windibank",
+    "aliases": [
+      "Mr. Windibank",
+      "James Windibank",
+      "Hosmer Angel"
+    ],
+    "description": "Wine importer and Sutherland's stepfather, who poses as Hosmer Angel to snare his stepdaughter's affections."
+  }
+]

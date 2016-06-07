@@ -1,0 +1,51 @@
+[
+  {
+    "id": "0",
+    "gender": "male",
+    "name": "Dmitri_Gurov",
+    "aliases": [
+      "Dmitri Gurov",
+      "Gurov",
+      "Dmitri"
+    ],
+    "description": "A forty-year-old man."
+  },
+  {
+    "id": "1",
+    "gender": "female",
+    "name": "Anna_Sergeyevna",
+    "aliases": [
+      "Anna Sergeyevna",
+      "Anna",
+      "the lady"
+    ],
+    "description": "The lady with the dog."
+  },
+  {
+    "id": "2",
+    "gender": "female",
+    "name": "Gurov's_wife",
+    "aliases": [
+      "Gurov's wife",
+      "his wife"
+    ],
+    "description": "Gurov's wife."
+  },
+  {
+    "id": "3",
+    "gender": "male",
+    "name": "the_official",
+    "aliases": [
+      "the official"
+    ]
+  },
+  {
+    "id": "4",
+    "gender": "female",
+    "name": "Gurov's_daughter",
+    "aliases": [
+      "Gurov's daughter"
+    ],
+    "description": "Gurov's daughter."
+  }
+]

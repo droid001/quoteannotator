@@ -385,6 +385,9 @@ AnnotationOptionsUI.prototype.update = function(annotationOpts) {
       } else {
         span.append(displayText);
       }
+      if (opt.title) {
+        span.attr('title', opt.title);
+      }
       div.append(span);
     } else {
       console.warn('Ignoring opt ' + name + ' in unknown group ' + opt.group);
@@ -499,6 +502,25 @@ AnnotationOptionsUI.prototype.attachOptionsToDiv = function(parentDiv) {
 AnnotationOptionsUI.prototype.addCharacterToConfig = function(character) {
   this.annotationOpts[character.name] = character;
   character.data = character.data || {};
+  if (!character.title) {
+    var parts = [];
+    if (character.data.aliases) {
+      var aliases = character.data.aliases.split(';');
+      var name = character.name.replace(/[._]+/g, ' ');
+      // Look for aliases that are not included in the character name
+      aliases = aliases.filter( function(alias) {
+        alias = alias.replace(/[._]+/g, ' ');
+        return name.indexOf(alias) < 0;
+      });
+      if (aliases.length > 0) {
+        parts.push('Names: ' + aliases.join(','));
+      }
+    }
+    if (character.data.description) {
+      parts.push(character.data.description);
+    }
+    character.title = parts.join('\n');
+  }
   character.data['id'] = character.id;
   character.data['name'] = character.name.startsWith('speaker_')?
     character.name.substring('speaker_'.length) : character.name;
@@ -589,13 +611,15 @@ Annotator.prototype.updateSpanIds = function() {
   for (var i = 0; i < spans.length; i++) {
     var targId = $(spans[i]).attr('id');
     // trim off the 's' that prepends it
-    if (targId.startsWith('s')) {
-      targId = parseInt(targId.substring(1), 10);
-      if (targId > maxId) {
-        maxId = targId;
+    if (targId) {
+      if (targId.startsWith('s')) {
+        targId = parseInt(targId.substring(1), 10);
+        if (targId > maxId) {
+          maxId = targId;
+        }
+      } else {
+        console.log("weirdly formatted id: " + targId);
       }
-    } else {
-      console.log("weirdly formatted id: " + targId);
     }
   }
   this.nextSpanId = maxId + 1;
@@ -701,7 +725,7 @@ Annotator.prototype.enterAnnotateMode = function() {
   $("#annotate").prop("disabled", true);
   $("#annotate").addClass("disabled");
   $("#annotate").css("background-color", "white");
-  this.ensureSpanIds();
+  this.updateSpanIds();
   this.updateSpanClicks();
 };
 
@@ -712,6 +736,7 @@ Annotator.prototype.ensureSpanIds = function() {
   for (var i = 0; i < spans.length; i++) {
     if ($(spans[i]).attr("id") == undefined) {
       $(spans[i]).attr("id", 's' + this.nextSpanId);
+      console.warn("Assigning span id " + this.nextSpanId);
       this.nextSpanId++;
     } else if (spansById[$(spans[i]).attr("id")]) {
       // Duplicate id
