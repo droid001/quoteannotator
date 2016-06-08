@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Speaker Annotator</title>
+    <title>A Little Annotator</title>
     <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css">
     <link rel="stylesheet" type="text/css" href="../static/css/quotes.css">
@@ -27,7 +27,7 @@
     <meta content="utf-8" http-equiv="encoding">
   </head>
   <body>
-    <h1>A Small Sandbox of Quote Annotation</h1>
+    <h1>A Small Sandbox of Annotation</h1>
 
     <!-- Modal HTML embedded directly into document -->
     <div id="addoptionmodal" style="display:none;">
@@ -64,12 +64,17 @@
     </div>
 
     <div>
-      <input id="addcharacter" type="button" value="Add Character" class="btn btn-primary" />
-      <input id="checkconnections" type="button" value="Check Connections" class="btn btn-primary" />
-      <p id="connectionstatus"></p>
+      <div>
+        <input id="addcharacter" type="button" value="Add Character" class="btn btn-primary" />
+      </div>
+      <div>
+        <input id="checkconnections" type="button" value="Check Connections" class="btn btn-primary" />
+        <p id="connectionstatus"></p>
+      </div>
     </div>
 
-    <div>
+    <div id="entitydisplay" class="left bordered">
+      <h3>Character List</h3>
     </div>
 
     <div id="annotationareacontainer" class="left bordered">
@@ -85,7 +90,7 @@
         <p>muzny@stanford.edu</p>
       </div>
       <div>
-        <button id="annotate">Annotate!</button>
+        <input id="annotate" type="button" value="Annotate!" class="btn btn-primary" />
       </div>
       <div class="text">
         <h4>Load and save text files</h4>

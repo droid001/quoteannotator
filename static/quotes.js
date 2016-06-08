@@ -422,6 +422,18 @@ AnnotationOptionsUI.prototype.update = function(annotationOpts) {
       $('<style>.' + CSS.escape(name) + ' { ' + str + ' }</style>').appendTo('head');
     }
   }
+  // update the character list
+  $("#entitydisplay div").remove();
+  for (var name in this.annotationOpts) {
+    if (name.startsWith('speaker_')) {
+      var nameDiv = $('<div />');
+      nameDiv.addClass(name);
+      var data = this.annotationOpts[name].data;
+      nameDiv.text(name + '\ngender: ' + data.gender +
+          '\ndesription: ' + data.description + '\naliases: ' + data.aliases);
+      $("#entitydisplay").append(nameDiv);    
+    } 
+  }
 };
 
 AnnotationOptionsUI.prototype.addCharacter = function() {
@@ -1025,7 +1037,7 @@ Annotator.prototype.drawConnection = function(span1, span2) {
 };
 
 Annotator.prototype.deleteConnection = function(e) {
-  if (event.altKey) {
+  if (e.altKey) {
     var id = e.target.id.split('_');
     $("#" + id[0]).removeClass('connection_' + id[1]);
     $("#" + id[1]).removeClass('connection_' + id[0]);
