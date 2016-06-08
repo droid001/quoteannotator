@@ -182,15 +182,23 @@ def addNestedQuotes(element):
             pieces = re.split("(Witness.*?:\s*|The Coroner:\s*|A Juryman:\s*)", str2)
             for i,p in enumerate(pieces):
                 if i % 2 == 0 and i > 0:
+                    speaker = ""
+                    if 'Witness' in pieces[i-1]:
+                        speaker = 'James_McCarthy'
+                    elif 'Coroner' in pieces[i-1]:
+                        speaker = 'Coroner'
+                    elif 'Juryman' in pieces[i-1]:
+                        speaker = 'Juryman'
                     if '<QUOTE>' in pieces[i]:
-                        pieces[i] = re.sub(r"(.*?)(\s*<QUOTE>)",r"<QUOTE>\1</QUOTE>\2", p)
+                        pieces[i] = re.sub(r"(.*?)(\s*<QUOTE>)",r'<QUOTE speaker="">\1</QUOTE>\2', p)
                     else:
-                        pieces[i] = '<QUOTE>' + p + '</QUOTE>'
+                        pieces[i] = '<QUOTE speaker="">' + p + '</QUOTE>'
+                    pieces[i] = pieces[i].replace('speaker=""', 'speaker="' + speaker + '"', 1)
                 #elif i % 2 == 1:
                 #    pieces[i] = re.sub(r"(Witness|The Coroner|A Juryman)",r'<MENTION entityType="PERSON">\1</MENTION>',p)
             str2 = "".join(pieces)
             #str2 = re.sub(r"(Witness:\s*|The Coroner:\s*|A Juryman:\s*)(.*?[.?])",r"\1<QUOTE>\2</QUOTE>", str2)
-        print str2
+        #print str2
         try:
             return minidom.parseString(str2).documentElement
         except:
