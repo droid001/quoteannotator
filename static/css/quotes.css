@@ -51,6 +51,10 @@ h1 {
   background-color: #B0C4DE;
 }
 
+.quote .quote {
+  border: 1px dotted black;
+}
+
 .missingConnection {
   font-weight: bold;
   color: red;
@@ -102,6 +106,15 @@ h1 {
 
 .bordered {
   border: 1px solid lightgray;
+}
+
+.modal {
+  overflow-y: scroll;
+  max-height: 700px;
+}
+
+#editAnnotation, #specificAnns {
+  height: 700px;
 }
 
 #entitydisplay {

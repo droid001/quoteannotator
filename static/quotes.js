@@ -494,7 +494,7 @@ AnnotationOptionsUI.prototype.submit = function() {
     }
 
     var css = $("#optioncss").val();
-    var data = { aliases: [originalName] };
+    var data = { aliases: originalName };
     var character = {name: name, id: this.nextCharacterId, css: css, data: data};
     this.addCharacterToConfig(character);
     $('#addtest p').attr("style", "");
