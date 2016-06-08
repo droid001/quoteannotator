@@ -120,6 +120,9 @@ function xmlToHtmlConvert(child, childConverted) {
     var val = $attr.val();
     if (name === "id") {
       id = val;
+      if (!id.startsWith('s')) {
+        id = 's' + id;
+      }
     } else if (classAttrs.indexOf(name) >= 0){
       classes[name] = val;
     } else {
@@ -130,11 +133,6 @@ function xmlToHtmlConvert(child, childConverted) {
   var span = $('<span/>');
   span.attr("id", id);
   var tagName = child[0].tagName;
-//  // this was a hack to fix old files
-//  if (tagName.startsWith('speaker_')) {
-//    classes['speaker'] = tagName.split('_').slice(1).join('_');
-//    tagName = "quote";
-//  }
   span.addClass(tagName);
   var title = tagName;
   for (var cl in classes) {
