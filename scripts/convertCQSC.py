@@ -177,6 +177,19 @@ def addNestedQuotes(element):
     str = element.toxml("utf-8")
     str2 = re.sub(r"(\W)'((?![ts]\W|re\W|ll\W).*?)'(\W)",r"\1<QUOTE>'\2'</QUOTE>\3", str)
     if not str == str2:
+        # Nested quote hack for doyle_boscombe
+        if 'Witness:' in str2:
+            pieces = re.split("(Witness.*?:\s*|The Coroner:\s*|A Juryman:\s*)", str2)
+            for i,p in enumerate(pieces):
+                if i % 2 == 0 and i > 0:
+                    if '<QUOTE>' in pieces[i]:
+                        pieces[i] = re.sub(r"(.*?)(\s*<QUOTE>)",r"<QUOTE>\1</QUOTE>\2", p)
+                    else:
+                        pieces[i] = '<QUOTE>' + p + '</QUOTE>'
+                #elif i % 2 == 1:
+                #    pieces[i] = re.sub(r"(Witness|The Coroner|A Juryman)",r'<MENTION entityType="PERSON">\1</MENTION>',p)
+            str2 = "".join(pieces)
+            #str2 = re.sub(r"(Witness:\s*|The Coroner:\s*|A Juryman:\s*)(.*?[.?])",r"\1<QUOTE>\2</QUOTE>", str2)
         print str2
         try:
             return minidom.parseString(str2).documentElement

@@ -61,6 +61,41 @@
   {
     "id": "6",
     "gender": "male",
+    "name": "Charles_McCarthy",
+    "aliases": [
+      "Charles McCarthy"
+    ],
+    "description": "A fellow Australian and a murder victim in this mystery."
+  },
+  {
+    "id": "7",
+    "gender": "male",
+    "name": "James_McCarthy",
+    "aliases": [
+      "James McCarthy",
+      "Witness"
+    ],
+    "description": "Charles McCarthy's son and suspect in his murder."
+  },
+  {
+    "id": "8",
+    "gender": "male",
+    "name": "Coroner",
+    "aliases": [
+      "The Coroner"
+    ]
+  },
+  {
+    "id": "9",
+    "gender": "male",
+    "name": "Juryman",
+    "aliases": [
+      "A Juryman"
+    ]
+  },
+  {
+    "id": "10",
+    "gender": "male",
     "name": "hotel_waiter",
     "aliases": [
       "hotel waiter"
