@@ -5,6 +5,7 @@
 import argparse
 import json
 import os
+import re
 import sys
 import logging
 import traceback
@@ -163,7 +164,40 @@ def findCharacter(entity, characters):
     else:
         return None
 
-def convert(input, outfilename, charactersFile, mentionLevel, splitChapters, includeSectionTags):
+def stripCharactersFromAttributes(element, s):
+    if element.attributes:
+        for attrName, attrValue in element.attributes.items():
+            element.setAttribute(attrName, re.sub(s, '', attrValue))
+    for child in element.childNodes:
+        stripCharactersFromAttributes(child, s)
+
+def addNestedQuotes(element):
+    # Strip ' from attributes
+    stripCharactersFromAttributes(element, "'")
+    str = element.toxml("utf-8")
+    str2 = re.sub(r"(\W)'((?![ts]\W|re\W|ll\W).*?)'(\W)",r"\1<QUOTE>'\2'</QUOTE>\3", str)
+    if not str == str2:
+        # Nested quote hack for doyle_boscombe
+        if 'Witness:' in str2:
+            pieces = re.split("(Witness.*?:\s*|The Coroner:\s*|A Juryman:\s*)", str2)
+            for i,p in enumerate(pieces):
+                if i % 2 == 0 and i > 0:
+                    if '<QUOTE>' in pieces[i]:
+                        pieces[i] = re.sub(r"(.*?)(\s*<QUOTE>)",r"<QUOTE>\1</QUOTE>\2", p)
+                    else:
+                        pieces[i] = '<QUOTE>' + p + '</QUOTE>'
+                #elif i % 2 == 1:
+                #    pieces[i] = re.sub(r"(Witness|The Coroner|A Juryman)",r'<MENTION entityType="PERSON">\1</MENTION>',p)
+            str2 = "".join(pieces)
+            #str2 = re.sub(r"(Witness:\s*|The Coroner:\s*|A Juryman:\s*)(.*?[.?])",r"\1<QUOTE>\2</QUOTE>", str2)
+        print str2
+        try:
+            return minidom.parseString(str2).documentElement
+        except:
+            log.error('Invalided nested quote xml: ' + str2)
+    return None
+
+def convert(input, outfilename, charactersFile, mentionLevel, splitChapters, includeSectionTags, extractNestedQuotes):
     #print input
     #print output
     nertypes = ['PERSON', 'ORGANIZATION', 'LOCATION']
@@ -204,7 +238,7 @@ def convert(input, outfilename, charactersFile, mentionLevel, splitChapters, inc
         for nertype in nertypes:
             for mention in paragraph.getElementsByTagName(nertype):
                 mention.tagName = 'MENTION'
-                mention.nodeName = 'MENTION' 
+                mention.nodeName = 'MENTION'
                 mention.setAttribute('entityType', nertype)
                 entityId = mention.getAttribute('entity')
                 mentionId = mention.getAttribute('id')
@@ -275,18 +309,24 @@ def convert(input, outfilename, charactersFile, mentionLevel, splitChapters, inc
         mentionIdToSpanId[mentionId] = 's' + str(nextMentionSpanId)
         mentionIdToMention[mentionId] = mention
         nextMentionSpanId += 1
-        mention.setAttribute('oid', mentionId);
+        mention.setAttribute('oid', mentionId)
         mention.setAttribute('id', mentionIdToSpanId[mentionId])
         if entityId:
             entity = entities[entityId]
-            speakerName =  entity['name'] if 'name' in entity else entityId
+            speakerName = entity['name'] if 'name' in entity else entityId
             # Rename attributes
             mention.setAttribute('speaker', speakerName)
 
+    quotes = dom.getElementsByTagName('QUOTE')
+    # Look for embedded quotes
+    if extractNestedQuotes:
+        for quote in quotes:
+            nestedQuote = addNestedQuotes(quote)
+            if nestedQuote:
+                quote.parentNode.replaceChild(nestedQuote, quote)
     # Go over quotes and match them to characters
     quoteIdToSpanId = {}
     nextQuoteSpanId = nextMentionSpanId
-    quotes = dom.getElementsByTagName('QUOTE')
     speakerMentions = Set()
     speakers = Set()
     noSpeaker = 0
@@ -296,7 +336,7 @@ def convert(input, outfilename, charactersFile, mentionLevel, splitChapters, inc
         quoteSpanId = 's' + str(nextQuoteSpanId)
         quoteIdToSpanId[quoteId] = quoteSpanId
         nextQuoteSpanId += 1
-        quote.setAttribute('oid', quoteId);
+        quote.setAttribute('oid', quoteId)
         quote.setAttribute('id', quoteIdToSpanId[quoteId])
         if speakerMentionId and speakerMentionId != 'none':
             speakerMentions.add(speakerMentionId)
@@ -346,7 +386,7 @@ def convert(input, outfilename, charactersFile, mentionLevel, splitChapters, inc
     (base, ext2) = os.path.splitext(temp)
     writeEntities(entitiesElement, base + ".entities" + ext)
 
-def convertMentionLevels(infilename, outname, charactersFile, splitChapters, includeSectionTags):
+def convertMentionLevels(infilename, outname, charactersFile, splitChapters, includeSectionTags, extractNestedQuotes):
     mentionLevels = ["ALL", "DIRECT", "QUOTES"]
     (outbase, outext) = os.path.splitext(outname)
     outext = outext or '.xml'
@@ -354,7 +394,7 @@ def convertMentionLevels(infilename, outname, charactersFile, splitChapters, inc
         outfilename = outbase + '.' + mentionLevel.lower() + outext
         with open(infilename, 'r') as infile:
             convert(infile, outfilename, charactersFile,
-                mentionLevel, splitChapters, includeSectionTags)
+                mentionLevel, splitChapters, includeSectionTags, extractNestedQuotes)
 
 
 def main():
@@ -363,11 +403,12 @@ def main():
     parser.add_argument('-c', '--characters', dest='charactersFile', help='characters file', action='store')
     parser.add_argument('-s', '--split', dest='splitChapters', help='split by chapter', action='store_true')
     parser.add_argument('-p', dest='includeSectionTags', help='paragraphs and headings', action='store_true')
+    parser.add_argument('-n', dest='extractNestedQuotes', help='exract nested quotes', action='store_true')
     parser.add_argument('infile')
     parser.add_argument('outfile', nargs='?')
     args = parser.parse_args()
     outname = args.outfile or args.infile
     convertMentionLevels(args.infile, outname, args.charactersFile,
-            args.splitChapters, args.includeSectionTags)
+            args.splitChapters, args.includeSectionTags, args.extractNestedQuotes)
 
 if __name__ == "__main__": main()

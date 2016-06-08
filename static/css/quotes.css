@@ -47,6 +47,10 @@ h1 {
   background-color: silver;
 }
 
+.quote .quote:hover {
+  background-color: #B0C4DE;
+}
+
 .missingConnection {
   font-weight: bold;
   color: red;
