@@ -615,6 +615,9 @@ Annotator.prototype.attachListeners = function() {
   $("#loadconfig").change( this.savingUI.load.bind(this) );
   // Error checking
   $("#checkconnections").click( this.errorChecker.checkConnections.bind(this) );
+  $( window ).resize(function() {
+    this.redrawConnections();
+  }.bind(this));
 };
 
 Annotator.prototype.updateSpanIds = function() {
@@ -917,6 +920,17 @@ Annotator.prototype.hasClassStartsWith = function($el, target) {
     }
   }
   return null;
+};
+
+Annotator.prototype.redrawConnections = function() {
+  // Update position of connections
+  // clear current connections
+  $('.connection').remove();
+  $('.upConnect').remove();
+  $('.overConnect').remove();
+  this.connectionNum = 0;
+  // redraw connections
+  this.updateConnections();
 };
 
 Annotator.prototype.updateConnections = function() {
