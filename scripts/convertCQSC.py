@@ -333,6 +333,7 @@ def convert(input, outfilename, charactersFile, mentionLevel, splitChapters, inc
             if nestedQuote:
                 quote.parentNode.replaceChild(nestedQuote, quote)
     # Go over quotes and match them to characters
+    quotes = dom.getElementsByTagName('QUOTE')
     quoteIdToSpanId = {}
     nextQuoteSpanId = nextMentionSpanId
     speakerMentions = Set()
