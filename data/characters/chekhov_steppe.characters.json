@@ -43,7 +43,8 @@
     "name": "Moisey_Moisevitch",
     "aliases": [
       "Moisey Moisevitch"
-    ]
+    ],
+    "description": "a innkeeper"
   },
   {
     "id": "5",
@@ -51,15 +52,18 @@
     "name": "Solomon",
     "aliases": [
       "Solomon"
-    ]
+    ],
+    "description": "the brother of Moisey Moisevitch"
   },
   {
     "id": "6",
     "gender": "female",
     "name": "the_Jewess",
     "aliases": [
-      "the Jewess"
-    ]
+      "the Jewess",
+      "Rosa"
+    ],
+    "description": "the wife of Moisey Moisevitch"
   },
   {
     "id": "7",
@@ -67,7 +71,8 @@
     "name": "Panteley",
     "aliases": [
       "Panteley"
-    ]
+    ],
+    "description": "an old man"
   },
   {
     "id": "8",
@@ -75,7 +80,8 @@
     "name": "Emelyan",
     "aliases": [
       "Emelyan"
-    ]
+    ],
+    "description": "A waggonner in a reddish-brown coat."
   },
   {
     "id": "9",
@@ -83,7 +89,8 @@
     "name": "Vassya",
     "aliases": [
       "Vassya"
-    ]
+    ],
+    "description": "A waggonner, with a wooden gait and bandage around his face."
   },
   {
     "id": "10",
@@ -91,7 +98,8 @@
     "name": "Dymov",
     "aliases": [
       "Dymov"
-    ]
+    ],
+    "description": "A waggonner, with curly flaxen hair, that killed a snake."
   },
   {
     "id": "11",
@@ -99,7 +107,8 @@
     "name": "Kiruha",
     "aliases": [
       "Kiruha"
-    ]
+    ],
+    "description": "A waggonner, a short stubby little man with a bushy black beard."
   },
   {
     "id": "12",
@@ -115,6 +124,50 @@
     "name": "Nastasya_Petrovna",
     "aliases": [
       "Nastasya Petrovna"
+    ]
+  },
+  {
+    "id": "14",
+    "gender": "male",
+    "name": "Mihailo_Timofevitch",
+    "aliases": [
+      "Mihailo Timofevitch",
+      "Mihailos"
+    ]
+    "description": "Father Christopher's son-in-law, a wool merchant."
+  },
+  {
+    "id": "15",
+    "gender": "male",
+    "name": "Gavrila",
+    "aliases": [
+      "Gavrila"
+    ]
+    "description": "Father Christopher's eldest son, a doctor."
+  },
+  {
+    "id": "16",
+    "gender": "male",
+    "name": "Bishop_Christopher",
+    "aliases": [
+      "Bishop Christopher"
+    ]
+  },
+  {
+    "id": "17",
+    "gender": "male",
+    "name": "Tit",
+    "aliases": [
+      "Tit"
+    ]
+    "description": "A chubby little boy Yegorushka meets during the journey."
+  },
+  {
+    "id": "18",
+    "gender": "female",
+    "name": "Countess_Dranitsky",
+    "aliases": [
+      "Countess Dranitsky"
     ]
   }
 ]
