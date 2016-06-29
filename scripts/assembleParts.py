@@ -26,8 +26,16 @@ def writeXml(dom, filename):
 #       output.write(dom.toprettyxml(encoding="utf-8"))
 
 def getPartNumber(filename):
-    m = re.match(r"(.*?)-([0-9]+)(-[^0-9]+)?\.xml",filename)
-    return float(m.group(2)) if m else -1
+    m = re.match(r"(.*?)-([0-9]+)([a-zA-Z])?(-[^0-9]+)?\.xml",filename)
+    if m:
+        partnum = float(m.group(2))
+        if (m.group(3)):
+            ch = m.group(3).lower()
+            code = ord(ch) - ord('a')
+            partnum = partnum + code/26.0
+        return partnum
+    else:
+        return -1
 
 def updateId(id, offset):
     if len(id) > 0:
@@ -172,6 +180,8 @@ def processCharacters(doc, allCharacterList):
     doc['characters'] = deduped
 
 # input: directory of files to merge
+#        to ensure files are correctly sorted, make sure each piece is named
+#             xxxx-<partnum>-xxx.xml
 # allCharacterList: list of all known characters 
 #                   If new character are found, will be output to separate list 
 #                   so the user can manually merge it

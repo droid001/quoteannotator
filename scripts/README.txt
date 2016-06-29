@@ -18,3 +18,6 @@ Preprocessing:
 Postprocessing:
 --------------
 - assembleParts.py : Puts back split pieces into one big file
+    1. Prepare annotated pieces by putting them into a directory: <dir>
+    2. Make sure the pieces are named as follows: xxxx-<partnum>-xxx.xml
+    3. To run: ./assembleParts.py -p -c <charactersFile> <dir>
