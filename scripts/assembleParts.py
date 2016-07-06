@@ -5,6 +5,7 @@
 import argparse
 import itertools
 import json
+import math
 import re
 import os
 import sys
@@ -37,6 +38,13 @@ def getPartNumber(filename):
     else:
         return -1
 
+def getFilePrefix(filename):
+    m = re.match(r"(.*?)-([0-9]+)([a-zA-Z])?(-[^0-9]+)?\.xml",filename)
+    if m:
+        return m.group(1)
+    else:
+        return filename
+
 def updateId(id, offset):
     if len(id) > 0:
         m = re.match(r"([a-zA-Z]+)([0-9]+)", id)
@@ -58,6 +66,88 @@ def updateIds(elements, offset):
         connection = ",".join(connections)
         element.setAttribute('connection', connection)
     return maxId+1
+
+def get_all_text( node ):
+    if node.nodeType ==  node.TEXT_NODE:
+        return node.data
+    else:
+        text_string = ""
+        for child_node in node.childNodes:
+            text_string += get_all_text( child_node )
+        return text_string
+
+def checkLinks(filename, textElem):
+    quotes = textElem.getElementsByTagName('quote')
+    mentions = textElem.getElementsByTagName('mention')
+    prefix = 'checkLinks(' + filename + '): '
+    # Make a map of quoteId to quote
+    quotesById = {}
+    for quote in quotes:
+        qid = quote.getAttribute('id')
+        quotesById[qid] = quote
+    # Make a map of mentionId to mention
+    mentionsById = {}
+    for mention in mentions:
+        mid = mention.getAttribute('id')
+        mentionsById[mid] = mention
+    # Make sure each mention is linked to at least one quote
+    # Make sure that the speaker is the same for the mention or quote
+    for mention in mentions:
+        mid = mention.getAttribute('id')
+        mspeaker = mention.getAttribute('speaker')
+        # getAttribute Returns empty string if attribute not there
+        connections = mention.getAttribute('connection').split(",")
+        connections = filter(None, connections)
+        mprefix = prefix + 'Mention ' + mid + '(' + mspeaker + ')'
+        if len(connections) > 0:
+            for conn in connections:
+                quote = quotesById.get(conn)
+                if quote:
+                    if quote.getAttribute('speaker') != mspeaker:
+                        log.warning(mprefix + ' and quote ' + conn + ' has different speakers')
+                        log.warning(mprefix + ' quote ' + conn + ': ' + get_all_text(quote))
+                    if not mid in quote.getAttribute('connection').split(","):
+                        log.warning(mprefix + ' connects to quote ' + conn + ', but quote do not connect back')
+                        log.warning(mprefix + ' quote ' + conn + ': ' + get_all_text(quote))
+                else:
+                    desc = ' (mention)' if mentionsById.get(conn) else ''
+                    log.warning(mprefix + ' connected to invalid quote ' + conn + desc)
+        else:
+            log.warning(mprefix + ' has no connections')
+    # Make sure each quote is linked to one mention
+    # Make sure that the speaker is the same for the mention or quote
+    # If a quote is not linked, make sure the speaker is none
+    for quote in quotes:
+        qid = quote.getAttribute('id')
+        qspeaker = quote.getAttribute('speaker')
+        # getAttribute Returns empty string if attribute not there
+        connections = quote.getAttribute('connection').split(",")
+        connections = filter(None, connections)
+        qprefix = prefix + 'Quote ' + qid
+        hasError = False
+        if len(connections) > 0:
+            if len(connections) > 1:
+                log.warning(qprefix + ' has multiple connections ' + ','.join(connections))
+                hasError = True
+            for conn in connections:
+                mention = mentionsById.get(conn)
+                if mention:
+                    if mention.getAttribute('speaker') != qspeaker:
+                        log.warning(qprefix + ' and mention ' + conn + ' has different speakers')
+                        hasError = True
+                    if not qid in mention.getAttribute('connection').split(","):
+                        log.warning(qprefix + ' connects to mention ' + conn + ', but mention do not connect back')
+                        hasError = True
+                else:
+                    desc = ' (quote)' if quotesById.get(conn) else ''
+                    log.warning(qprefix + ' connected to invalid mention ' + conn + desc)
+                    hasError = True
+        else:
+            if qspeaker != 'none':
+                log.warning(qprefix + ' has no connections')
+                hasError = True
+        if hasError:
+            log.warning(qprefix + ': ' + get_all_text(quote))
 
 def guessCharacter(name, allCharactersByAlias):
     matched = process.extractOne(name, allCharactersByAlias.keys())
@@ -191,13 +281,16 @@ def assemble(input, allCharacterList, includeSectionTags, outfilename):
     # Get filelist
     files = [f for f in os.listdir(input) if f.endswith('.xml')]
     # Sort files by order
-    files.sort(key=lambda val: (getPartNumber(val), val))
+    files.sort(key=lambda val: (getFilePrefix(val), getPartNumber(val)))
     # Iterate through chapters
     chapters = []
     characters = []
     charactersByName = {}
     maxSpanId = 0
     for file in files:
+        print file
+        partNumber = getPartNumber(file)
+        chapterStart = not partNumber or math.floor(partNumber) == partNumber
         chdom = minidom.parse(input + '/' + file)
         characterElems = chdom.getElementsByTagName('character')
         for characterElem in characterElems:
@@ -210,11 +303,19 @@ def assemble(input, allCharacterList, includeSectionTags, outfilename):
         for textElem in textElems:
             # TODO: fix up span ids for quote, mention, connection
             spanOffset = maxSpanId
-            m1 = updateIds(chdom.getElementsByTagName('quote'), spanOffset)
-            m2 = updateIds(chdom.getElementsByTagName('mention'), spanOffset)
+            checkLinks(file, textElem)
+            m1 = updateIds(textElem.getElementsByTagName('quote'), spanOffset)
+            m2 = updateIds(textElem.getElementsByTagName('mention'), spanOffset)
             maxSpanId = m1 if m1 > maxSpanId else maxSpanId
             maxSpanId = m2 if m2 > maxSpanId else maxSpanId
-            chapters.append({'xml': textElem})
+            if chapterStart:
+                chapters.append({'xml': textElem, 'part': partNumber})
+            else:
+                # merge with previous chapter
+                chapter = chapters[-1]
+                for child in textElem.childNodes:
+                    chapter['xml'].appendChild(child.cloneNode(True))
+            chapterStart = False
     # Process characters
     if allCharacterList:
         doc = {
