@@ -29,7 +29,6 @@
     "aliases": [
       "Mr. John Knightley",
       "John Knightley",
-      "Mr. Knightley",
       "John"
     ],
     "description": "Emma’s brother-in-law, and Mr. George Knightley’s brother."
@@ -51,6 +50,7 @@
     "name": "Mr._George_Knightley",
     "aliases": [
       "Mr. George Knightley",
+      "Mr. Knightley",
       "George"
     ],
     "description": "Emma’s brother-in-law and the Woodhouses’ trusted friend and advisor. Knightley is a respected landowner in his late thirties. He lives at Donwell Abbey."
