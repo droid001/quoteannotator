@@ -102,10 +102,13 @@ def checkLinks(filename, textElem):
         if len(connections) > 0:
             for conn in connections:
                 quote = quotesById.get(conn)
+                # Make sure mention is linked to quote and not something else
                 if quote:
+                    # Make sure that the speaker is the same for the mention or quote
                     if quote.getAttribute('speaker') != mspeaker:
                         log.warning(mprefix + ' and quote ' + conn + ' has different speakers')
                         log.warning(mprefix + ' quote ' + conn + ': ' + get_all_text(quote))
+                    # Make sure that the mention links to quote and quote to mention
                     if not mid in quote.getAttribute('connection').split(","):
                         log.warning(mprefix + ' connects to quote ' + conn + ', but quote do not connect back')
                         log.warning(mprefix + ' quote ' + conn + ': ' + get_all_text(quote))
@@ -123,7 +126,7 @@ def checkLinks(filename, textElem):
         # getAttribute Returns empty string if attribute not there
         connections = quote.getAttribute('connection').split(",")
         connections = filter(None, connections)
-        qprefix = prefix + 'Quote ' + qid
+        qprefix = prefix + 'Quote ' + qid + '(' + qspeaker + ')'
         hasError = False
         if len(connections) > 0:
             if len(connections) > 1:
@@ -131,10 +134,13 @@ def checkLinks(filename, textElem):
                 hasError = True
             for conn in connections:
                 mention = mentionsById.get(conn)
+                # Make sure quote is linked to mention and not something else
                 if mention:
+                    # Make sure that the speaker is the same for the mention or quote
                     if mention.getAttribute('speaker') != qspeaker:
                         log.warning(qprefix + ' and mention ' + conn + ' has different speakers')
                         hasError = True
+                    # Make sure that the mention links to quote and quote to mention
                     if not qid in mention.getAttribute('connection').split(","):
                         log.warning(qprefix + ' connects to mention ' + conn + ', but mention do not connect back')
                         hasError = True
@@ -143,13 +149,15 @@ def checkLinks(filename, textElem):
                     log.warning(qprefix + ' connected to invalid mention ' + conn + desc)
                     hasError = True
         else:
+            # If a quote is not linked, make sure the speaker is none
             if qspeaker != 'none':
                 log.warning(qprefix + ' has no connections')
                 hasError = True
+        # Print out text of the quote that errored
         if hasError:
             log.warning(qprefix + ': ' + get_all_text(quote))
 
-def guessCharacter(name, allCharactersByAlias):
+def guessCharacter(name, allCharactersByAlias, allCharactersByNormalized):
     matched = process.extractOne(name, allCharactersByAlias.keys())
     result = {
         "name": matched[0],
@@ -158,9 +166,16 @@ def guessCharacter(name, allCharactersByAlias):
     }
     if result['score'] < 100:
         # match without punctuation
-        m = normalizeName(result['name'])
-        result['score'] = fuzz.ratio(name, m)
+        m = normalizeName(name)
+        matched = process.extractOne(m, allCharactersByNormalized.keys())
+        result = {
+            "name": matched[0],
+            "score": matched[1],
+            "characters": allCharactersByNormalized[matched[0]]
+        }
     result['ok'] = result['score'] == 100 and len(result['characters']) == 1
+    if result['ok']:
+        log.info('Guess ' + name + ' is ' + result['characters'][0]['name'] )
     return result
 
 def normalizeName(s):
@@ -219,10 +234,12 @@ def processCharacters(doc, allCharacterList):
     allCharactersByName = {}
     # Create a backup map of characters by alias (string to list of characters)
     allCharactersByAlias = {}
+    allCharactersByNormalized = {}  # normalized
     for character in allCharacterList:
         name = character['name']
         # Strip . (guess that's something the javascript did)
         name = name.replace(".", "")
+        #name = normalizeName(name)
         character['normalized'] = name
         if not allCharactersByName.get(name):
             allCharactersByName[name] = character
@@ -234,11 +251,17 @@ def processCharacters(doc, allCharacterList):
                     allCharactersByAlias[alias] = [character]
                 else:
                     allCharactersByAlias[alias].append(character)
+                nalias = normalizeName(alias)
+                if not allCharactersByNormalized.get(nalias):
+                    allCharactersByNormalized[nalias] = [character]
+                else:
+                    allCharactersByNormalized[nalias].append(character)
     # Go through characters and make sure they are found in our character list!
     characters = doc['characters']
     for character in characters:
         dom = character['xml']
         name = dom.getAttribute('name')
+        #name = normalizeName(name)
         if allCharactersByName.get(name):
             character['character'] = allCharactersByName.get(name)
             fixupCharacter(doc, character)
@@ -249,7 +272,7 @@ def processCharacters(doc, allCharacterList):
                 dom.setAttribute('group', "true")
                 members = []
                 for nm in names:
-                    guessed = guessCharacter(nm, allCharactersByAlias)
+                    guessed = guessCharacter(nm, allCharactersByAlias, allCharactersByNormalized)
                     if guessed['ok']:
                         members.append(guessed['characters'][0]['normalized'])
                     else:
@@ -257,7 +280,7 @@ def processCharacters(doc, allCharacterList):
                 if len(members) > 0:
                     dom.setAttribute('members', ';'.join(members))
             else:
-                guessed = guessCharacter(name, allCharactersByAlias)
+                guessed = guessCharacter(name, allCharactersByAlias, allCharactersByNormalized)
                 if guessed['ok']:
                     character['character'] = guessed['characters'][0]
                     fixupCharacter(doc, character)
