@@ -3,6 +3,7 @@
 # Reassembles annotated chapters into one big file
 
 import argparse
+import collections
 import itertools
 import json
 import math
@@ -76,10 +77,21 @@ def get_all_text( node ):
             text_string += get_all_text( child_node )
         return text_string
 
-def checkLinks(filename, textElem):
+def has_ancestor_tag( node, tag ):
+    if node:
+        if node.nodeType ==  node.ELEMENT_NODE:
+            if node.tagName == tag:
+                return True
+        return has_ancestor_tag( node.parentNode, tag )
+    else:
+        return False
+
+
+def checkLinks(filename, textElem, charactersByName, overallStats):
     quotes = textElem.getElementsByTagName('quote')
     mentions = textElem.getElementsByTagName('mention')
     prefix = 'checkLinks(' + filename + '): '
+    stats = collections.Counter()
     # Make a map of quoteId to quote
     quotesById = {}
     for quote in quotes:
@@ -120,7 +132,14 @@ def checkLinks(filename, textElem):
     # Make sure each quote is linked to one mention
     # Make sure that the speaker is the same for the mention or quote
     # If a quote is not linked, make sure the speaker is none
+    stats.update({'quotes': len(quotes)})
     for quote in quotes:
+        isNested = has_ancestor_tag(quote.parentNode, 'quote')
+        if isNested:
+            stats.update({'nested': 1})
+        qoid = quote.getAttribute('oid')
+        if qoid:
+            stats.update({'quoteHasOrigId': 1})
         qid = quote.getAttribute('id')
         qspeaker = quote.getAttribute('speaker')
         # getAttribute Returns empty string if attribute not there
@@ -128,7 +147,15 @@ def checkLinks(filename, textElem):
         connections = filter(None, connections)
         qprefix = prefix + 'Quote ' + qid + '(' + qspeaker + ')'
         hasError = False
+        # Check if qspeaker is known character
+        character = charactersByName.get(qspeaker)
+        if not character:
+            stats.update({'quoteUnknownCharacter': 1})
+            log.warning(qprefix + ' has speaker ' + qspeaker + ' with unknown character')
+            hasError = True
         if len(connections) > 0:
+            if not character:
+                stats.update({'quoteWithMentionUnknownCharacter': 1})
             if len(connections) > 1:
                 log.warning(qprefix + ' has multiple connections ' + ','.join(connections))
                 hasError = True
@@ -145,17 +172,26 @@ def checkLinks(filename, textElem):
                         log.warning(qprefix + ' connects to mention ' + conn + ', but mention do not connect back')
                         hasError = True
                 else:
+                    stats.update({'quoteConnectedToInvalidMention': 1})
                     desc = ' (quote)' if quotesById.get(conn) else ''
                     log.warning(qprefix + ' connected to invalid mention ' + conn + desc)
                     hasError = True
         else:
+            if not character:
+                stats.update({'quoteNoMentionUnknownCharacter': 1})
+            stats.update({'quotesNoMention': 1})
             # If a quote is not linked, make sure the speaker is none
             if qspeaker != 'none':
                 log.warning(qprefix + ' has no connections')
                 hasError = True
+            else:
+                stats.update({'quotesNoMentionSpeakerNone': 1})
         # Print out text of the quote that errored
         if hasError:
             log.warning(qprefix + ': ' + get_all_text(quote))
+    #writeStats(stats)
+    overallStats.update(stats)
+    return stats
 
 def guessCharacter(name, allCharactersByAlias, allCharactersByNormalized):
     matched = process.extractOne(name, allCharactersByAlias.keys())
@@ -292,6 +328,9 @@ def processCharacters(doc, allCharacterList):
         c['xml'].setAttribute('id', str(i))
     doc['characters'] = deduped
 
+def writeStats(stats):
+    print(json.dumps(stats, sort_keys=True, indent=2))
+
 # input: directory of files to merge
 #        to ensure files are correctly sorted, make sure each piece is named
 #             xxxx-<partnum>-xxx.xml
@@ -310,6 +349,7 @@ def assemble(input, allCharacterList, includeSectionTags, outfilename):
     characters = []
     charactersByName = {}
     maxSpanId = 0
+    overallStats = collections.Counter()
     for file in files:
         print file
         partNumber = getPartNumber(file)
@@ -326,7 +366,7 @@ def assemble(input, allCharacterList, includeSectionTags, outfilename):
         for textElem in textElems:
             # TODO: fix up span ids for quote, mention, connection
             spanOffset = maxSpanId
-            checkLinks(file, textElem)
+            checkLinks(file, textElem, charactersByName, overallStats)
             m1 = updateIds(textElem.getElementsByTagName('quote'), spanOffset)
             m2 = updateIds(textElem.getElementsByTagName('mention'), spanOffset)
             maxSpanId = m1 if m1 > maxSpanId else maxSpanId
@@ -373,6 +413,7 @@ def assemble(input, allCharacterList, includeSectionTags, outfilename):
             chapterElem.appendChild(c.cloneNode(True))
     docElem.appendChild(textElem)
     writeXml(dom, outfilename)
+    writeStats(overallStats)
 
 def readCharactersJson(filename):
     with open(filename) as file:
