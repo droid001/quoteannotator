@@ -136,10 +136,10 @@ def checkLinks(filename, textElem, charactersByName, overallStats):
     for quote in quotes:
         isNested = has_ancestor_tag(quote.parentNode, 'quote')
         if isNested:
-            stats.update({'nested': 1})
+            stats.update({'quotesNested': 1})
         qoid = quote.getAttribute('oid')
         if qoid:
-            stats.update({'quoteHasOrigId': 1})
+            stats.update({'quotesOrig': 1})
         qid = quote.getAttribute('id')
         qspeaker = quote.getAttribute('speaker')
         # getAttribute Returns empty string if attribute not there
@@ -149,13 +149,17 @@ def checkLinks(filename, textElem, charactersByName, overallStats):
         hasError = False
         # Check if qspeaker is known character
         character = charactersByName.get(qspeaker)
+        if qoid and character:
+            stats.update({'quotesOrigWithCharacter': 1})
         if not character:
-            stats.update({'quoteUnknownCharacter': 1})
+            stats.update({'quotesUnknownCharacter': 1})
             log.warning(qprefix + ' has speaker ' + qspeaker + ' with unknown character')
             hasError = True
+        if qspeaker == '':
+            stats.update({'quotesNoSpeaker': 1})
         if len(connections) > 0:
             if not character:
-                stats.update({'quoteWithMentionUnknownCharacter': 1})
+                stats.update({'quotesWithMentionUnknownCharacter': 1})
             if len(connections) > 1:
                 log.warning(qprefix + ' has multiple connections ' + ','.join(connections))
                 hasError = True
@@ -172,13 +176,13 @@ def checkLinks(filename, textElem, charactersByName, overallStats):
                         log.warning(qprefix + ' connects to mention ' + conn + ', but mention do not connect back')
                         hasError = True
                 else:
-                    stats.update({'quoteConnectedToInvalidMention': 1})
+                    stats.update({'quotesConnectedToInvalidMention': 1})
                     desc = ' (quote)' if quotesById.get(conn) else ''
                     log.warning(qprefix + ' connected to invalid mention ' + conn + desc)
                     hasError = True
         else:
             if not character:
-                stats.update({'quoteNoMentionUnknownCharacter': 1})
+                stats.update({'quotesNoMentionUnknownCharacter': 1})
             stats.update({'quotesNoMention': 1})
             # If a quote is not linked, make sure the speaker is none
             if qspeaker != 'none':
