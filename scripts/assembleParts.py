@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 #
 # Reassembles annotated chapters into one big file
+# Requires: pip install fuzzywuzzy
 
 import argparse
 import collections
@@ -16,6 +17,10 @@ import traceback
 import xml.dom.minidom as minidom
 from fuzzywuzzy import process
 from fuzzywuzzy import fuzz
+
+from util import get_all_text
+from util import has_ancestor_tag
+from util import readCharacters
 
 FORMAT = '%(asctime)-15s [%(levelname)s] %(message)s'
 logging.basicConfig(format=FORMAT)
@@ -67,25 +72,6 @@ def updateIds(elements, offset):
         connection = ",".join(connections)
         element.setAttribute('connection', connection)
     return maxId+1
-
-def get_all_text( node ):
-    if node.nodeType ==  node.TEXT_NODE:
-        return node.data
-    else:
-        text_string = ""
-        for child_node in node.childNodes:
-            text_string += get_all_text( child_node )
-        return text_string
-
-def has_ancestor_tag( node, tag ):
-    if node:
-        if node.nodeType ==  node.ELEMENT_NODE:
-            if node.tagName == tag:
-                return True
-        return has_ancestor_tag( node.parentNode, tag )
-    else:
-        return False
-
 
 def checkLinks(filename, textElem, charactersByName, overallStats):
     quotes = textElem.getElementsByTagName('quote')
@@ -332,8 +318,12 @@ def processCharacters(doc, allCharacterList):
         c['xml'].setAttribute('id', str(i))
     doc['characters'] = deduped
 
-def writeStats(stats):
-    print(json.dumps(stats, sort_keys=True, indent=2))
+def writeStats(stats, statsFilename = None):
+    if statsFilename:
+        with open(statsFilename, "w") as out:
+            out.write(json.dumps(stats, sort_keys=True, indent=2))
+    else:
+        print(json.dumps(stats, sort_keys=True, indent=2))
 
 # input: directory of files to merge
 #        to ensure files are correctly sorted, make sure each piece is named
@@ -342,10 +332,19 @@ def writeStats(stats):
 #                   If new character are found, will be output to separate list 
 #                   so the user can manually merge it
 # includeSectionTags: whether section tags are included (currently just chapter markings)
-# outfilename: Output aggregated file
-def assemble(input, allCharacterList, includeSectionTags, outfilename):
+# outFilename: Output aggregated file
+# filterPattern:    Pattern to use when filtering filename
+# overallStats:     Cumulative stats
+# statsFilename:    Filename for output stats
+def assemble(input, allCharacterList, includeSectionTags, outFilename, 
+    filterPattern = None, overallStats = None, statsFilename = None):
     # Get filelist
-    files = [f for f in os.listdir(input) if f.endswith('.xml')]
+    xml_files = [f for f in os.listdir(input) if f.endswith('.xml')]
+    if filterPattern:
+        p = re.compile(filterPattern)
+        files = [f for f in xml_files if re.match(p, f)]
+    else:
+        xml_files
     # Sort files by order
     files.sort(key=lambda val: (getFilePrefix(val), getPartNumber(val)))
     # Iterate through chapters
@@ -353,7 +352,7 @@ def assemble(input, allCharacterList, includeSectionTags, outfilename):
     characters = []
     charactersByName = {}
     maxSpanId = 0
-    overallStats = collections.Counter()
+    novelStats = collections.Counter()
     for file in files:
         print file
         partNumber = getPartNumber(file)
@@ -370,7 +369,7 @@ def assemble(input, allCharacterList, includeSectionTags, outfilename):
         for textElem in textElems:
             # TODO: fix up span ids for quote, mention, connection
             spanOffset = maxSpanId
-            checkLinks(file, textElem, charactersByName, overallStats)
+            checkLinks(file, textElem, charactersByName, novelStats)
             m1 = updateIds(textElem.getElementsByTagName('quote'), spanOffset)
             m2 = updateIds(textElem.getElementsByTagName('mention'), spanOffset)
             maxSpanId = m1 if m1 > maxSpanId else maxSpanId
@@ -416,12 +415,10 @@ def assemble(input, allCharacterList, includeSectionTags, outfilename):
         for c in t.childNodes:
             chapterElem.appendChild(c.cloneNode(True))
     docElem.appendChild(textElem)
-    writeXml(dom, outfilename)
-    writeStats(overallStats)
-
-def readCharactersJson(filename):
-    with open(filename) as file:
-        return json.load(file)
+    writeXml(dom, outFilename)
+    writeStats(novelStats, statsFilename)
+    if overallStats is not None:
+        overallStats.update(novelStats)
 
 def main():
     # Argument processing
@@ -429,10 +426,11 @@ def main():
     parser.add_argument('infile')
     parser.add_argument('-c', '--characters', dest='charactersFile', help='characters file', action='store')
     parser.add_argument('-p', dest='includeSectionTags', help='paragraphs and headings', action='store_true')
+    parser.add_argument('-f', '--filter', dest='filter', help='filter pattern for input files', action='store')
     parser.add_argument('outfile', nargs='?')
     args = parser.parse_args()
     outname = args.outfile or args.infile + '.xml'
-    characters = readCharactersJson(args.charactersFile) if args.charactersFile else None
-    assemble(args.infile, characters, args.includeSectionTags, outname)
+    characters = readCharacters(args.charactersFile) if args.charactersFile else None
+    assemble(args.infile, characters, args.includeSectionTags, outname, args.filter)
 
 if __name__ == "__main__": main()

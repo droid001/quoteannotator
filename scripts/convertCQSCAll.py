@@ -10,6 +10,7 @@ import logging
 import traceback
 
 import convertCQSC as cqsc
+import util
 
 FORMAT = '%(asctime)-15s [%(levelname)s] %(message)s'
 logging.basicConfig(format=FORMAT)
@@ -21,11 +22,11 @@ def main():
     parser = argparse.ArgumentParser(description='Convert CQSC XML')
     parser.add_argument('-s', '--split', dest='splitChapters', help='split by chapter', action='store_true')
     parser.add_argument('-p', dest='includeSectionTags', help='paragraphs and headings', action='store_true')
-    parser.add_argument('-n', dest='extractNestedQuotes', help='exract nested quotes', action='store_true')
+    parser.add_argument('-n', dest='extractNestedQuotes', help='extract nested quotes', action='store_true')
     parser.add_argument('indir', help='directory to use', action='store')
     args = parser.parse_args()
 
-    files = cqsc.readlines(args.indir + '/files.txt')
+    files = util.readlines(args.indir + '/files.txt')
     for file in files:
         filename = args.indir + "/" + file
         (base,ext) = os.path.splitext(filename)

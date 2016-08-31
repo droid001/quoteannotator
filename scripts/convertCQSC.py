@@ -9,11 +9,15 @@ import re
 import sys
 import logging
 import traceback
+import util
 
 import xml.dom.minidom as minidom
 
 from sets import Set
 from collections import Counter
+
+from util import get_all_text
+from util import readCharacters
 
 FORMAT = '%(asctime)-15s [%(levelname)s] %(message)s'
 logging.basicConfig(format=FORMAT)
@@ -36,44 +40,6 @@ def mapGender(gender):
         return 'female'
     else:
         return gender
-
-def readlines(input):
-    lines = []
-    with open(input) as x:
-        for line in x:
-            line = line.strip()
-            if len(line):
-                lines.append(line)
-    return lines
-
-def readCharactersTxt(filename):
-    characters = readlines(filename)
-    characters = map(strToCharacter, characters)
-    for index,character in enumerate(characters):
-        character['id'] = str(index)
-    return characters
-
-def readCharactersJson(filename):
-    with open(filename) as file:
-        return json.load(file)
-
-def readCharacters(filename):
-    (base,ext) = os.path.splitext(filename)
-    if ext == '.json':
-        return readCharactersJson(filename)
-    elif ext == '.txt':
-        return readCharactersTxt(filename)
-    else:
-        raise Exception('Unsupported character format ' + filename)
-
-def get_all_text( node ):
-    if node.nodeType ==  node.TEXT_NODE:
-        return node.data
-    else:
-        text_string = ""
-        for child_node in node.childNodes:
-            text_string += get_all_text( child_node )
-        return text_string
 
 def lowercaseTags( node ):
     if node.nodeType ==  node.ELEMENT_NODE:
