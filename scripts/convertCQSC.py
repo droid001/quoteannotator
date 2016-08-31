@@ -305,7 +305,9 @@ def convert(input, outfilename, charactersFile, mentionLevel, splitChapters, inc
     speakerMentions = Set()
     speakers = Set()
     noSpeaker = 0
+    nQuotes = 0
     for quote in quotes:
+        nQuotes += 1
         speakerMentionId = quote.getAttribute('speaker')
         quoteId = quote.getAttribute('id')
         quoteSpanId = 's' + str(nextQuoteSpanId)
@@ -315,27 +317,34 @@ def convert(input, outfilename, charactersFile, mentionLevel, splitChapters, inc
         quote.setAttribute('id', quoteIdToSpanId[quoteId])
         if speakerMentionId and speakerMentionId != 'none':
             speakerMentions.add(speakerMentionId)
-            speakerId = mentionIdToEntityId[speakerMentionId]
-            entity = entities[speakerId]
-            speakerName =  entity['name'] if 'name' in entity else speakerId
-            # Rename attributes
-            #quote.setAttribute('speakerId', speakerId)
-            quote.setAttribute('speaker', speakerName)
-            quote.setAttribute('mention', speakerMentionId)
-            if not mentionLevel == 'QUOTES':  # No need to set connection if no mentions will be output
-                quote.setAttribute('connection', mentionIdToSpanId[speakerMentionId])
-            # Add connection to mention
-            mention = mentionIdToMention[speakerMentionId]
-            if not mentionLevel == 'QUOTES':  # No need to set connection if no mentions will be output
-                mconn = mention.getAttribute('connection')
-                if len(mconn) > 0:
-                    mention.setAttribute('connection',  mconn + ',' + quoteSpanId)
-                else:
-                    mention.setAttribute('connection', quoteSpanId)
+            speakerId = mentionIdToEntityId.get(speakerMentionId)
+            if speakerId:
+                entity = entities[speakerId]
+                speakerName =  entity['name'] if 'name' in entity else speakerId
+                # Rename attributes
+                #quote.setAttribute('speakerId', speakerId)
+                quote.setAttribute('speaker', speakerName)
+                quote.setAttribute('mention', speakerMentionId)
+                if not mentionLevel == 'QUOTES':  # No need to set connection if no mentions will be output
+                    quote.setAttribute('connection', mentionIdToSpanId[speakerMentionId])
+                # Add connection to mention
+                mention = mentionIdToMention[speakerMentionId]
+                if not mentionLevel == 'QUOTES':  # No need to set connection if no mentions will be output
+                    mconn = mention.getAttribute('connection')
+                    if len(mconn) > 0:
+                        mention.setAttribute('connection',  mconn + ',' + quoteSpanId)
+                    else:
+                        mention.setAttribute('connection', quoteSpanId)
+            else:
+                # Special case handling for speakers we added in this script
+                if not speakerMentionId in ['James_McCarthy', 'Coroner', 'Juryman']:
+                    print 'No speaker for ' + speakerMentionId
+                speakerName = speakerMentionId
+                quote.setAttribute('speaker', speakerName)
         else:
             noSpeaker += 1
             #print 'Unknown speaker for ' + quote.toxml('utf-8')
-    print 'No speaker for ' + str(noSpeaker) + ' quotes'
+    print 'No speaker for ' + str(noSpeaker) + '/' + str(nQuotes) + ' quotes'
 
     # Trim based on mention level
     if mentionLevel == 'QUOTES': # only show quotes (remove mentions)
