@@ -151,8 +151,13 @@ def checkLinks(filename, textElem, charactersByName, overallStats):
         else:
             updateStats(stats, statsFlags, 'withCharacter')
         if qspeaker == '':
-            updateStats(stats, statsFlags, 'noSpeaker')
+            updateStats(stats, statsFlags, 'speakerEmpty')
+        elif qspeaker == 'none':
+            updateStats(stats, statsFlags, 'speakerNone')
+        else:
+            updateStats(stats, statsFlags, 'speakerSpecified')
         if len(connections) > 0:
+            updateStats(stats, statsFlags, 'withMention')
             if not character:
                 updateStats(stats, statsFlags, 'withMentionUnknownCharacter')
             if len(connections) > 1:
@@ -176,9 +181,9 @@ def checkLinks(filename, textElem, charactersByName, overallStats):
                     log.warning(qprefix + ' connected to invalid mention ' + conn + desc)
                     hasError = True
         else:
+            updateStats(stats, statsFlags, 'noMention')
             if not character:
                 updateStats(stats, statsFlags, 'noMentionUnknownCharacter')
-            updateStats(stats, statsFlags, 'noMention')
             # If a quote is not linked, make sure the speaker is none
             if qspeaker != 'none':
                 log.warning(qprefix + ' has no connections')

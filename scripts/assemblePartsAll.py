@@ -34,6 +34,9 @@ def main():
     if args.outdir:
         if not os.path.exists(args.outdir):
             os.makedirs(args.outdir)
+        overallStatsFile = os.path.join(args.outdir, 'all.stats.txt')
+    else:
+        overallStatsFile = os.path.join(args.indir, 'all.stats.txt')
     files = glob(args.indir + '/*/')
     for filename in files:
         (base,ext) = os.path.splitext(filename)
@@ -50,6 +53,6 @@ def main():
                 outname, args.filter, overallStats, statsFilename)
         except:
             log.error("Unexpected error processing " + filename + ": ", exc_info=True)
-    assembleParts.writeStats(overallStats)
+    assembleParts.writeStats(overallStats, overallStatsFile)
 
 if __name__ == "__main__": main()
