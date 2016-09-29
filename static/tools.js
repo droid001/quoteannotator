@@ -60,7 +60,7 @@ Tools.prototype.alert = function(message, callback){
 Tools.prototype.getConnectionColor = function(i) {
   var ind = i % connection_colors.length;
   return connection_colors[ind];
-}
+};
 
 Tools.prototype.getColor = function(i) {
   // TODO: generate a random color if i >= array_length

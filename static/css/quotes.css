@@ -120,10 +120,13 @@ h1 {
 #entitydisplay {
   overflow: hidden;
   width: 23%;
-  white-space: pre;
   overflow-y: scroll;
   overflow-x: scroll;
   height: 700px;
+}
+
+#entitydisplay div {
+  white-space: pre;  
 }
 
 #annotationareacontainer {

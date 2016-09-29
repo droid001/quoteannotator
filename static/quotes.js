@@ -424,13 +424,17 @@ AnnotationOptionsUI.prototype.update = function(annotationOpts) {
   }
   // update the character list
   $("#entitydisplay div").remove();
+  function getOrEmpty(x) { return (x != undefined)? x:''; }
   for (var name in this.annotationOpts) {
     if (name.startsWith('speaker_')) {
-      var nameDiv = $('<div />');
+      var nameDiv = $('<div/>');
       nameDiv.addClass(name);
       var data = this.annotationOpts[name].data;
-      nameDiv.text(name + '\ngender: ' + data.gender +
-          '\ndesription: ' + data.description + '\naliases: ' + data.aliases);
+      var prettyName = name.substring(8);
+      nameDiv.html(prettyName + 
+          '\ngender: ' + getOrEmpty(data.gender) +
+          '\ndesription: ' + getOrEmpty(data.description) + 
+          '\naliases: ' + getOrEmpty(data.aliases));
       $("#entitydisplay").append(nameDiv);    
     } 
   }
