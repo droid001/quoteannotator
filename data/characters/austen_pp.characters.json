@@ -3,6 +3,7 @@
     "id": "0",
     "gender": "female",
     "name": "Mrs._Annesley",
+    "description": "Mrs. Annesley is Georgiana's companion at Pemberley",
     "aliases": [
       "Mrs. Annesley",
       "Annesley"
@@ -12,6 +13,7 @@
     "id": "1",
     "gender": "female",
     "name": "Elizabeth_Bennet",
+    "description": "The novel’s protagonist. The second daughter of Mr. Bennet, Elizabeth is the most intelligent and sensible of the five Bennet sisters",
     "aliases": [
       "Elizabeth Bennet",
       "Miss Elizabeth Bennet",
@@ -30,6 +32,7 @@
     "id": "2",
     "gender": "female",
     "name": "Jane_Bennet",
+    "description": "The eldest and most beautiful Bennet sister. Jane is more reserved and gentler than Elizabeth.",
     "aliases": [
       "Jane Bennet",
       "Jane"
@@ -39,6 +42,7 @@
     "id": "3",
     "gender": "female",
     "name": "Lydia_Bennet",
+    "description": "The youngest Bennet sister, she is gossipy, immature, and self-involved. Unlike Elizabeth, Lydia flings herself headlong into romance and ends up running off with Wickham.",
     "aliases": [
       "Lydia Bennet",
       "Miss Lydia Bennet",
@@ -50,6 +54,7 @@
     "id": "4",
     "gender": "female",
     "name": "Kitty_Bennet",
+    "description": "The fourth Bennet sister. Like Lydia, she is girlishly enthralled with the soldiers.",
     "aliases": [
       "Kitty Bennet",
       "Catherine Bennet",
@@ -60,6 +65,7 @@
     "id": "5",
     "gender": "female",
     "name": "Mary_Bennet",
+    "description": "The middle Bennet sister, bookish and pedantic.",
     "aliases": [
       "Mary Bennet",
       "Mary"
@@ -69,6 +75,7 @@
     "id": "6",
     "gender": "female",
     "name": "Mrs._Bennet",
+    "description": "Mr. Bennet’s wife, a foolish, noisy woman whose only goal in life is to see her daughters married.",
     "aliases": [
       "Mrs. Bennet",
       "Bennet"
@@ -78,6 +85,7 @@
     "id": "7",
     "gender": "male",
     "name": "Mr._Bennet",
+    "description": "The patriarch of the Bennet family, a gentleman of modest income with five unmarried daughters.",
     "aliases": [
       "Mr. Bennet",
       "Bennet"
@@ -87,6 +95,7 @@
     "id": "8",
     "gender": "male",
     "name": "Mr._Bingley",
+    "description": "Darcy’s considerably wealthy best friend.",
     "aliases": [
       "Mr. Bingley",
       "Bingley"
@@ -96,6 +105,7 @@
     "id": "9",
     "gender": "female",
     "name": "Caroline_Bingley",
+    "description": "Bingley’s snobbish sister. Miss Bingley bears inordinate disdain for Elizabeth’s middle-class background.",
     "aliases": [
       "Caroline Bingley",
       "Caroline",
@@ -106,6 +116,7 @@
     "id": "10",
     "gender": "female",
     "name": "Charlotte",
+    "description": "Elizabeth's sensible and intelligent friend, who disappoints Elizabeth by marrying Mr. Collins for money and security.",
     "aliases": [
       "Charlotte",
       "Charlotte Lucas",
@@ -125,6 +136,7 @@
     "id": "12",
     "gender": "male",
     "name": "Mr._Collins",
+    "description": "A pompous, generally idiotic clergyman who stands to inherit Mr. Bennet’s property.",
     "aliases": [
       "Mr. Collins",
       "William Collins"
@@ -134,9 +146,11 @@
     "id": "13",
     "gender": "female",
     "name": "Lady_Catherine",
+    "description": "A rich, bossy noblewoman; Mr. Collins’s patron and Darcy’s aunt.",
     "aliases": [
       "Lady Catherine",
-      "Catherine"
+      "Catherine",
+      "Lady Catherine de Bourgh"
     ]
   },
   {
@@ -159,6 +173,7 @@
     "id": "16",
     "gender": "male",
     "name": "Mr._Denny",
+    "description": "Mr. Denny is a soldier in the regiment who introduces the Bennet girls to Mr. Wickham.",
     "aliases": [
       "Mr. Denny"
     ]
@@ -167,6 +182,7 @@
     "id": "17",
     "gender": "male",
     "name": "Mr._Darcy",
+    "description": "A wealthy gentleman, the master of Pemberley, and the nephew of Lady Catherine de Bourgh.",
     "aliases": [
       "Mr. Darcy",
       "Mr. Fitzwilliam Darcy",
@@ -196,6 +212,7 @@
     "id": "20",
     "gender": "female",
     "name": "Georgiana_Darcy",
+    "description": "Darcy's sister Georgiana, ten years his junior, is quiet and shy but generally amiable and good-natured. ",
     "aliases": [
       "Georgiana Darcy",
       "Georgiana",
@@ -206,6 +223,7 @@
     "id": "21",
     "gender": "male",
     "name": "Colonel_Fitzwilliam",
+    "description": "Darcy's well-mannered and pleasant cousin, who is interested in Elizabeth, but who needs to marry someone with money.",
     "aliases": [
       "Colonel Fitzwilliam",
       "Colonel F."
@@ -215,6 +233,7 @@
     "id": "22",
     "gender": "male",
     "name": "Colonel_Forster",
+    "description": "A good-natured and basically responsible man, Colonel Forster is the regiment leader who allows his wife to bring Lydia to Brighton.",
     "aliases": [
       "Colonel Forster"
     ]
@@ -231,6 +250,7 @@
     "id": "24",
     "gender": "female",
     "name": "Mrs._Gardiner",
+    "description": "Mrs. Bennet’s brother's wife.",
     "aliases": [
       "Mrs. Gardiner"
     ]
@@ -239,6 +259,7 @@
     "id": "25",
     "gender": "male",
     "name": "Mr._Gardiner",
+    "description": "Mrs. Bennet’s brother.",
     "aliases": [
       "Mr. Gardiner",
       "EDW. Gardiner",
@@ -273,6 +294,7 @@
     "id": "29",
     "gender": "female",
     "name": "Mrs._Jenkinson",
+    "description": "Miss de Bough's companion. She pampers the young girl.",
     "aliases": [
       "Mrs. Jenkinson"
     ]
@@ -289,6 +311,7 @@
     "id": "31",
     "gender": "female",
     "name": "Miss_Mary_King",
+    "description": "Wickham pursues Miss King, a woman in Meryton, after she inherits a sum of money.",
     "aliases": [
       "Miss Mary King",
       "Mary King"
@@ -306,6 +329,7 @@
     "id": "33",
     "gender": "female",
     "name": "Lady_Lucas",
+    "description": "Charlotte's mother and the Bennets' neighbor.",
     "aliases": [
       "Lady Lucas"
     ]
@@ -314,6 +338,7 @@
     "id": "34",
     "gender": "female",
     "name": "Maria_Lucas",
+    "description": "Charlotte's younger sister, Maria, is as empty-headed as her father.",
     "aliases": [
       "Maria Lucas",
       "Miss Lucas",
@@ -324,6 +349,7 @@
     "id": "35",
     "gender": "male",
     "name": "Mr._Hurst",
+    "description": "Bingley's snobbish brother-in-law.",
     "aliases": [
       "Mr. Hurst"
     ]
@@ -332,6 +358,7 @@
     "id": "36",
     "gender": "female",
     "name": "Louisa_Hurst",
+    "description": "Bingley's snobbish elder sister",
     "aliases": [
       "Louisa Hurst",
       "Louisa",
@@ -367,6 +394,7 @@
     "id": "40",
     "gender": "male",
     "name": "Mr._Philips",
+    "description": "A country attorney (his wife is Mrs. Bennet's sister).",
     "aliases": [
       "Mr. Philips",
       "Philips"
@@ -393,6 +421,7 @@
     "id": "43",
     "gender": "female",
     "name": "Mrs._Reynolds",
+    "description": "Mrs. Reynolds is the estate's longtime housekeeper. She gives Elizabeth and the Gardiners a tour of Pemberley and impresses Elizabeth with her praise of Darcy.",
     "aliases": [
       "Mrs. Reynolds"
     ]
@@ -433,6 +462,7 @@
     "id": "48",
     "gender": "male",
     "name": "Sir_William",
+    "description": "Charlotte's father and the Bennets' neighbor.",
     "aliases": [
       "Sir William",
       "Sir William Lucas"
@@ -442,6 +472,7 @@
     "id": "49",
     "gender": "female",
     "name": "Anne_de_Bourgh",
+    "description": "Lady Catherine's sickly, bland daughter.",
     "aliases": [
       "Anne de Bourgh",
       "Miss de Bourgh",
@@ -452,6 +483,7 @@
     "id": "50",
     "gender": "male",
     "name": "Mr._Wickham",
+    "description": "A handsome, fortune-hunting militia officer.",
     "aliases": [
       "Mr. Wickham",
       "George Wickham",
@@ -463,6 +495,7 @@
     "id": "51",
     "gender": "female",
     "name": "Mrs._Philips",
+    "description": "Mrs. Bennet's sister, wife of a country attorney.",
     "aliases": [
       "Mrs. Philips",
       "Mrs. Phillips"

@@ -358,7 +358,7 @@ def assemble(input, allCharacterList, includeSectionTags, outFilename,
         p = re.compile(filterPattern)
         files = [f for f in xml_files if re.match(p, f)]
     else:
-        xml_files
+        files = xml_files
     # Sort files by order
     files.sort(key=lambda val: (getFilePrefix(val), getPartNumber(val)))
     # Iterate through chapters

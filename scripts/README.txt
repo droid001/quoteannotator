@@ -27,4 +27,7 @@ Postprocessing:
   You may need to do 'pip install fuzzywuzzy' before running the script
 - assemblePartsAll.py : Runs assembleParts.py over a several directory
   To use for getting statistics from the Columbia Quoted Speech Corpus:
-    assemblePartsAll.py -f '^.*\.direct.xml$' -p converted_split outdir   
+    assemblePartsAll.py -f '^.*\.direct.xml$' -p converted_split outdir
+- compareAnnotations.py : Compare our annotations with original annotations
+  Use on assembled files
+    compareAnnotations.py -q <file of common quotes> <our file> <merged converted file>
