@@ -40,7 +40,7 @@ def main():
     files = glob(args.indir + '/*/')
     for filename in files:
         (base,ext) = os.path.splitext(filename)
-        file = os.path.basename(base.rstrip('/'))
+        file = os.path.basename(base.rstrip('/').rstrip('\\'))
         charactersFile = os.path.join(args.characterDir, file + ".characters.json")
         if not os.path.isfile(charactersFile):
             charactersFile = None
@@ -49,7 +49,7 @@ def main():
         print "Assembling " + filename + " with characters " + str(charactersFile) + " to " + outname
         try:
             characters = util.readCharacters(charactersFile) if charactersFile else None
-            assembleParts.assemble(filename, characters, args.includeSectionTags, 
+            assembleParts.assemble(filename, characters, args.includeSectionTags,
                 outname, args.filter, overallStats, statsFilename)
         except:
             log.error("Unexpected error processing " + filename + ": ", exc_info=True)
