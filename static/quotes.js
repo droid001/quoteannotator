@@ -427,15 +427,22 @@ AnnotationOptionsUI.prototype.update = function(annotationOpts) {
   function getOrEmpty(x) { return (x != undefined)? x:''; }
   for (var name in this.annotationOpts) {
     if (name.startsWith('speaker_')) {
-      var nameDiv = $('<div/>');
-      nameDiv.addClass(name);
+      var entityDiv = $('<div/>');
+      entityDiv.addClass(name);
       var data = this.annotationOpts[name].data;
       var prettyName = name.substring(8);
-      nameDiv.html(prettyName + 
-          '\ngender: ' + getOrEmpty(data.gender) +
+      var nameDiv = $('<div/>').addClass('name');
+      nameDiv.text(prettyName);
+      var detailsDiv = $('<div/>').addClass('details');
+      detailsDiv.text(
+          'gender: ' + getOrEmpty(data.gender) +
           '\ndesription: ' + getOrEmpty(data.description) + 
           '\naliases: ' + getOrEmpty(data.aliases));
-      $("#entitydisplay").append(nameDiv);    
+      // Expand and hide details
+      nameDiv.click(function(div) { div.toggle(); }.bind(this, detailsDiv));
+      //nameDiv.dblclick(function(div) { div.toggle(); }.bind(this, entityDiv));
+      entityDiv.append(nameDiv).append(detailsDiv);
+      $("#entitydisplay").append(entityDiv);
     } 
   }
 };
@@ -991,7 +998,7 @@ Annotator.prototype.drawConnection = function(span1, span2) {
   var leftOffset = (this.connectionNum % 10) * 2;
   if (Math.abs(s1Top - s2Top) < 10) {
     heightDiv = 10;
-    var div = $('<div />'); 
+    var div = $('<div/>'); 
     div.addClass('connection');
     div.addClass("flat");
     div.css({
