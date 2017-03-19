@@ -9,8 +9,6 @@ If you use this tool please cite the following paper:
 
 Grace Muzny, Michael Fang, Angel Fang and Dan Jurafsky. A Two-stage Sieve Approach to Quote Attribution. In Proceedings of the *European Chapter of the Association for Computational Linguistics* (EACL), 2017, Valencia, Spain.
 
-The main project page 
-
 Usage
 -----
 
