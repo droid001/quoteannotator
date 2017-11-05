@@ -31,6 +31,7 @@ Saver.prototype.save = function(evt) {
 Saver.prototype.load = function(evt) {
   var files = evt.target.files; // FileList object
   var id = evt.target.id;
+
   if (files.length == 0) {
     return;
   }
@@ -41,8 +42,11 @@ Saver.prototype.load = function(evt) {
   var textType = /text.*/;
   var file = files[0];
   var ann = this;
+
   if (file.type.match(textType) || file.type.match(/application\/json/)) {
-    var reader = new FileReader();
+
+	var reader = new FileReader();
+
     if (id == 'loadfiles') {
       reader.onload = function(e) {
         var content = reader.result;
@@ -54,6 +58,7 @@ Saver.prototype.load = function(evt) {
         ann.enableConnectionClicks();
       };
     } else if (id == 'loadconfig') {
+
       reader.onload = function(e) {
         var content = reader.result;
         var annotationOpts = JSON.parse(content);
@@ -64,9 +69,46 @@ Saver.prototype.load = function(evt) {
   }
 };
 
+Saver.prototype.loadAndReturnValue = function(evt) {
+
+	var files = evt.target.files; // FileList object
+
+	if (files.length == 0) {
+		return;
+	}
+	if (files.length != 1) {
+		ts.alert("Only the first selected file will be loaded!");
+	}
+
+	var textType = /text.*/;
+	var file = files[0];
+	var ann = this;
+
+	if (file.type.match(/application\/json/)) {
+
+		return new Promise( (resolve, reject) => {
+
+			var reader = new FileReader();
+			reader.onload = resolve;
+			reader.readAsText(file);
+		})
+
+		// reader.onload = function(e) {
+		// 	var content = reader.result;
+		// 	return JSON.parse(content);
+		//
+		// }.bind(this);
+		//
+		// return reader.readAsText(file);
+
+	} else {
+		throw new Error("Wrong file format. JSON expected");
+	}
+};
+
 function attrsToString(data) {
   var attrs = Object.keys(data).map( function(key) {
-    return key + '="' + data[key] + '"'; 
+    return key + '="' + data[key] + '"';
   });
   var attrStr = attrs.join(" ");
   return attrStr;
@@ -185,7 +227,7 @@ function convertSingleSpan(span, conversionFunction) {
 function convertToXml(html, annotationOpts) {
   var head = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><doc>";
   // we need to insert character info here
-  
+
   head += "<characters>";
   for (var name in annotationOpts) {
     var annOpt = annotationOpts[name];
